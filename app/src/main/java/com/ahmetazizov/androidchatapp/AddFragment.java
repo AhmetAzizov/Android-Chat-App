@@ -21,8 +21,16 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentSnapshot;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.List;
+import java.util.Locale;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -92,6 +100,7 @@ public class AddFragment extends Fragment {
     public final static String TAG = "AddFragment";
     Button addButton;
     EditText inputAddName;
+    static String userName;
 
 
     @Override
@@ -124,22 +133,61 @@ public class AddFragment extends Fragment {
 
                                     FirebaseUser user = mAuth.getCurrentUser();
 
-                                    UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                            .setDisplayName(inputAddName.getText().toString()).build();
 
-                                    user.updateProfile(profileUpdates);
+//                                    if (inputAddName.getText().toString() != "") {
+//                                        Log.d(TAG, "null");
+//
+                                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                                .setDisplayName("Ahmad").build();
 
-                                    Log.d(TAG, "displayName set to: " + user.getDisplayName());
+                                        user.updateProfile(profileUpdates);
+//                                    }
+
+                                    userName = user.getDisplayName();
+
+
+
+                                    Log.d(TAG, "username: " + userName);
+
+
+                                    // Firestore database reference
+                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
+                                    final CollectionReference docRef = db.collection("chats");
+
+                                    // get data from "chats" collection once
+                                    docRef.get()
+                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+                                                @Override
+                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                                                    if (task.isSuccessful()) {
+
+                                                        QuerySnapshot document = task.getResult();
+
+
+                                                        for (QueryDocumentSnapshot doc : document) {
+                                                            if (doc.getId().toLowerCase().contains(userName.toLowerCase())) {
+                                                                MainActivity.chats.add(doc.getId());
+                                                            }
+                                                        }
+                                                    } else {
+                                                        Log.d(TAG, "Error getting documents: ", task.getException());
+                                                    }
+                                                }
+                                            });
+
+                                    mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChats()).commit();
+
                                 } else {
-                                    Log.d(TAG, "There was an error logging in";
+                                    Log.d(TAG, "There was an error logging in");
                                 }
                             }
                         });
-
-
-                mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout,new ShowChats()).commit();
             }
         });
     }
 
+
+    public String returnString(){
+        return "example string";
+    }
 }

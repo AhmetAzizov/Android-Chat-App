@@ -1,15 +1,29 @@
 package com.ahmetazizov.androidchatapp;
 
+import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+
 import org.checkerframework.checker.nullness.qual.NonNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -66,21 +80,54 @@ public class ShowChats extends Fragment {
     }
 
 
+    public final static String TAG = "ShowChats";
 
-
-
-
-
-
-
-
-
-
+    static ChatsRecyclerViewAdapter adapter;
+    MainActivity mainActivity;
+    RecyclerView recyclerView;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
 
+        recyclerView = view.findViewById(R.id.chatsRecyclerView);
+        mainActivity = (MainActivity) getActivity();
+
+
+        adapter = new ChatsRecyclerViewAdapter(getContext(), mainActivity.chats);
+        recyclerView.setAdapter(adapter);
+        recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        Log.w(TAG, "chats: " + MainActivity.chats);
+
+
+
+        // Firestore database reference
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final CollectionReference docRef = db.collection("chats");
+
+        docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                    @Override
+                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                        if (e != null) {
+                            Log.w(TAG, "Listen failed.", e);
+                            return;
+                        }
+
+                        mainActivity.chats.clear();
+
+                        for (QueryDocumentSnapshot document : value) {
+                            if (document.getId().toLowerCase().contains(AddFragment.userName.toLowerCase())) {
+                                MainActivity.chats.add(document.getId());
+                                adapter.notifyDataSetChanged();
+                            }
+                        }
+
+                    }
+                });
+
     }
+
 }
