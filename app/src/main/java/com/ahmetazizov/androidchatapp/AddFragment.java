@@ -5,17 +5,23 @@ import android.graphics.Color;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
@@ -87,20 +93,11 @@ public class AddFragment extends Fragment {
     }
 
 
-
-
-
-
-
-
-
-
-
-
     public final static String TAG = "AddFragment";
     Button addButton;
     EditText inputAddName;
-    static String userName;
+    static String userName = "";
+    ProgressBar progressBar;
 
 
     @Override
@@ -116,12 +113,14 @@ public class AddFragment extends Fragment {
 
         addButton = view.findViewById(R.id.addButton);
         inputAddName = view.findViewById(R.id.inputAddName);
-
+        progressBar = view.findViewById(R.id.addProgressBar);
 
 
         addButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                progressBar.setVisibility(View.VISIBLE);
 
 
                 mAuth.signInWithEmailAndPassword("ahmet.azizov@gmail.com", "asasdosu")
@@ -129,65 +128,71 @@ public class AddFragment extends Fragment {
                             @Override
                             public void onComplete(@NonNull Task<AuthResult> task) {
                                 if (task.isSuccessful()) {
-                                    // Sign in success, update UI with the signed-in user's information
-
                                     FirebaseUser user = mAuth.getCurrentUser();
 
 
-//                                    if (inputAddName.getText().toString() != "") {
-//                                        Log.d(TAG, "null");
-//
+                                    if (!TextUtils.isEmpty(inputAddName.getText().toString().trim())) {
+
+                                        // This logs the input value if it isn't empty
+                                        Log.d(TAG, "input: " + inputAddName.getText().toString());
+
+                                        // This code sets displayName to the logged in user
                                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                                .setDisplayName("Ahmad").build();
+                                                .setDisplayName(inputAddName.getText().toString().trim()).build();
 
-                                        user.updateProfile(profileUpdates);
-//                                    }
+                                        // This code updates the profile. The code goes further if there is no error
+                                        user.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
+                                            @Override
+                                            public void onComplete(@androidx.annotation.NonNull Task<Void> task) {
+                                                userName = user.getDisplayName();
+                                                addData();
+                                            }
+                                        }).addOnFailureListener(new OnFailureListener() {
+                                            @Override
+                                            public void onFailure(@androidx.annotation.NonNull Exception e) {
+                                                Log.d(TAG, "Error: " + e);
+                                                return;
+                                            }
+                                        });
+                                    } else {
 
-                                    userName = user.getDisplayName();
+                                        userName = user.getDisplayName();
 
+                                        addData();
 
+                                    }
+                                }}});}});
 
-                                    Log.d(TAG, "username: " + userName);
+    }
 
+    public void addData() {
+        // Firestore database reference
+        FirebaseFirestore db = FirebaseFirestore.getInstance();
+        final CollectionReference docRef = db.collection("chats");
 
-                                    // Firestore database reference
-                                    FirebaseFirestore db = FirebaseFirestore.getInstance();
-                                    final CollectionReference docRef = db.collection("chats");
+        // get data from "chats" collection once
+        docRef.get().addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
+            @Override
+            public void onComplete(@NonNull Task<QuerySnapshot> task) {
+                if (task.isSuccessful()) {
+                    QuerySnapshot document = task.getResult();
+                    for (QueryDocumentSnapshot doc : document) {
+                        if (doc.getId().toLowerCase().contains(userName.toLowerCase())) {
+                            MainActivity.chats.add(doc.getId());
+                            Log.d(TAG, "username: " + userName);
+                        }
 
-                                    // get data from "chats" collection once
-                                    docRef.get()
-                                            .addOnCompleteListener(new OnCompleteListener<QuerySnapshot>() {
-                                                @Override
-                                                public void onComplete(@NonNull Task<QuerySnapshot> task) {
-                                                    if (task.isSuccessful()) {
+                        progressBar.setVisibility(View.GONE);
 
-                                                        QuerySnapshot document = task.getResult();
-
-
-                                                        for (QueryDocumentSnapshot doc : document) {
-                                                            if (doc.getId().toLowerCase().contains(userName.toLowerCase())) {
-                                                                MainActivity.chats.add(doc.getId());
-                                                            }
-                                                        }
-                                                    } else {
-                                                        Log.d(TAG, "Error getting documents: ", task.getException());
-                                                    }
-                                                }
-                                            });
-
-                                    mainActivity.getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChats()).commit();
-
-                                } else {
-                                    Log.d(TAG, "There was an error logging in");
-                                }
-                            }
-                        });
+                        FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        fragmentTransaction.replace(R.id.frameLayout, new ShowChats()).commit();
+                    }
+                } else {
+                    Log.d(TAG, "Error getting documents: ", task.getException());
+                }
             }
         });
-    }
-
-
-    public String returnString(){
-        return "example string";
-    }
+        // End of docRef.get() method call
+    } // End of addData() method definition
 }
