@@ -9,6 +9,8 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Window;
+import android.view.WindowManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
@@ -36,12 +38,17 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+//        requestWindowFeature(Window.FEATURE_NO_TITLE);
+//        getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
+//                WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
         setContentView(R.layout.activity_main);
 
         chats = new ArrayList<String>();
 
         // go to chats fragment
-        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new AddFragment()).commit();
+        getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new registerFragment()).commit();
     }
 
 
