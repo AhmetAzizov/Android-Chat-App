@@ -18,6 +18,7 @@ import androidx.fragment.app.Fragment;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
+import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -120,7 +121,7 @@ public class registerFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public final static String TAG = "registerFragment";
-    ActivityResultLauncher mGetContentLauncher;
+    ActivityResultLauncher<String> mGetContentLauncher;
     private static final int PICK_IMAGE_REQUEST = 1;
     private Button selectImageButton, uploadImageButton, registerButton;
     TextView loginDirect;
@@ -133,6 +134,13 @@ public class registerFragment extends Fragment {
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     StorageReference storageRef;
     CollectionReference dbUsersRef;
+
+    private final ActivityResultLauncher<String> galleryLauncher = registerForActivityResult(
+            new ActivityResultContracts.GetContent(),
+            selectedUri -> {
+                // handle the selected image URI here
+                image.setImageURI(selectedUri);
+            });
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -165,6 +173,8 @@ public class registerFragment extends Fragment {
             public void onClick(View v) {
                 // Method for choosing the image from device
                 openFileChooser();
+//                galleryLauncher.launch("image/*");
+
             }
         });
 
@@ -180,7 +190,7 @@ public class registerFragment extends Fragment {
 //                        .into(image);
 
                 Glide.with(getContext())
-                        .load("")
+                        .load("https://firebasestorage.googleapis.com/v0/b/android-chat-application-155b5.appspot.com/o/imageUploads%2F1680045792837.jpg?alt=media&token=fa02e7ce-ff9e-415c-a636-33288511fe0f")
                         .override(500, 500)
                         .into(image);
 
@@ -199,11 +209,10 @@ public class registerFragment extends Fragment {
 
                 if (checkErrors(username, email, password, imageUri)) {
                     // Checks if there is any error in the input
-
+                    uploadFile(username, email, password);
                 } else {
                     Log.d(TAG, "error");
                 }
-                uploadFile(username, email, password);
 
             }
         });
@@ -218,29 +227,43 @@ public class registerFragment extends Fragment {
 
 
     private boolean checkErrors(String username, String email, String password, Uri uri) {
-        if (username.trim().isEmpty() || username == null)  {
+        if (username.isEmpty() || username == null) {
             enterUsernameLayout.setError("User Name is Empty!");
+            enterUsernameLayout.requestFocus();
             return false;
+        }
+        else if(username.contains("-") || username.contains("%") || username.contains(" ")) {
+            enterUsernameLayout.setError("Username can not contain space or special characters!");
         } else {
             enterUsernameLayout.setError(null);
         }
 
 
-        if (email.trim().isEmpty() || email == null) {
+
+
+        if (email.isEmpty() || email == null) {
             enterEmailLayout.setError("Email is Empty!");
             return false;
+        }
+        else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
+            enterEmailLayout.setError("Please provide valid email!");
         } else {
             enterEmailLayout.setError(null);
         }
 
-        if (password.trim().isEmpty() || password == null) {
+
+        if (password.isEmpty() || password == null) {
             enterPasswordLayout.setError("Password is Empty!");
             return false;
+        }
+        else if(password.length() < 6) {
+            enterPasswordLayout.setError("Password should be at least 6 characters!");
         } else {
             enterPasswordLayout.setError(null);
         }
 
         if (uri == null || uri.toString().isEmpty() || uri.toString() == "null") {
+            Toast.makeText(getContext(), "Please select a profile image!", Toast.LENGTH_SHORT).show();
             return false;
         }
 
@@ -260,6 +283,8 @@ public class registerFragment extends Fragment {
         MimeTypeMap mime = MimeTypeMap.getSingleton();
         return mime.getExtensionFromMimeType(cR.getType(uri));
     }
+
+
 
     private void uploadFile(String username, String email, String password) {
         if (imageUri != null) {
@@ -361,7 +386,8 @@ public class registerFragment extends Fragment {
 
 
                             UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(user.getUsername()).build();
+                                    .setDisplayName(user.getUsername()).setPhotoUri(imageUri).build();
+
 
                             authUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
                                 @Override
@@ -453,19 +479,22 @@ public class registerFragment extends Fragment {
 //                && data != null && data.getData() != null){
 //
 //            imageUri = data.getData();
-////            image.setImageURI(imageUri);
+//            image.setImageURI(imageUri);
+//
+//            Log.d(TAG, "uri: " + imageUri);
+//
 //
 ////            Glide.with(getContext())
 ////                                    .load(imageUri)
-////                                    .override(1500, 1500)
+////                                    .override(500, 500)
 ////                                    .centerInside()
 ////                                    .into(image);
 //
-//                    Picasso.get()
-//                        .load(imageUri)
-//                        .resize(500, 500)
-//                        .centerInside()
-//                        .into(image);
+////                    Picasso.get()
+////                        .load(imageUri)
+////                        .resize(500, 500)
+////                        .centerInside()
+////                        .into(image);
 //
 //        }
 //    }

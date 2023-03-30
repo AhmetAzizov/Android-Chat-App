@@ -11,12 +11,16 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.transition.AutoTransition;
+import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -115,10 +119,13 @@ public class ShowChats extends Fragment {
     FirebaseFirestore db;
     MainActivity mainActivity;
     RecyclerView recyclerView;
-    Button searchButton;
-    TextView editTextsSearch;
     static CardView cover;
     ProgressBar loadingScreenProgressBar;
+
+    CardView addContactCard;
+    TextView txtAddContact;
+    Button buttonAddContact;
+    LinearLayout addContactLayout;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -130,12 +137,15 @@ public class ShowChats extends Fragment {
         cover = view.findViewById(R.id.loadingScreen);
         loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
         contacts = new ArrayList<>();
-        searchButton = view.findViewById(R.id.searchButton);
-        editTextsSearch = view.findViewById(R.id.editTextsSearch);
 
         adapter = new ChatsRecyclerViewAdapter(getContext(), contacts);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        addContactCard = view.findViewById(R.id.addContactCard);
+        txtAddContact = view.findViewById(R.id.txtAddContact);
+        buttonAddContact = view.findViewById(R.id.buttonAddContact);
+        addContactLayout = view.findViewById(R.id.addContactLayout);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser authUser = mAuth.getCurrentUser();
@@ -147,6 +157,17 @@ public class ShowChats extends Fragment {
         final CollectionReference usersRef = db.collection("users");
 
 
+
+        addContactCard.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                int status = (txtAddContact.getVisibility() == View.GONE)? View.VISIBLE: View.GONE;
+
+                TransitionManager.beginDelayedTransition(addContactLayout, new AutoTransition());
+                txtAddContact.setVisibility(status);
+                buttonAddContact.setVisibility(status);
+            }
+        });
 
 
         // Unused code //
@@ -168,13 +189,23 @@ public class ShowChats extends Fragment {
 
 
 
-        searchButton.setOnClickListener(new View.OnClickListener() {
+        buttonAddContact.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
 
-                String searchResult = editTextsSearch.getText().toString().trim();
+                String searchResult = txtAddContact.getText().toString().trim();
 
                 boolean found = false;
+
+
+                for (User contact : contacts) {
+
+                    if (searchResult.equalsIgnoreCase(contact.getUsername())) {
+                        return;
+                    }
+
+                }
+
 
                 for (User user : MainActivity.users) {
 
@@ -286,7 +317,12 @@ public class ShowChats extends Fragment {
                 contacts.clear();
 
                 for (QueryDocumentSnapshot document : value) {
-                    if (document.getId().toLowerCase().contains(MainActivity.username.toLowerCase())) {
+
+                    String[] separateNames = document.getId().split("-");
+
+                    if (separateNames[0].equalsIgnoreCase(MainActivity.username) || separateNames[1].equalsIgnoreCase(MainActivity.username)) {
+
+                        Log.d(TAG, "chat: " + document.getId());
 
                         sortUser(document.getId());
 
