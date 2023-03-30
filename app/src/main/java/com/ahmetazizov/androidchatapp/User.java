@@ -4,6 +4,7 @@ public class User {
     private String username;
     private String email;
     private String imageURL;
+    private String chatReference;
 
     public User () {
         // Default empty constructor
@@ -37,5 +38,13 @@ public class User {
 
     public void setImageURL(String imageURL) {
         this.imageURL = imageURL;
+    }
+
+    public String getChatReference() {
+        return chatReference;
+    }
+
+    public void setChatReference(String chatReference) {
+        this.chatReference = chatReference;
     }
 }

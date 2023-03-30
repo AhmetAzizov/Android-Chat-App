@@ -1,10 +1,13 @@
 package com.ahmetazizov.androidchatapp;
 
-import android.annotation.SuppressLint;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -12,18 +15,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewTreeObserver;
+import android.widget.Button;
+import android.widget.ProgressBar;
+import android.widget.TextView;
+import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -80,53 +94,233 @@ public class ShowChats extends Fragment {
     }
 
 
-    public final static String TAG = "ShowChats";
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public final static String TAG = "ShowChats";
+    private FirebaseAuth mAuth;
+    public static ArrayList<User> contacts;
     static ChatsRecyclerViewAdapter adapter;
+    FirebaseFirestore db;
     MainActivity mainActivity;
     RecyclerView recyclerView;
+    Button searchButton;
+    TextView editTextsSearch;
+    static CardView cover;
+    ProgressBar loadingScreenProgressBar;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Log.d(TAG, "Current User: " + MainActivity.username);
 
         recyclerView = view.findViewById(R.id.chatsRecyclerView);
-        mainActivity = (MainActivity) getActivity();
+        cover = view.findViewById(R.id.loadingScreen);
+        loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
+        contacts = new ArrayList<>();
+        searchButton = view.findViewById(R.id.searchButton);
+        editTextsSearch = view.findViewById(R.id.editTextsSearch);
 
-
-        adapter = new ChatsRecyclerViewAdapter(getContext(), mainActivity.chats);
+        adapter = new ChatsRecyclerViewAdapter(getContext(), contacts);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
-
-        Log.w(TAG, "chats: " + MainActivity.chats);
-
-
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser authUser = mAuth.getCurrentUser();
 
         // Firestore database reference
-        FirebaseFirestore db = FirebaseFirestore.getInstance();
-        final CollectionReference docRef = db.collection("chats");
+        db = FirebaseFirestore.getInstance();
 
-        docRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                    @Override
-                    public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                        if (e != null) {
-                            Log.w(TAG, "Listen failed.", e);
-                            return;
-                        }
 
-                        mainActivity.chats.clear();
+        final CollectionReference usersRef = db.collection("users");
 
-                        for (QueryDocumentSnapshot document : value) {
-                            if (document.getId().toLowerCase().contains(AddFragment.userName.toLowerCase())) {
-                                MainActivity.chats.add(document.getId());
-                                adapter.notifyDataSetChanged();
+
+
+
+        // Unused code //
+        recyclerView
+                .getViewTreeObserver()
+                .addOnGlobalLayoutListener(
+                        new ViewTreeObserver.OnGlobalLayoutListener() {
+                            @Override
+                            public void onGlobalLayout() {
+                                // At this point the layout is complete and the
+                                // dimensions of recyclerView and any child views
+                                // are known.
+                                recyclerView
+                                        .getViewTreeObserver()
+                                        .removeOnGlobalLayoutListener(this);
+
                             }
-                        }
+                        });
+
+
+
+        searchButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+
+                String searchResult = editTextsSearch.getText().toString().trim();
+
+                boolean found = false;
+
+                for (User user : MainActivity.users) {
+
+                    if (searchResult.equals(user.getUsername())) {
+
+                        found = true;
+                        cover.setVisibility(View.VISIBLE);
+                        String newChatRef = MainActivity.username + "-" + searchResult;
+                        CollectionReference colRef = db.collection("chats");
+
+                        // Create an empty document inside "chats" collection
+                        colRef.document(newChatRef)
+                                .set(new HashMap<String, Object>(), SetOptions.merge())
+                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                    @Override
+                                    public void onSuccess(Void unused) {
+                                        Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+                                    }
+                                }).addOnFailureListener(new OnFailureListener() {
+                                    @Override
+                                    public void onFailure(@androidx.annotation.NonNull Exception e) {
+                                        Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+                                    }
+                                });
 
                     }
-                });
+                }
+
+                if (!found) Toast.makeText(getContext(), "User does not exist!", Toast.LENGTH_LONG).show();
+
+
+
+//                    FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//                    // Create a Bundle object and set the data you want to pass
+//                    Bundle bundle = new Bundle();
+//                    bundle.putString("myData", "Hello World");
+//
+//                    // Create a new instance of the fragment and set the bundle
+//                    AddFragment addFragment = new AddFragment();
+//                    addFragment.setArguments(bundle);
+//
+//                    // Replace the current fragment with the new one
+//                    fragmentTransaction.replace(R.id.frameLayout, addFragment).commit();
+
+
+            }
+        });
+
+
+
+        getUsers();
+
+        getChats();
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void getUsers() {
+        final CollectionReference usersRef = db.collection("users");
+
+        usersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                MainActivity.users.clear();
+
+
+                for (QueryDocumentSnapshot document : value) {
+                    User user = document.toObject(User.class);
+
+                    MainActivity.users.add(user);
+
+                }
+            }
+        });
+    }
+
+
+    public void getChats() {
+        final CollectionReference chatsRef = db.collection("chats");
+
+        chatsRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                mainActivity.chats.clear();
+                contacts.clear();
+
+                for (QueryDocumentSnapshot document : value) {
+                    if (document.getId().toLowerCase().contains(MainActivity.username.toLowerCase())) {
+
+                        sortUser(document.getId());
+
+                    }
+                }
+
+                for (User user:contacts) Log.d(TAG, "sorted user: " + user.getUsername());
+
+                if (contacts.isEmpty()) cover.setAlpha(0.0f);
+
+                adapter.notifyDataSetChanged();
+            }
+        });
+    }
+
+
+    public void sortUser(String chatReference) {
+        String[] chatRefSplit = chatReference.split("-");
+        String tempUsername;
+
+        if (chatRefSplit[1] == MainActivity.username) tempUsername = chatRefSplit[0];
+        else tempUsername = chatRefSplit[1];
+
+        for (User user : MainActivity.users) {
+
+
+            if (user.getUsername().equals(tempUsername)) {
+
+
+                user.setChatReference(chatReference);
+                contacts.add(user);
+
+            }
+        }
 
     }
 
