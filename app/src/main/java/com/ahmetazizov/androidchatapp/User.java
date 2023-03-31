@@ -1,6 +1,13 @@
 package com.ahmetazizov.androidchatapp;
 
-public class User {
+import android.os.Parcel;
+import android.os.Parcelable;
+
+import androidx.annotation.NonNull;
+
+import java.io.Serializable;
+
+public class User implements Serializable {
     private String username;
     private String email;
     private String imageURL;
@@ -15,6 +22,8 @@ public class User {
         this.email = email;
         this.imageURL = imageURL;
     }
+
+
 
     public String getUsername() {
         return username;

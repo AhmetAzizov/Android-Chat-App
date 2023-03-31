@@ -1,11 +1,9 @@
 package com.ahmetazizov.androidchatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.Fragment;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.util.Log;
 
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -13,7 +11,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class AuthenticationActivity extends AppCompatActivity {
 
 
-    public final static String TAG = "mainActivity";
+    public final static String TAG = "AuthenticationActivity";
     private FirebaseAuth mAuth;
 
     @Override
@@ -32,10 +30,13 @@ public class AuthenticationActivity extends AppCompatActivity {
             startActivity(intent);
 
         } else {
-            getSupportFragmentManager().beginTransaction().replace(R.id.AuthFrameLayout, new registerFragment()).commit();
+            RegisterFragment fragment = (RegisterFragment) getSupportFragmentManager().findFragmentByTag("registerFragment");
+
+            if (fragment == null) {
+                getSupportFragmentManager().beginTransaction().replace(R.id.AuthFrameLayout, new RegisterFragment(), "registerFragment").commit();
+            }
         }
     }
-
 
 
     @Override
@@ -43,11 +44,38 @@ public class AuthenticationActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_authentication);
 
-
+//        Log.d("registerFragment", "activity onCreate: " + registerFragment.imageUri);
     }
 
-
 //    @Override
+//    protected void onResume() {
+//        super.onResume();
+//
+//        Log.d("registerFragment", "activity onResume: " + registerFragment.imageUri);
+//    }
+//
+//    @Override
+//    protected void onPause() {
+//        super.onPause();
+//
+//        Log.d("registerFragment", "activity onPause: " + registerFragment.imageUri);
+//    }
+//
+//    @Override
+//    protected void onStop() {
+//        super.onStop();
+//
+//        Log.d("registerFragment", "activity onStop: " + registerFragment.imageUri);
+//    }
+//
+//    @Override
+//    protected void onDestroy() {
+//        super.onDestroy();
+//
+//        Log.d("registerFragment", "activity onDestroy: " + registerFragment.imageUri);
+//    }
+
+    //    @Override
 //    protected void onSaveInstanceState(Bundle outState) {
 //        super.onSaveInstanceState(outState);
 //

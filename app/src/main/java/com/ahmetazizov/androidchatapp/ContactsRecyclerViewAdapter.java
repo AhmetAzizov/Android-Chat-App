@@ -2,7 +2,6 @@ package com.ahmetazizov.androidchatapp;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -13,9 +12,6 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -26,27 +22,27 @@ import com.bumptech.glide.request.target.Target;
 
 import java.util.ArrayList;
 
-public class ChatsRecyclerViewAdapter extends RecyclerView.Adapter<ChatsRecyclerViewAdapter.MyViewHolder> {
+public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.MyViewHolder> {
 
     public final static String TAG = "ChatsRecycler";
     static Context context;
     ArrayList<User> chats;
 
-    public ChatsRecyclerViewAdapter(Context context, ArrayList<User> chats){
+    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats){
         this.context = context;
         this.chats = chats;
     }
 
     @NonNull
     @Override
-    public ChatsRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
+    public ContactsRecyclerViewAdapter.MyViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         LayoutInflater inflater = LayoutInflater.from(context);
         View view = inflater.inflate(R.layout.chats_recyclerview_row, parent, false);
-        return new ChatsRecyclerViewAdapter.MyViewHolder(view);
+        return new ContactsRecyclerViewAdapter.MyViewHolder(view);
     }
 
     @Override
-    public void onBindViewHolder(@NonNull ChatsRecyclerViewAdapter.MyViewHolder holder, int position) {
+    public void onBindViewHolder(@NonNull ContactsRecyclerViewAdapter.MyViewHolder holder, int position) {
 
         holder.chatName.setText(chats.get(position).getUsername());
 

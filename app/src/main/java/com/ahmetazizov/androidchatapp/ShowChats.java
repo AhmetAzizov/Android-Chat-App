@@ -1,17 +1,19 @@
 package com.ahmetazizov.androidchatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.transition.AutoTransition;
+import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -19,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewTreeObserver;
 import android.widget.Button;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -30,7 +31,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -115,10 +115,13 @@ public class ShowChats extends Fragment {
     public final static String TAG = "ShowChats";
     private FirebaseAuth mAuth;
     public static ArrayList<User> contacts;
-    static ChatsRecyclerViewAdapter adapter;
+    private ArrayList<User> searchResult;
+    static ContactsRecyclerViewAdapter adapter;
+    SearchAdapter searchAdapter;
     FirebaseFirestore db;
     MainActivity mainActivity;
     RecyclerView recyclerView;
+    Button logOutButton;
     static CardView cover;
     ProgressBar loadingScreenProgressBar;
 
@@ -126,6 +129,11 @@ public class ShowChats extends Fragment {
     TextView txtAddContact;
     Button buttonAddContact;
     LinearLayout addContactLayout;
+
+    CardView searchCard;
+    RecyclerView searchCardList;
+    TextView searchCardInput;
+    LinearLayout searchCardLayout;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -137,11 +145,22 @@ public class ShowChats extends Fragment {
         cover = view.findViewById(R.id.loadingScreen);
         loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
         contacts = new ArrayList<>();
+        searchResult = new ArrayList<>();
 
-        adapter = new ChatsRecyclerViewAdapter(getContext(), contacts);
+        searchCard = view.findViewById(R.id.searchCard);
+        searchCardList = view.findViewById(R.id.searchCardList);
+        searchCardInput = view.findViewById(R.id.searchCardInput);
+        searchCardLayout = view.findViewById(R.id.searchCardLayout);
+
+        adapter = new ContactsRecyclerViewAdapter(getContext(), contacts);
         recyclerView.setAdapter(adapter);
         recyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
 
+        searchAdapter = new SearchAdapter(getContext(), searchResult);
+        searchCardList.setAdapter(searchAdapter);
+        searchCardList.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        logOutButton = view.findViewById(R.id.logOutButton);
         addContactCard = view.findViewById(R.id.addContactCard);
         txtAddContact = view.findViewById(R.id.txtAddContact);
         buttonAddContact = view.findViewById(R.id.buttonAddContact);
@@ -158,6 +177,11 @@ public class ShowChats extends Fragment {
 
 
 
+
+
+
+
+
         addContactCard.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -166,6 +190,33 @@ public class ShowChats extends Fragment {
                 TransitionManager.beginDelayedTransition(addContactLayout, new AutoTransition());
                 txtAddContact.setVisibility(status);
                 buttonAddContact.setVisibility(status);
+            }
+        });
+
+
+        searchCardInput.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+
+            }
+
+            @Override
+            public void onTextChanged(CharSequence s, int start, int before, int count) {
+                final ChangeBounds transition = new ChangeBounds();
+                transition.setDuration(400L);
+
+                TransitionManager.beginDelayedTransition(searchCardLayout, transition);
+
+                String searchInput = searchCardInput.getText().toString().trim();
+
+                searchResult(searchInput);
+
+                searchAdapter.notifyDataSetChanged();
+            }
+
+            @Override
+            public void afterTextChanged(Editable s) {
+
             }
         });
 
@@ -230,7 +281,6 @@ public class ShowChats extends Fragment {
                                         Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
                                     }
                                 });
-
                     }
                 }
 
@@ -256,6 +306,16 @@ public class ShowChats extends Fragment {
             }
         });
 
+        logOutButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                mAuth.signOut();
+
+                Intent intent = new Intent(getContext(), AuthenticationActivity.class);
+                startActivity(intent);
+            }
+        });
+
 
 
         getUsers();
@@ -275,6 +335,25 @@ public class ShowChats extends Fragment {
 
 
 
+
+
+    public void searchResult(String input) {
+
+        searchResult.clear();
+
+        for (User contact : MainActivity.users) {
+
+            if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
+
+                searchResult.add(contact);
+
+                Log.d(TAG, "searchResult chatreference: " + contact.getChatReference());
+            }
+
+        }
+
+        if (input.isEmpty()) searchResult.clear();
+    }
 
 
     public void getUsers() {

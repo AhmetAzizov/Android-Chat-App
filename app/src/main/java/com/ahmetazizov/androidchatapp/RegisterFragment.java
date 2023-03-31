@@ -2,21 +2,20 @@ package com.ahmetazizov.androidchatapp;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultCallback;
 import androidx.activity.result.ActivityResultLauncher;
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Handler;
-import android.text.TextUtils;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -34,7 +33,6 @@ import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
-import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.AuthResult;
@@ -42,21 +40,24 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.ktx.Firebase;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
-import com.squareup.picasso.Picasso;
+
+import java.util.ArrayList;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link registerFragment#newInstance} factory method to
+ * Use the {@link RegisterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class registerFragment extends Fragment {
+public class RegisterFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -67,7 +68,7 @@ public class registerFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public registerFragment() {
+    public RegisterFragment() {
         // Required empty public constructor
     }
 
@@ -80,8 +81,8 @@ public class registerFragment extends Fragment {
      * @return A new instance of fragment registerFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static registerFragment newInstance(String param1, String param2) {
-        registerFragment fragment = new registerFragment();
+    public static RegisterFragment newInstance(String param1, String param2) {
+        RegisterFragment fragment = new RegisterFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -96,8 +97,6 @@ public class registerFragment extends Fragment {
             mParam1 = getArguments().getString(ARG_PARAM1);
             mParam2 = getArguments().getString(ARG_PARAM2);
         }
-
-
     }
 
     @Override
@@ -117,30 +116,23 @@ public class registerFragment extends Fragment {
 
 
 
-
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public final static String TAG = "registerFragment";
     ActivityResultLauncher<String> mGetContentLauncher;
     private static final int PICK_IMAGE_REQUEST = 1;
     private Button selectImageButton, uploadImageButton, registerButton;
+    private ArrayList<String> users;
     TextView loginDirect;
     TextInputLayout enterUsernameLayout, enterEmailLayout, enterPasswordLayout;
     TextInputEditText enterUsername, enterEmail, enterPassword;
     ImageView image;
     ProgressBar progressBar;
-    private Uri imageUri;
+    Uri imageUri;
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     StorageReference storageRef;
     CollectionReference dbUsersRef;
-
-    private final ActivityResultLauncher<String> galleryLauncher = registerForActivityResult(
-            new ActivityResultContracts.GetContent(),
-            selectedUri -> {
-                // handle the selected image URI here
-                image.setImageURI(selectedUri);
-            });
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -152,6 +144,8 @@ public class registerFragment extends Fragment {
         loginDirect = view.findViewById(R.id.loginDirect);
         progressBar = view.findViewById(R.id.progressBar);
         image = view.findViewById(R.id.image);
+        users = new ArrayList<String>();
+
 
         enterUsernameLayout = view.findViewById(R.id.enterUserNameLayout);
         enterEmailLayout = view.findViewById(R.id.enterEmailLayout);
@@ -162,11 +156,12 @@ public class registerFragment extends Fragment {
         enterPassword = view.findViewById(R.id.enterPassword);
 
 
-
         dbUsersRef = db.collection("users");
         storageRef = FirebaseStorage.getInstance().getReference("imageUploads");
 
-        setupGetContentLauncher();
+        usersListener();
+
+//        setupGetContentLauncher();
 
         selectImageButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -217,12 +212,16 @@ public class registerFragment extends Fragment {
             }
         });
 
-//        loginDirect.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//            }
-//        });
+        loginDirect.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentTransaction.replace(R.id.AuthFrameLayout, new LoginFragment()).commit();
+
+            }
+        });
     }
 
 
@@ -234,12 +233,10 @@ public class registerFragment extends Fragment {
         }
         else if(username.contains("-") || username.contains("%") || username.contains(" ")) {
             enterUsernameLayout.setError("Username can not contain space or special characters!");
+            return false;
         } else {
             enterUsernameLayout.setError(null);
         }
-
-
-
 
         if (email.isEmpty() || email == null) {
             enterEmailLayout.setError("Email is Empty!");
@@ -247,6 +244,7 @@ public class registerFragment extends Fragment {
         }
         else if(!Patterns.EMAIL_ADDRESS.matcher(email).matches()) {
             enterEmailLayout.setError("Please provide valid email!");
+            return false;
         } else {
             enterEmailLayout.setError(null);
         }
@@ -258,6 +256,7 @@ public class registerFragment extends Fragment {
         }
         else if(password.length() < 6) {
             enterPasswordLayout.setError("Password should be at least 6 characters!");
+            return false;
         } else {
             enterPasswordLayout.setError(null);
         }
@@ -266,6 +265,16 @@ public class registerFragment extends Fragment {
             Toast.makeText(getContext(), "Please select a profile image!", Toast.LENGTH_SHORT).show();
             return false;
         }
+
+
+        for (String user : users) {
+            if (user.equalsIgnoreCase(username)) {
+                Toast.makeText(getContext(), "Username already taken, please choose another one", Toast.LENGTH_LONG).show();
+                return false;
+            }
+        }
+
+
 
         return true;
     }
@@ -418,99 +427,125 @@ public class registerFragment extends Fragment {
 
 
 
-    private void setupGetContentLauncher() {
+        private void usersListener() {
+            final CollectionReference usersRef = db.collection("users");
 
-
-        mGetContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-                new ActivityResultCallback<Uri>() {
-                    @Override
-                    public void onActivityResult(Uri result) {
-                        if (result != null) {
-
-                            imageUri = result;
-
-//                            Picasso.get().load(imageUri).resize(500, 500).centerInside().into(image);
-
-
-                            try {
-                                Glide.with(getContext())
-                                        .load(imageUri)
-                                        .override(500, 500)
-                                        .centerInside()
-                                        .into(image);
-                            } catch (Exception e) {
-                                Log.d(TAG, "Exception: " + e.getMessage());
-                            }
-
-
-//                            image.setImageURI(imageUri);
-
-
-                            Log.d(TAG, "URI: " + result);
-                        }
+            usersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
+                @Override
+                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
                     }
-                });
-    }
 
-    private void openFileChooser() {
-        mGetContentLauncher.launch("image/*");
-    }
+                    users.clear();
 
 
+                    for (QueryDocumentSnapshot document : value) {
+
+                        users.add(document.getId());
+
+                    }
+                }
+            });
+        }
 
 
 
-
-
-
-
-//    private void openFileChooser(){
-//        Intent intent = new Intent();
-//        intent.setType("image/*");
-//        intent.setAction(Intent.ACTION_GET_CONTENT);
-//        startActivityForResult(intent,PICK_IMAGE_REQUEST);
+//    private void setupGetContentLauncher() {
+//
+//
+//        mGetContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
+//                new ActivityResultCallback<Uri>() {
+//                    @Override
+//                    public void onActivityResult(Uri result) {
+//                        if (result != null) {
+//
+//                            imageUri = result;
+//
+////                            Picasso.get().load(imageUri).resize(500, 500).centerInside().into(image);
+//
+//
+//                            try {
+//                                Glide.with(getContext())
+//                                        .load(imageUri)
+//                                        .override(500, 500)
+//                                        .centerInside()
+//                                        .into(image);
+//                            } catch (Exception e) {
+//                                Log.d(TAG, "Exception: " + e.getMessage());
+//                            }
+//
+//
+////                            image.setImageURI(imageUri);
+//
+//
+//                            Log.d(TAG, "URI: " + result);
+//                        }
+//                    }
+//                });
 //    }
 //
-//    @Override
-//    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
-//        super.onActivityResult(requestCode, resultCode, data);
-//
-//        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
-//                && data != null && data.getData() != null){
-//
+//    private void openFileChooser() {
+//        mGetContentLauncher.launch("image/*");
+//    }
+
+
+
+
+
+
+
+
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+          startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null){
+
 //            imageUri = data.getData();
 //            image.setImageURI(imageUri);
+
+                imageUri = data.getData();
+                image.setImageURI(imageUri);
+
+
+
+
+//            Glide.with(getContext())
+//                                    .load(imageUri)
+//                                    .override(500, 500)
+//                                    .centerInside()
+//                                    .into(image);
+
+//                    Picasso.get()
+//                        .load(imageUri)
+//                        .resize(500, 500)
+//                        .centerInside()
+//                        .into(image);
+
+        }
+    }
+
 //
-//            Log.d(TAG, "uri: " + imageUri);
-//
-//
-////            Glide.with(getContext())
-////                                    .load(imageUri)
-////                                    .override(500, 500)
-////                                    .centerInside()
-////                                    .into(image);
-//
-////                    Picasso.get()
-////                        .load(imageUri)
-////                        .resize(500, 500)
-////                        .centerInside()
-////                        .into(image);
-//
+//    private void saveSelectedImageUri(Uri imageUri) {
+//        Bundle bundle = getArguments();
+//        if (bundle == null) {
+//            bundle = new Bundle();
 //        }
+//        bundle.putParcelable("imageUri", imageUri);
+//        setArguments(bundle);
 //    }
 
-
-    @Override
-    public void onStop() {
-        super.onStop();
-
-        Log.d(TAG, "onStop: ");
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "onDestroy: ");
-    }
 }

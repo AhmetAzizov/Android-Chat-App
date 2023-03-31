@@ -1,12 +1,41 @@
 package com.ahmetazizov.androidchatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
+import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.EditText;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
+import com.google.firebase.firestore.FieldValue;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
+import com.google.firestore.v1.DocumentTransform;
+
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Date;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -60,5 +89,125 @@ public class ChatFragment extends Fragment {
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chat, container, false);
+    }
+
+
+
+
+
+
+    public final static String TAG = "ChatFragment";
+    FirebaseFirestore db;
+    ArrayList<Message> chats;
+    ImageView contactImage;
+    TextView contactName;
+    User user;
+    ChatsAdapter chatsAdapter;
+    RecyclerView chatsRecyclerView;
+    Button sendButton;
+    EditText messageInput;
+
+    @Override
+    public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
+        super.onViewCreated(view, savedInstanceState);
+
+        Bundle bundle = getArguments();
+        user = (User) bundle.getSerializable("user");
+
+        db = FirebaseFirestore.getInstance();
+        contactImage = view.findViewById(R.id.contactImage);
+        contactName = view.findViewById(R.id.contactName);
+        chatsRecyclerView = view.findViewById(R.id.chatsRecyclerView);
+        chats = new ArrayList<>();
+        sendButton = view.findViewById(R.id.sendButton);
+        messageInput = view.findViewById(R.id.messageInput);
+
+        chatsAdapter = new ChatsAdapter(getContext(), chats);
+        chatsRecyclerView.setAdapter(chatsAdapter);
+        chatsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+        Glide.with(getContext())
+                .load(user.getImageURL())
+                .override(300, 300)
+                .centerCrop()
+                .into(contactImage);
+
+        contactName.setText(user.getUsername());
+
+        Log.d(TAG, "chatref: " + user.getChatReference());
+
+        getChats();
+
+
+
+
+        sendButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                String message = messageInput.getText().toString().trim();
+
+                if (message.isEmpty()) return;
+
+                Calendar calendar = Calendar.getInstance();
+                Date now = calendar.getTime();
+                SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm");
+                String formattedTime = formatterTime.format(now);
+
+                SimpleDateFormat formatterExactTime = new SimpleDateFormat("HH:mm:ss.SSS");
+                String formattedExactTime = formatterExactTime.format(now);
+
+                Message newMessage = new Message(MainActivity.username, message, formattedTime, formattedExactTime);
+
+
+                final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
+
+                chatRef.add(newMessage)
+                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                            @Override
+                            public void onSuccess(DocumentReference documentReference) {
+                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error adding document", e);
+                            }
+                        });
+
+                messageInput.setText("");
+                messageInput.clearFocus();
+            }
+        });
+    }
+
+
+
+    public void getChats() {
+        final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
+
+        chatRef.orderBy("exactTime").addSnapshotListener(new EventListener<QuerySnapshot>() {
+            @Override
+            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
+
+                chats.clear();
+
+
+                for (QueryDocumentSnapshot document : value) {
+                    Message message = document.toObject(Message.class);
+
+                    chats.add(message);
+
+                    Log.d(TAG, "message sender: " + message.getSender());
+
+                }
+
+                chatsAdapter.notifyDataSetChanged();
+            }
+        });
     }
 }
