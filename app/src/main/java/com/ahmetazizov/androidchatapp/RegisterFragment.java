@@ -11,11 +11,13 @@ import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.os.Handler;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Patterns;
 import android.view.LayoutInflater;
@@ -118,15 +120,16 @@ public class RegisterFragment extends Fragment {
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
-    public final static String TAG = "registerFragment";
+    public final static String TAG = "RegisterFragment";
     ActivityResultLauncher<String> mGetContentLauncher;
     private static final int PICK_IMAGE_REQUEST = 1;
-    private Button selectImageButton, uploadImageButton, registerButton;
+    private Button selectImageButton, registerButton;
     private ArrayList<String> users;
     TextView loginDirect;
     TextInputLayout enterUsernameLayout, enterEmailLayout, enterPasswordLayout;
     TextInputEditText enterUsername, enterEmail, enterPassword;
     ImageView image;
+    CardView imageContainer;
     ProgressBar progressBar;
     Uri imageUri;
 
@@ -139,11 +142,11 @@ public class RegisterFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         selectImageButton = view.findViewById(R.id.selectImageButton);
-        uploadImageButton = view.findViewById(R.id.uploadImageButton);
         registerButton = view.findViewById(R.id.registerButton);
         loginDirect = view.findViewById(R.id.loginDirect);
         progressBar = view.findViewById(R.id.progressBar);
         image = view.findViewById(R.id.image);
+        imageContainer = view.findViewById(R.id.imageContainer);
         users = new ArrayList<String>();
 
 
@@ -173,26 +176,7 @@ public class RegisterFragment extends Fragment {
             }
         });
 
-        uploadImageButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                // Method for uploading the image to firebase
 
-//                Picasso.get()
-//                        .load("https://firebasestorage.googleapis.com/v0/b/android-chat-application-155b5.appspot.com/o/imageUploads%2F1680045792837.jpg?alt=media&token=fa02e7ce-ff9e-415c-a636-33288511fe0f")
-//                        .resize(1500, 1500)
-//                        .centerInside()
-//                        .into(image);
-
-                Glide.with(getContext())
-                        .load("https://firebasestorage.googleapis.com/v0/b/android-chat-application-155b5.appspot.com/o/imageUploads%2F1680045792837.jpg?alt=media&token=fa02e7ce-ff9e-415c-a636-33288511fe0f")
-                        .override(500, 500)
-                        .into(image);
-
-                Log.d(TAG, "URI: " + imageUri);
-
-            }
-        });
 
         registerButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -234,6 +218,8 @@ public class RegisterFragment extends Fragment {
         else if(username.contains("-") || username.contains("%") || username.contains(" ")) {
             enterUsernameLayout.setError("Username can not contain space or special characters!");
             return false;
+        } else if (username.length() > 15) {
+            enterUsernameLayout.setError("Username length can't be more than 15!");
         } else {
             enterUsernameLayout.setError(null);
         }

@@ -7,7 +7,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
-    android:background="#2A402C"
+    android:background="#484948"
     tools:context=".RegisterFragment">
 
 
@@ -24,24 +24,48 @@
             android:layout_height="wrap_content"
             >
 
-            <TextView
-                android:id="@+id/description"
+<!--            <TextView-->
+<!--                android:id="@+id/description"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_centerHorizontal="true"-->
+<!--                android:layout_marginTop="20dp"-->
+<!--                android:background="@color/DimGray"-->
+<!--                android:fontFamily="serif-monospace"-->
+<!--                android:gravity="center"-->
+<!--                android:padding="15dp"-->
+<!--                android:text="Registration"-->
+<!--                android:textAlignment="center"-->
+<!--                android:textColor="#EDEAE5"-->
+<!--                android:textSize="40dp"-->
+<!--                android:textStyle="italic"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toTopOf="parent" />-->
+
+            <View
+                android:id="@+id/view"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
-                android:layout_marginTop="20dp"
-                android:background="@color/DimGray"
-                android:fontFamily="serif-monospace"
-                android:gravity="center"
-                android:padding="15dp"
-                android:text="Registration"
-                android:textAlignment="center"
-                android:textColor="#EDEAE5"
-                android:textSize="40dp"
-                android:textStyle="italic"
+                android:layout_height="130dp"
+                android:background="@color/Gray"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
+
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Registration"
+                android:textSize="28sp"
+                android:textColor="@color/black"
+                android:fontFamily="sans-serif-black"
+                app:layout_constraintBottom_toBottomOf="@+id/view"
+                app:layout_constraintEnd_toEndOf="@+id/view"
+                app:layout_constraintStart_toEndOf="@+id/imageContainer"
+                app:layout_constraintTop_toTopOf="@+id/imageContainer" />
+
+
 
             <ProgressBar
                 android:id="@+id/progressBar"
@@ -56,19 +80,20 @@
                 android:id="@+id/imageContainer"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                app:layout_constraintStart_toStartOf="parent"
-                android:layout_marginLeft="10dp"
-                android:layout_marginTop="10dp"
+                android:layout_marginLeft="20dp"
                 app:cardCornerRadius="50dp"
-                app:layout_constraintTop_toBottomOf="@+id/description">
+                app:layout_constraintBottom_toBottomOf="@+id/view"
+                app:layout_constraintStart_toStartOf="parent"
+                app:cardElevation="15dp"
+                app:layout_constraintTop_toBottomOf="@+id/view">
 
                 <ImageView
                     android:id="@+id/image"
-                    style="@style/roundImageView"
                     android:layout_width="180dp"
                     android:layout_height="180dp"
                     android:adjustViewBounds="true"
                     android:scaleType="centerCrop"
+                    android:src="@drawable/ic_person"
                     app:shapeAppearance="@style/roundImageView" />
 
             </androidx.cardview.widget.CardView>
@@ -84,31 +109,12 @@
                 android:textStyle="bold"
                 app:icon="@drawable/ic_image_search"
                 app:iconTint="@color/black"
-                app:layout_constraintBottom_toTopOf="@+id/uploadImageButton"
+                app:strokeWidth="3dp"
+                app:layout_constraintBottom_toTopOf="@+id/progressBar"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
                 app:layout_constraintStart_toEndOf="@+id/imageContainer"
-                app:layout_constraintTop_toTopOf="@+id/imageContainer"
-                app:rippleColor="@color/Red"
-                app:strokeColor="@color/black" />
-
-            <Button
-                android:id="@+id/uploadImageButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton.Icon"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
-                android:padding="10dp"
-                android:text="Upload Image"
-                android:textColor="@color/black"
-                android:textStyle="bold"
-                app:icon="@drawable/ic_add_image"
-                app:iconTint="@color/black"
-                app:layout_constraintBottom_toBottomOf="@+id/imageContainer"
-                app:layout_constraintEnd_toEndOf="@+id/selectImageButton"
-                app:layout_constraintHorizontal_bias="0.5"
-                app:layout_constraintStart_toStartOf="@+id/selectImageButton"
-                app:layout_constraintTop_toBottomOf="@+id/selectImageButton"
+                app:layout_constraintTop_toBottomOf="@+id/view"
                 app:rippleColor="@color/Red"
                 app:strokeColor="@color/black" />
 
@@ -121,12 +127,13 @@
                 android:layout_margin="20dp"
                 app:boxStrokeColor="@color/black"
                 app:counterEnabled="true"
-                app:counterMaxLength="20"
+                app:counterMaxLength="15"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
                 app:helperText="required*"
                 app:helperTextTextColor="#686867"
                 app:hintTextColor="#686867"
+                app:boxStrokeWidth="3dp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/progressBar"
@@ -152,13 +159,12 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 app:boxStrokeColor="@color/black"
-                app:counterEnabled="true"
-                app:counterMaxLength="20"
                 app:endIconMode="clear_text"
                 app:errorEnabled="true"
                 app:helperText="required*"
                 app:helperTextTextColor="#686867"
                 app:hintTextColor="#686867"
+                app:boxStrokeWidth="3dp"
                 app:layout_constraintEnd_toEndOf="@+id/enterUserNameLayout"
                 app:layout_constraintStart_toStartOf="@+id/enterUserNameLayout"
                 app:layout_constraintTop_toBottomOf="@id/enterUserNameLayout"
@@ -181,13 +187,12 @@
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 app:boxStrokeColor="@color/black"
-                app:counterEnabled="true"
-                app:counterMaxLength="20"
-                app:endIconMode="clear_text"
+                app:endIconMode="password_toggle"
                 app:errorEnabled="true"
                 app:helperText="required*"
                 app:helperTextTextColor="#686867"
                 app:hintTextColor="#686867"
+                app:boxStrokeWidth="3dp"
                 app:layout_constraintEnd_toEndOf="@+id/enterEmailLayout"
                 app:layout_constraintStart_toStartOf="@+id/enterEmailLayout"
                 app:layout_constraintTop_toBottomOf="@id/enterEmailLayout"
@@ -200,7 +205,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:inputType="textPassword"
-                    android:hint="Phone Number"
+                    android:hint="Password"
                     android:textColor="#A1A0A0" />
 
             </com.google.android.material.textfield.TextInputLayout>
@@ -208,13 +213,13 @@
 
             <Button
                 android:id="@+id/registerButton"
-                style="@style/Widget.MaterialComponents.Button.OutlinedButton"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
                 android:padding="10dp"
                 android:textSize="20sp"
                 android:text="Register"
+                android:backgroundTint="#939393"
                 android:fontFamily="sans-serif-black"
                 android:textColor="@color/black"
                 app:layout_constraintEnd_toEndOf="parent"

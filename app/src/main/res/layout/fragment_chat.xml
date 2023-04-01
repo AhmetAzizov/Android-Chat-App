@@ -11,9 +11,10 @@
         android:layout_height="match_parent">
 
         <androidx.cardview.widget.CardView
-            android:id="@+id/cardView3"
+            android:id="@+id/profileCardView"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            app:cardBackgroundColor="#272727"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -22,27 +23,52 @@
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
-                <ImageView
-                    android:id="@+id/contactImage"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    android:layout_margin="10dp"
-                    android:src="@drawable/ic_person"
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/contactImageContainer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="15dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginBottom="10dp"
+                    app:cardBackgroundColor="@color/black"
+                    app:cardCornerRadius="100dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageView
+                        android:id="@+id/contactImage"
+                        android:layout_width="50dp"
+                        android:layout_height="50dp" />
+
+                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/contactName"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_margin="20dp"
+                    android:layout_marginStart="12dp"
                     android:fontFamily="sans-serif-medium"
                     android:text="Username"
-                    android:textSize="20sp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toEndOf="@+id/contactImage"
+                    android:textColor="@color/white"
+                    android:textSize="23sp"
+                    app:layout_constraintBottom_toTopOf="@+id/infoLabel"
+                    app:layout_constraintStart_toEndOf="@+id/contactImageContainer"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/infoLabel"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginStart="12dp"
+                    android:textSize="15sp"
+                    android:text="select for contact info"
+                    android:visibility="visible"
+                    android:textColor="#B3B1B1"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/contactImageContainer"
+                    app:layout_constraintTop_toBottomOf="@+id/contactName" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.cardview.widget.CardView>
@@ -51,46 +77,74 @@
         <ScrollView
             android:id="@+id/scrollView"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            app:layout_constraintBottom_toTopOf="@+id/linearLayout"
+            android:layout_height="match_parent"
+            android:layout_marginTop="70dp"
+            android:layout_marginBottom="60dp"
+            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent">
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent">
 
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/chatsRecyclerView"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
+                android:layout_gravity="bottom"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintTop_toBottomOf="@+id/cardView3" />
 
         </ScrollView>
 
-        <LinearLayout
-            android:id="@+id/linearLayout"
+
+        <androidx.cardview.widget.CardView
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:background="@color/Gray"
-            android:gravity="center"
             app:layout_constraintBottom_toBottomOf="parent">
 
-            <EditText
-                android:id="@+id/messageInput"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_margin="10dp"
-                android:ems="13"
-                android:inputType="textPersonName" />
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent">
 
-            <Button
-                android:id="@+id/sendButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:backgroundTint="@color/black"
-                android:layout_margin="10dp"
-                android:textColor="@color/white"
-                android:text="SEND" />
+                <EditText
+                    android:id="@+id/messageInput"
+                    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:layout_marginRight="80dp"
+                    android:layout_marginLeft="10dp"
+                    android:inputType="textPersonName"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toStartOf="@+id/sendButton"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
 
-        </LinearLayout>
+
+                <androidx.cardview.widget.CardView
+                    android:id="@+id/sendButton"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_margin="10dp"
+                    app:cardBackgroundColor="@color/Gray"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:cardCornerRadius="10dp"
+                    app:rippleColor="@color/Red"
+                    app:strokeColor="@color/white">
+
+                    <ImageView
+                        android:layout_width="60dp"
+                        android:layout_height="wrap_content"
+                        android:elevation="20dp"
+                        android:padding="5dp"
+                        android:src="@drawable/ic_send" />
+
+                </androidx.cardview.widget.CardView>
+            </androidx.constraintlayout.widget.ConstraintLayout>
+        </androidx.cardview.widget.CardView>
+
+
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>

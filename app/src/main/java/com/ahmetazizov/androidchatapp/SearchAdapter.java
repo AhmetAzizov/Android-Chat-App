@@ -87,7 +87,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
                                 // This method will navigate to the chat fragment and send a user object containing the users information
                                 sendToDataToFragment(holder);
-
                             }
                         }).addOnFailureListener(new OnFailureListener() {
                             @Override

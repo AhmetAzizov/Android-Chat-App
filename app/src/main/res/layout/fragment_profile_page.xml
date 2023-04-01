@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".ProfilePage">
+
+    <androidx.constraintlayout.widget.ConstraintLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+
+
+        <View
+            android:id="@+id/topView"
+            android:layout_width="match_parent"
+            android:layout_height="150dp"
+            android:background="@color/Gray"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/returnButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            app:cardElevation="0dp"
+            app:cardBackgroundColor="@color/Gray"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="@+id/topView">
+
+            <ImageView
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_margin="10dp"
+                android:src="@drawable/ic_back" />
+
+
+        </androidx.cardview.widget.CardView>
+
+
+        <androidx.cardview.widget.CardView
+            android:id="@+id/profileImageContainer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="50dp"
+            app:cardCornerRadius="300dp"
+            app:layout_constraintBottom_toBottomOf="@+id/topView"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/topView">
+
+            <ImageView
+                android:id="@+id/profileImage"
+                android:layout_width="250dp"
+                android:layout_height="250dp" />
+
+        </androidx.cardview.widget.CardView>
+
+        <TextView
+            android:id="@+id/username"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="username"
+            android:textSize="35sp"
+            android:layout_marginTop="50dp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/profileImageContainer" />
+
+
+        <TextView
+            android:id="@+id/userEmail"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="user@mail.com"
+            android:textSize="30sp"
+            android:layout_marginTop="70dp"
+            android:fontFamily="sans-serif-medium"
+            app:layout_constraintEnd_toEndOf="parent"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toBottomOf="@+id/username" />
+
+    </androidx.constraintlayout.widget.ConstraintLayout>
+</FrameLayout>

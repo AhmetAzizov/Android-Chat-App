@@ -5,10 +5,15 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import android.os.Handler;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -32,6 +37,7 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.DocumentTransform;
 
+import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -96,6 +102,9 @@ public class ChatFragment extends Fragment {
 
 
 
+
+
+
     public final static String TAG = "ChatFragment";
     FirebaseFirestore db;
     ArrayList<Message> chats;
@@ -104,8 +113,10 @@ public class ChatFragment extends Fragment {
     User user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
-    Button sendButton;
+    CardView sendButton;
     EditText messageInput;
+    CardView profileCardView;
+    TextView infoLabel;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -114,6 +125,7 @@ public class ChatFragment extends Fragment {
         Bundle bundle = getArguments();
         user = (User) bundle.getSerializable("user");
 
+
         db = FirebaseFirestore.getInstance();
         contactImage = view.findViewById(R.id.contactImage);
         contactName = view.findViewById(R.id.contactName);
@@ -121,10 +133,23 @@ public class ChatFragment extends Fragment {
         chats = new ArrayList<>();
         sendButton = view.findViewById(R.id.sendButton);
         messageInput = view.findViewById(R.id.messageInput);
+        profileCardView = view.findViewById(R.id.profileCardView);
+        infoLabel = view.findViewById(R.id.infoLabel);
 
         chatsAdapter = new ChatsAdapter(getContext(), chats);
         chatsRecyclerView.setAdapter(chatsAdapter);
         chatsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+
+
+        Handler handler = new Handler();
+        handler.postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                infoLabel.setVisibility(View.GONE);
+            }
+        }, 5000);
+
+
 
         Glide.with(getContext())
                 .load(user.getImageURL())
@@ -141,6 +166,26 @@ public class ChatFragment extends Fragment {
 
 
 
+        profileCardView.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                // Create a Bundle object and set the data you want to pass
+                Bundle bundle = new Bundle();
+                bundle.putSerializable("user", (Serializable) user);
+
+                // Create a new instance of the fragment and set the bundle
+                ProfilePage profilePage = new ProfilePage();
+                profilePage.setArguments(bundle);
+
+
+                // Replace the current fragment with the new one
+                fragmentTransaction.replace(R.id.frameLayout, profilePage).commit();
+            }
+        });
+
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,7 +198,7 @@ public class ChatFragment extends Fragment {
                 SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm");
                 String formattedTime = formatterTime.format(now);
 
-                SimpleDateFormat formatterExactTime = new SimpleDateFormat("HH:mm:ss.SSS");
+                SimpleDateFormat formatterExactTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
                 String formattedExactTime = formatterExactTime.format(now);
 
                 Message newMessage = new Message(MainActivity.username, message, formattedTime, formattedExactTime);

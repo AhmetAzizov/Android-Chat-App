@@ -4,8 +4,11 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -23,6 +26,7 @@ import android.view.ViewTreeObserver;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -124,6 +128,7 @@ public class ShowChats extends Fragment {
     Button logOutButton;
     static CardView cover;
     ProgressBar loadingScreenProgressBar;
+    CardView settingsButton;
 
     CardView addContactCard;
     TextView txtAddContact;
@@ -132,7 +137,7 @@ public class ShowChats extends Fragment {
 
     CardView searchCard;
     RecyclerView searchCardList;
-    TextView searchCardInput;
+    SearchView searchCardInput;
     LinearLayout searchCardLayout;
 
     @Override
@@ -146,6 +151,7 @@ public class ShowChats extends Fragment {
         loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
         contacts = new ArrayList<>();
         searchResult = new ArrayList<>();
+        settingsButton = view.findViewById(R.id.settingsButton);
 
         searchCard = view.findViewById(R.id.searchCard);
         searchCardList = view.findViewById(R.id.searchCardList);
@@ -161,10 +167,10 @@ public class ShowChats extends Fragment {
         searchCardList.setLayoutManager(new LinearLayoutManager(getContext()));
 
         logOutButton = view.findViewById(R.id.logOutButton);
-        addContactCard = view.findViewById(R.id.addContactCard);
-        txtAddContact = view.findViewById(R.id.txtAddContact);
-        buttonAddContact = view.findViewById(R.id.buttonAddContact);
-        addContactLayout = view.findViewById(R.id.addContactLayout);
+//        addContactCard = view.findViewById(R.id.addContactCard);
+//        txtAddContact = view.findViewById(R.id.txtAddContact);
+//        buttonAddContact = view.findViewById(R.id.buttonAddContact);
+//        addContactLayout = view.findViewById(R.id.addContactLayout);
 
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser authUser = mAuth.getCurrentUser();
@@ -182,44 +188,65 @@ public class ShowChats extends Fragment {
 
 
 
-        addContactCard.setOnClickListener(new View.OnClickListener() {
+//        addContactCard.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//                int status = (txtAddContact.getVisibility() == View.GONE)? View.VISIBLE: View.GONE;
+//
+//                TransitionManager.beginDelayedTransition(addContactLayout, new AutoTransition());
+//                txtAddContact.setVisibility(status);
+//                buttonAddContact.setVisibility(status);
+//            }
+//        });
+
+
+//        searchCardInput.addTextChangedListener(new TextWatcher() {
+//            @Override
+//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
+//
+//            }
+//
+//            @Override
+//            public void onTextChanged(CharSequence s, int start, int before, int count) {
+//
+//            }
+//
+//            @Override
+//            public void afterTextChanged(Editable s) {
+//
+//            }
+//        });
+
+        searchCardInput.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                int status = (txtAddContact.getVisibility() == View.GONE)? View.VISIBLE: View.GONE;
-
-                TransitionManager.beginDelayedTransition(addContactLayout, new AutoTransition());
-                txtAddContact.setVisibility(status);
-                buttonAddContact.setVisibility(status);
+                searchCardInput.setIconified(false);
             }
         });
 
 
-        searchCardInput.addTextChangedListener(new TextWatcher() {
+        searchCardInput.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
             @Override
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-
+            public boolean onQueryTextSubmit(String query) {
+                return false;
             }
 
             @Override
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
+            public boolean onQueryTextChange(String newText) {
                 final ChangeBounds transition = new ChangeBounds();
                 transition.setDuration(400L);
 
                 TransitionManager.beginDelayedTransition(searchCardLayout, transition);
 
-                String searchInput = searchCardInput.getText().toString().trim();
+                String searchInput = searchCardInput.getQuery().toString().trim();
 
                 searchResult(searchInput);
 
                 searchAdapter.notifyDataSetChanged();
-            }
 
-            @Override
-            public void afterTextChanged(Editable s) {
-
+                return false;
             }
         });
-
 
         // Unused code //
         recyclerView
@@ -240,71 +267,83 @@ public class ShowChats extends Fragment {
 
 
 
-        buttonAddContact.setOnClickListener(new View.OnClickListener() {
+//        buttonAddContact.setOnClickListener(new View.OnClickListener() {
+//            @Override
+//            public void onClick(View v) {
+//
+//                String searchResult = txtAddContact.getText().toString().trim();
+//
+//                boolean found = false;
+//
+//
+//                for (User contact : contacts) {
+//
+//                    if (searchResult.equalsIgnoreCase(contact.getUsername())) {
+//                        return;
+//                    }
+//
+//                }
+//
+//
+//                for (User user : MainActivity.users) {
+//
+//                    if (searchResult.equals(user.getUsername())) {
+//
+//                        found = true;
+//                        cover.setVisibility(View.VISIBLE);
+//                        String newChatRef = MainActivity.username + "-" + searchResult;
+//                        CollectionReference colRef = db.collection("chats");
+//
+//                        // Create an empty document inside "chats" collection
+//                        colRef.document(newChatRef)
+//                                .set(new HashMap<String, Object>(), SetOptions.merge())
+//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                    @Override
+//                                    public void onSuccess(Void unused) {
+//                                        Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+//                                    }
+//                                }).addOnFailureListener(new OnFailureListener() {
+//                                    @Override
+//                                    public void onFailure(@androidx.annotation.NonNull Exception e) {
+//                                        Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
+//                                    }
+//                                });
+//                    }
+//                }
+//
+//                if (!found) Toast.makeText(getContext(), "User does not exist!", Toast.LENGTH_LONG).show();
+//
+//
+//
+////                    FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+////                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+////
+////                    // Create a Bundle object and set the data you want to pass
+////                    Bundle bundle = new Bundle();
+////                    bundle.putString("myData", "Hello World");
+////
+////                    // Create a new instance of the fragment and set the bundle
+////                    AddFragment addFragment = new AddFragment();
+////                    addFragment.setArguments(bundle);
+////
+////                    // Replace the current fragment with the new one
+////                    fragmentTransaction.replace(R.id.frameLayout, addFragment).commit();
+//
+//
+//            }
+//        });
+
+        settingsButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                String searchResult = txtAddContact.getText().toString().trim();
-
-                boolean found = false;
-
-
-                for (User contact : contacts) {
-
-                    if (searchResult.equalsIgnoreCase(contact.getUsername())) {
-                        return;
-                    }
-
-                }
-
-
-                for (User user : MainActivity.users) {
-
-                    if (searchResult.equals(user.getUsername())) {
-
-                        found = true;
-                        cover.setVisibility(View.VISIBLE);
-                        String newChatRef = MainActivity.username + "-" + searchResult;
-                        CollectionReference colRef = db.collection("chats");
-
-                        // Create an empty document inside "chats" collection
-                        colRef.document(newChatRef)
-                                .set(new HashMap<String, Object>(), SetOptions.merge())
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void unused) {
-                                        Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
-                                    }
-                                }).addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@androidx.annotation.NonNull Exception e) {
-                                        Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                                    }
-                                });
-                    }
-                }
-
-                if (!found) Toast.makeText(getContext(), "User does not exist!", Toast.LENGTH_LONG).show();
-
-
-
-//                    FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//                    // Create a Bundle object and set the data you want to pass
-//                    Bundle bundle = new Bundle();
-//                    bundle.putString("myData", "Hello World");
-//
-//                    // Create a new instance of the fragment and set the bundle
-//                    AddFragment addFragment = new AddFragment();
-//                    addFragment.setArguments(bundle);
-//
-//                    // Replace the current fragment with the new one
-//                    fragmentTransaction.replace(R.id.frameLayout, addFragment).commit();
-
-
+                fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
             }
         });
+
+
 
         logOutButton.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -342,6 +381,8 @@ public class ShowChats extends Fragment {
         searchResult.clear();
 
         for (User contact : MainActivity.users) {
+
+            if (contact.getUsername().equals(MainActivity.username)) continue;
 
             if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
 
@@ -408,7 +449,9 @@ public class ShowChats extends Fragment {
                     }
                 }
 
+                for (User user:MainActivity.users) Log.d(TAG, "user: " + user.getUsername());
                 for (User user:contacts) Log.d(TAG, "sorted user: " + user.getUsername());
+
 
                 if (contacts.isEmpty()) cover.setAlpha(0.0f);
 
@@ -422,21 +465,20 @@ public class ShowChats extends Fragment {
         String[] chatRefSplit = chatReference.split("-");
         String tempUsername;
 
-        if (chatRefSplit[1] == MainActivity.username) tempUsername = chatRefSplit[0];
+        if (chatRefSplit[1].equals(MainActivity.username)) tempUsername = chatRefSplit[0];
         else tempUsername = chatRefSplit[1];
+
 
         for (User user : MainActivity.users) {
 
-
             if (user.getUsername().equals(tempUsername)) {
-
-
                 user.setChatReference(chatReference);
                 contacts.add(user);
-
             }
+
         }
 
     }
+
 
 }

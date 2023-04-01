@@ -2,6 +2,7 @@ package com.ahmetazizov.androidchatapp;
 
 import android.content.Context;
 import android.graphics.drawable.Drawable;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +13,9 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.bumptech.glide.Glide;
@@ -20,6 +24,7 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.MyViewHolder> {
@@ -79,9 +84,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
         holder.itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-//                FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
-//                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                fragmentTransaction.replace(R.id.frameLayout, new AddFragment()).commit();
+                sendToDataToFragment(holder);
             }
         });
     }
@@ -134,5 +137,23 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
 
         ShowChats.cover.startAnimation(fadeAnimation);
+    }
+
+
+    private void sendToDataToFragment(ContactsRecyclerViewAdapter.MyViewHolder holder) {
+        FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        // Create a Bundle object and set the data you want to pass
+        Bundle bundle = new Bundle();
+        bundle.putSerializable("user", (Serializable) chats.get(holder.getAdapterPosition()));
+
+        // Create a new instance of the fragment and set the bundle
+        ChatFragment chatFragment = new ChatFragment();
+        chatFragment.setArguments(bundle);
+
+
+        // Replace the current fragment with the new one
+        fragmentTransaction.replace(R.id.frameLayout, chatFragment).commit();
     }
 }
