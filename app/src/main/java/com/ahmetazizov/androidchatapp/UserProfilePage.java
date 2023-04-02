@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -23,6 +24,8 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
@@ -99,6 +102,7 @@ public class UserProfilePage extends Fragment {
 
 
     public final static String TAG = "UserProfilePage";
+    private FirebaseAuth mAuth;
     FirebaseFirestore db;
     ImageView profileImage;
     CardView profileImageContainer, returnButton;
@@ -122,6 +126,9 @@ public class UserProfilePage extends Fragment {
         returnButton = view.findViewById(R.id.returnButton);
         topView = view.findViewById(R.id.topView);
 
+        mAuth = FirebaseAuth.getInstance();
+        FirebaseUser authUser = mAuth.getCurrentUser();
+
         DocumentReference currentUser = db.collection("users").document(MainActivity.username);
 
         currentUser.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
@@ -134,13 +141,11 @@ public class UserProfilePage extends Fragment {
 
                         currentUserData = document.toObject(User.class);
 
-
                         Glide.with(getContext())
                                 .load(currentUserData.getImageURL())
                                 .override(1000, 1000)
                                 .centerCrop()
                                 .into(profileImage);
-
 
                         username.setText(currentUserData.getUsername());
                         userEmail.setText(currentUserData.getEmail());
@@ -155,6 +160,10 @@ public class UserProfilePage extends Fragment {
                 }
             }
         });
+
+
+
+
 
 
 
@@ -178,6 +187,33 @@ public class UserProfilePage extends Fragment {
                 resizeImage();
             }
         });
+
+
+        resetPassword.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().sendPasswordResetEmail(currentUserData.getEmail())
+                        .addOnCompleteListener(new OnCompleteListener<Void>() {
+                            @Override
+                            public void onComplete(@NonNull Task<Void> task) {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(getContext(), "Password reset link has been sent to your email address", Toast.LENGTH_LONG).show();
+                                }
+                            }
+                        });
+            }
+        });
+
+
+        logOut.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FirebaseAuth.getInstance().signOut();
+
+                Intent intent = new Intent(getContext(), AuthenticationActivity.class);
+                startActivity(intent);
+            }
+        });
     }
 
 
@@ -193,7 +229,7 @@ public class UserProfilePage extends Fragment {
         float density = getResources().getDisplayMetrics().density;
         return Math.round((float) dp * density);
     }
-    
+
     private void resizeImage(){
         DisplayMetrics displayMetrics = new DisplayMetrics();
         getActivity().getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);

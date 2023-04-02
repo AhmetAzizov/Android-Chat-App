@@ -44,6 +44,7 @@ import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -125,7 +126,6 @@ public class ShowChats extends Fragment {
     FirebaseFirestore db;
     MainActivity mainActivity;
     RecyclerView recyclerView;
-    Button logOutButton;
     static CardView cover;
     ProgressBar loadingScreenProgressBar;
     CardView settingsButton;
@@ -166,7 +166,6 @@ public class ShowChats extends Fragment {
         searchCardList.setAdapter(searchAdapter);
         searchCardList.setLayoutManager(new LinearLayoutManager(getContext()));
 
-        logOutButton = view.findViewById(R.id.logOutButton);
 //        addContactCard = view.findViewById(R.id.addContactCard);
 //        txtAddContact = view.findViewById(R.id.txtAddContact);
 //        buttonAddContact = view.findViewById(R.id.buttonAddContact);
@@ -338,22 +337,10 @@ public class ShowChats extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
                 fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
             }
         });
 
-
-
-        logOutButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                mAuth.signOut();
-
-                Intent intent = new Intent(getContext(), AuthenticationActivity.class);
-                startActivity(intent);
-            }
-        });
 
 
 
