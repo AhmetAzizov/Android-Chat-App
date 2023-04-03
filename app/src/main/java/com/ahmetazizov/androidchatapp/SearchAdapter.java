@@ -19,6 +19,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
@@ -26,6 +27,7 @@ import com.google.firebase.firestore.SetOptions;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHolder> {
@@ -74,9 +76,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
                 String newChatRef = MainActivity.username + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
                 CollectionReference colRef = db.collection("chats");
+
+                Timestamp timestamp = Timestamp.now();
+                Map<String, Object> data = new HashMap<>();
+                data.put("time", timestamp);
+
                 // Create an empty document inside "chats" collection
                 colRef.document(newChatRef)
-                        .set(new HashMap<String, Object>(), SetOptions.merge())
+                        .set(data, SetOptions.merge())
                         .addOnSuccessListener(new OnSuccessListener<Void>() {
                             @Override
                             public void onSuccess(Void unused) {

@@ -23,7 +23,10 @@ import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -32,6 +35,8 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -208,6 +213,28 @@ public class UserProfilePage extends Fragment {
         logOut.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
+
+                Timestamp timestamp = Timestamp.now();
+
+                Map<String, Object> data = new HashMap<>();
+                data.put("isOnline", "false");
+                data.put("lastOnline", timestamp);
+
+                DocumentReference docRef = db.collection("users").document(MainActivity.username);
+
+                docRef.update(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
+
                 FirebaseAuth.getInstance().signOut();
 
                 Intent intent = new Intent(getContext(), AuthenticationActivity.class);
@@ -215,12 +242,6 @@ public class UserProfilePage extends Fragment {
             }
         });
     }
-
-
-
-
-
-
 
 
 

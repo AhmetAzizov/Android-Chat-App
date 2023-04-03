@@ -1,5 +1,7 @@
 package com.ahmetazizov.androidchatapp;
 
+import java.util.Date;
+
 public class Message {
 
     public static final int LAYOUT_SENDER = 1;
@@ -8,13 +10,13 @@ public class Message {
     String sender;
     String content;
     String time;
-    String exactTime;
+    Date exactTime;
 
     public Message() {
         // Default no-argument constructor
     }
 
-    public Message(String sender, String content, String time, String exactTime) {
+    public Message(String sender, String content, String time, Date exactTime) {
         this.sender = sender;
         this.content = content;
         this.time = time;
@@ -45,11 +47,11 @@ public class Message {
         this.time = time;
     }
 
-    public String getExactTime() {
+    public Date getExactTime() {
         return exactTime;
     }
 
-    public void setExactTime(String exactTime) {
+    public void setExactTime(Date exactTime) {
         this.exactTime = exactTime;
     }
 }

@@ -5,6 +5,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/black"
     tools:context=".ShowChats">
 
         <androidx.constraintlayout.widget.ConstraintLayout
@@ -13,13 +14,20 @@
 
 
                 <androidx.cardview.widget.CardView
-                    android:id="@+id/searchCard"
-                    android:layout_width="match_parent"
+                    android:id="@+id/settingsButton"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    app:cardCornerRadius="50dp"
+                    android:layout_margin="10dp"
+                    app:cardCornerRadius="15dp"
+                    app:cardElevation="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
+
+                        <ImageView
+                            android:layout_width="50dp"
+                            android:layout_height="50dp"
+                            android:padding="10dp"
+                            android:src="@drawable/ic_settings" />
 
                 </androidx.cardview.widget.CardView>
 
@@ -151,28 +159,6 @@
                         </LinearLayout>
 
                 </androidx.cardview.widget.CardView>
-
-
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/settingsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    app:cardCornerRadius="15dp"
-                    app:cardElevation="20dp"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
-
-                        <ImageView
-                            android:layout_width="50dp"
-                            android:layout_height="50dp"
-                            android:padding="10dp"
-                            android:src="@drawable/ic_settings" />
-
-                </androidx.cardview.widget.CardView>
-
-
-
 
 
                 <androidx.cardview.widget.CardView

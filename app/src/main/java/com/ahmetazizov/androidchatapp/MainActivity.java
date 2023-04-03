@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp;
 
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
@@ -14,7 +15,10 @@ import android.view.Window;
 import android.view.WindowManager;
 
 import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
+import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -26,10 +30,11 @@ import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-import org.checkerframework.checker.nullness.qual.NonNull;
-
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -38,13 +43,14 @@ public class MainActivity extends AppCompatActivity {
     public static ArrayList<String> chats;
     public static ArrayList<User> users;
     public static String username;
-
+    FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
     @Override
     protected void onStart() {
         super.onStart();
-
+        Log.d(TAG, "onStart: ");
+        db = FirebaseFirestore.getInstance();
         chats = new ArrayList<String>();
         users = new ArrayList<User>();
         mAuth = FirebaseAuth.getInstance();
@@ -55,12 +61,32 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser != null){
             username = currentUser.getDisplayName();
 
+            Map<String, Object> data = new HashMap<>();
+            data.put("isOnline", "true");
+
+            DocumentReference docRef = db.collection("users").document(username);
+
+            docRef.update(data)
+                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                        @Override
+                        public void onSuccess(Void aVoid) {
+                        }
+                    })
+                    .addOnFailureListener(new OnFailureListener() {
+                        @Override
+                        public void onFailure(@NonNull Exception e) {
+                            Log.w(TAG, "Error writing document", e);
+                        }
+                    });
+
+
             // go to add fragment
             getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChats()).commit();
 
         } else {
             Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
-            startActivity(intent);        }
+            startActivity(intent);
+        }
     }
 
 
@@ -69,9 +95,49 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        Log.d(TAG, "onCreate: ");
+    }
+
+
+    @Override
+    protected void onPause() {
+        super.onPause();
+
+        Timestamp timestamp = Timestamp.now();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("isOnline", "false");
+        data.put("lastOnline", timestamp);
+
+
+        DocumentReference docRef = db.collection("users").document(username);
+
+        docRef.update(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.d(TAG, "onStop: ");
+
 
     }
 
 
+    @Override
+    public void onBackPressed() {
+        return;
+    }
 }
 

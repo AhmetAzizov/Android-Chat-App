@@ -1,12 +1,15 @@
 package com.ahmetazizov.androidchatapp;
 
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
+import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -27,12 +30,15 @@ import android.widget.Toast;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firestore.v1.DocumentTransform;
@@ -42,6 +48,8 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -117,6 +125,10 @@ public class ChatFragment extends Fragment {
     EditText messageInput;
     CardView profileCardView;
     TextView infoLabel;
+    ImageView backButton;
+    CardView downArrow;
+    ImageView downArrowIcon;
+    boolean firstTime = true;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -135,19 +147,30 @@ public class ChatFragment extends Fragment {
         messageInput = view.findViewById(R.id.messageInput);
         profileCardView = view.findViewById(R.id.profileCardView);
         infoLabel = view.findViewById(R.id.infoLabel);
+        backButton = view.findViewById(R.id.backButton);
+        downArrow = view.findViewById(R.id.downArrow);
+        downArrowIcon = view.findViewById(R.id.downArrowIcon);
 
         chatsAdapter = new ChatsAdapter(getContext(), chats);
         chatsRecyclerView.setAdapter(chatsAdapter);
-        chatsRecyclerView.setLayoutManager(new LinearLayoutManager(getContext()));
+        LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
+        // This code makes the recyclerview scrollable
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        chatsRecyclerView.setLayoutManager(layoutManager);
+
+
+        layoutManager.setReverseLayout(true);
+        chatsRecyclerView.scrollToPosition(0);
 
 
         Handler handler = new Handler();
         handler.postDelayed(new Runnable() {
             @Override
             public void run() {
-                infoLabel.setVisibility(View.GONE);
+//                infoLabel.setVisibility(View.GONE);
+                getStatus();
             }
-        }, 5000);
+        }, 4500);
 
 
 
@@ -159,10 +182,46 @@ public class ChatFragment extends Fragment {
 
         contactName.setText(user.getUsername());
 
-        Log.d(TAG, "chatref: " + user.getChatReference());
-
         getChats();
+//        getStatus();
 
+
+
+
+        chatsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
+            @Override
+            public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
+                super.onScrolled(recyclerView, dx, dy);
+                int currentPosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                        .findFirstVisibleItemPosition();
+
+                if (currentPosition >= 1 && chatsAdapter.getItemCount() != 0) downArrow.setVisibility(View.VISIBLE);
+                else {
+                    downArrow.setVisibility(View.GONE);
+                    downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.Gray), PorterDuff.Mode.SRC_IN);
+                }
+            }
+        });
+
+
+        downArrow.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                chatsRecyclerView.scrollToPosition(0);
+                downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.Gray), PorterDuff.Mode.SRC_IN);
+            }
+        });
+
+
+
+        backButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.replace(R.id.frameLayout, new ShowChats()).commit();
+            }
+        });
 
 
 
@@ -189,49 +248,17 @@ public class ChatFragment extends Fragment {
         sendButton.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String message = messageInput.getText().toString().trim();
-
-                if (message.isEmpty()) return;
-
-                Calendar calendar = Calendar.getInstance();
-                Date now = calendar.getTime();
-                SimpleDateFormat formatterTime = new SimpleDateFormat("HH:mm");
-                String formattedTime = formatterTime.format(now);
-
-                SimpleDateFormat formatterExactTime = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS");
-                String formattedExactTime = formatterExactTime.format(now);
-
-                Message newMessage = new Message(MainActivity.username, message, formattedTime, formattedExactTime);
-
-
-                final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
-
-                chatRef.add(newMessage)
-                        .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                            @Override
-                            public void onSuccess(DocumentReference documentReference) {
-                                Log.d(TAG, "DocumentSnapshot added with ID: " + documentReference.getId());
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error adding document", e);
-                            }
-                        });
-
-                messageInput.setText("");
-                messageInput.clearFocus();
+                sendChats();
             }
         });
     }
 
 
 
-    public void getChats() {
+    private void getChats() {
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
 
-        chatRef.orderBy("exactTime").addSnapshotListener(new EventListener<QuerySnapshot>() {
+        chatRef.orderBy("exactTime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
             @Override
             public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
                 if (e != null) {
@@ -243,16 +270,135 @@ public class ChatFragment extends Fragment {
 
 
                 for (QueryDocumentSnapshot document : value) {
-                    Message message = document.toObject(Message.class);
+
+                    // Retrieves all the fields and puts it to a new Message object
+                    String sender = document.getString("sender");
+                    String content = document.getString("content");
+                    String time = document.getString("time");
+                    Timestamp timestamp = document.getTimestamp("exactTime");
+                    Date date = timestamp.toDate();
+
+                    Message message = new Message(sender, content, time, date);
 
                     chats.add(message);
 
-                    Log.d(TAG, "message sender: " + message.getSender());
+                }
 
+                if (!firstTime) {
+                    downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
+                } else {
+                    firstTime = false;
                 }
 
                 chatsAdapter.notifyDataSetChanged();
             }
         });
     }
+
+
+
+    private void sendChats() {
+        String message = messageInput.getText().toString().trim();
+
+        if (message.isEmpty()) return;
+
+
+        Timestamp timestamp = Timestamp.now();
+
+
+        // This converts the current to HH:mm format
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        String formattedTime = sdf.format(timestamp.toDate());
+
+
+        // Creates a new Message object, fills it with specified information and sends it to the database
+        Message newMessage = new Message(MainActivity.username, message, formattedTime, timestamp.toDate());
+
+
+        final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
+
+        chatRef.add(newMessage)
+                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                    @Override
+                    public void onSuccess(DocumentReference documentReference) {
+                        chatsRecyclerView.scrollToPosition(0);
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error adding document", e);
+                        Toast.makeText(getContext(), "There was an error sending your message", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+        messageInput.setText("");
+        messageInput.clearFocus();
+
+
+        final DocumentReference docRef = db.collection("chats").document(user.getChatReference());
+
+        Timestamp docTimestamp = Timestamp.now();
+
+        Map<String, Object> data = new HashMap<>();
+        data.put("time", docTimestamp);
+
+        docRef.set(data)
+                .addOnSuccessListener(new OnSuccessListener<Void>() {
+                    @Override
+                    public void onSuccess(Void aVoid) {
+                        Log.d(TAG, "DocumentSnapshot successfully written!");
+                    }
+                })
+                .addOnFailureListener(new OnFailureListener() {
+                    @Override
+                    public void onFailure(@NonNull Exception e) {
+                        Log.w(TAG, "Error writing document", e);
+                    }
+                });
+    }
+
+
+
+
+    private void getStatus() {
+        final DocumentReference userRef = db.collection("users").document(user.getUsername());
+
+        userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
+            @Override
+            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
+                if (error != null) {
+                    Log.w(TAG, "Listen failed.", error);
+                    return;
+                }
+
+                if (value != null && value.exists()) {
+                    String status = value.getString("isOnline");
+                    Timestamp lastOnline = value.getTimestamp("lastOnline");
+
+                    String lastSeen;
+                    long lastOnlineMilli = lastOnline.toDate().getTime();
+
+                    if (Math.abs(lastOnlineMilli-System.currentTimeMillis())>86400000){
+                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+                        String date = sdf.format(new Date(lastOnlineMilli));
+
+                        lastSeen = "last seen " + date;
+                    } else {
+                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+                        String date = sdf.format(new Date(lastOnlineMilli));
+                        lastSeen = "last seen today at " + date;
+                    }
+
+
+                    if (status.equals("true")) infoLabel.setText("Online");
+                    else infoLabel.setText(lastSeen);
+
+                } else {
+                    Log.d(TAG, "Current data: null");
+                }
+            }
+        });
+    }
+
 }

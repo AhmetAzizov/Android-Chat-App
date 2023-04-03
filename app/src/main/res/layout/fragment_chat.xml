@@ -24,17 +24,27 @@
                 android:layout_height="match_parent">
 
 
+                <ImageView
+                    android:id="@+id/backButton"
+                    android:layout_width="70dp"
+                    android:layout_height="70dp"
+                    android:padding="10dp"
+                    android:src="@drawable/ic_back"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+
                 <androidx.cardview.widget.CardView
                     android:id="@+id/contactImageContainer"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dp"
                     android:layout_marginTop="10dp"
                     android:layout_marginBottom="10dp"
                     app:cardBackgroundColor="@color/black"
                     app:cardCornerRadius="100dp"
                     app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintStart_toEndOf="@+id/backButton"
                     app:layout_constraintTop_toTopOf="parent">
 
                     <ImageView
@@ -74,31 +84,24 @@
         </androidx.cardview.widget.CardView>
 
 
-        <ScrollView
-            android:id="@+id/scrollView"
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/chatsRecyclerView"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:layout_marginTop="70dp"
-            android:layout_marginBottom="60dp"
-            app:layout_constraintBottom_toBottomOf="@+id/linearLayout"
+            android:layout_marginBottom="55dp"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent">
+            app:layout_constraintTop_toTopOf="parent" />
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/chatsRecyclerView"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_gravity="bottom"
-                app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
-
-        </ScrollView>
 
 
         <androidx.cardview.widget.CardView
+            android:id="@+id/cardView5"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="55dp"
             app:layout_constraintBottom_toBottomOf="parent">
 
             <androidx.constraintlayout.widget.ConstraintLayout
@@ -110,10 +113,10 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:textSize="20sp"
-                    android:layout_marginRight="80dp"
                     android:layout_marginLeft="10dp"
+                    android:layout_marginRight="80dp"
                     android:inputType="textPersonName"
+                    android:textSize="20sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toStartOf="@+id/sendButton"
                     app:layout_constraintStart_toStartOf="parent"
@@ -126,10 +129,10 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     app:cardBackgroundColor="@color/Gray"
+                    app:cardCornerRadius="10dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:cardCornerRadius="10dp"
                     app:rippleColor="@color/Red"
                     app:strokeColor="@color/white">
 
@@ -145,6 +148,25 @@
         </androidx.cardview.widget.CardView>
 
 
+        <androidx.cardview.widget.CardView
+            android:id="@+id/downArrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="20dp"
+            android:visibility="gone"
+            app:cardCornerRadius="100dp"
+            app:layout_constraintBottom_toBottomOf="@+id/chatsRecyclerView"
+            app:layout_constraintEnd_toEndOf="parent">
+
+            <ImageView
+                android:id="@+id/downArrowIcon"
+                android:layout_width="40dp"
+                android:layout_height="40dp"
+                android:src="@drawable/ic_down_double_arrow"
+                app:tint="@color/Gray"
+                />
+
+        </androidx.cardview.widget.CardView>
 
     </androidx.constraintlayout.widget.ConstraintLayout>
 </FrameLayout>
