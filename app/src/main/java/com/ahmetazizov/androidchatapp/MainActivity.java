@@ -103,6 +103,34 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
+        isOffline();
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        isOffline();
+    }
+
+    @Override
+    protected void onDestroy() {
+        super.onDestroy();
+
+        isOffline();
+    }
+
+    @Override
+    public void onBackPressed() {
+        return;
+    }
+
+
+
+
+
+
+    private void isOffline() {
         Timestamp timestamp = Timestamp.now();
 
         Map<String, Object> data = new HashMap<>();
@@ -124,20 +152,6 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "Error writing document", e);
                     }
                 });
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-        Log.d(TAG, "onStop: ");
-
-
-    }
-
-
-    @Override
-    public void onBackPressed() {
-        return;
     }
 }
 

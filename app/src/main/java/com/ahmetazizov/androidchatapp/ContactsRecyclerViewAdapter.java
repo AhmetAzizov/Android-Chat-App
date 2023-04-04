@@ -114,7 +114,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
     private void loadingScreenGone() {
         AlphaAnimation fadeAnimation = new AlphaAnimation(1.0f, 0.0f);
-        fadeAnimation.setDuration(1000); // set the duration of the animation in milliseconds
+        fadeAnimation.setDuration(500); // set the duration of the animation in milliseconds
 
         fadeAnimation.setAnimationListener(new Animation.AnimationListener() {
             @Override

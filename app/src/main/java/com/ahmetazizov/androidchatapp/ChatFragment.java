@@ -158,6 +158,7 @@ public class ChatFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         chatsRecyclerView.setLayoutManager(layoutManager);
 
+        Log.d(TAG, "downArrow: " + downArrowIcon);
 
         layoutManager.setReverseLayout(true);
         chatsRecyclerView.scrollToPosition(0);
@@ -285,7 +286,9 @@ public class ChatFragment extends Fragment {
                 }
 
                 if (!firstTime) {
-                    downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
+                    if (getContext() != null) {
+                        downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
+                    }
                 } else {
                     firstTime = false;
                 }

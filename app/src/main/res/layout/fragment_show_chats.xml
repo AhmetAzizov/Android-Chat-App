@@ -19,7 +19,6 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     app:cardCornerRadius="15dp"
-                    app:cardElevation="20dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
@@ -143,6 +142,7 @@
                                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                                     android:layout_width="match_parent"
                                     android:layout_height="wrap_content"
+                                    android:background="@null"
                                     android:queryHint="Add New Contact" />
 
                                 <ScrollView
@@ -165,7 +165,8 @@
                     android:id="@+id/loadingScreen"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="gone">
+                    app:cardBackgroundColor="@color/black"
+                    android:visibility="visible">
 
 
                         <ProgressBar
