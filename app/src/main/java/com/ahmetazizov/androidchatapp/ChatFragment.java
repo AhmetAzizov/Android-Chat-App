@@ -158,7 +158,6 @@ public class ChatFragment extends Fragment {
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         chatsRecyclerView.setLayoutManager(layoutManager);
 
-        Log.d(TAG, "downArrow: " + downArrowIcon);
 
         layoutManager.setReverseLayout(true);
         chatsRecyclerView.scrollToPosition(0);
@@ -381,8 +380,18 @@ public class ChatFragment extends Fragment {
 
                     String lastSeen;
                     long lastOnlineMilli = lastOnline.toDate().getTime();
+                    long currentTime = System.currentTimeMillis();
 
-                    if (Math.abs(lastOnlineMilli-System.currentTimeMillis())>86400000){
+                    SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                    SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                    int lastOnlineHour = Integer.parseInt(hourFormat.format(lastOnlineMilli));
+                    int currentHour = Integer.parseInt(hourFormat.format(currentTime));
+                    int lastOnlineMinute = Integer.parseInt(minuteFormat.format(lastOnlineMilli));
+                    int currentMinute = Integer.parseInt(minuteFormat.format(currentTime));
+
+
+
+                    if (Math.abs(lastOnlineMilli - currentTime) > 86400000){
                         SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
                         String date = sdf.format(new Date(lastOnlineMilli));
 
@@ -390,7 +399,24 @@ public class ChatFragment extends Fragment {
                     } else {
                         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
                         String date = sdf.format(new Date(lastOnlineMilli));
-                        lastSeen = "last seen today at " + date;
+
+                        if (currentHour <= lastOnlineHour) {
+
+                            lastSeen = "last seen yesterday at " + date;
+
+                        } else if(currentHour == lastOnlineHour) {
+
+                            if (currentMinute < lastOnlineMinute) lastSeen = "last seen yesterday at " + date;
+                            else lastSeen = "last seen today at " + date;
+
+                        } else {
+
+                            lastSeen = "last seen today at " + date;
+
+                        }
+
+                        Log.d(TAG, "currentHour: " + currentHour + "  lastOnlineHour: " + lastOnlineHour);
+                        Log.d(TAG, "currentMinute: " + currentMinute + "  lastOnlineMinute: " + lastOnlineMinute);
                     }
 
 
