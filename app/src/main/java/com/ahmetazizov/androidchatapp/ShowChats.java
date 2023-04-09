@@ -136,6 +136,7 @@ public class ShowChats extends Fragment {
     static CardView cover;
     ProgressBar loadingScreenProgressBar;
     CardView settingsButton;
+    CardView rateButton;
 
     CardView addContactCard;
     TextView txtAddContact;
@@ -157,6 +158,7 @@ public class ShowChats extends Fragment {
         contacts = new ArrayList<>();
         searchResult = new ArrayList<>();
         settingsButton = view.findViewById(R.id.settingsButton);
+        rateButton = view.findViewById(R.id.rateButton);
 
         searchCard = view.findViewById(R.id.searchCard);
         searchCardList = view.findViewById(R.id.searchCardList);
@@ -347,6 +349,14 @@ public class ShowChats extends Fragment {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
+            }
+        });
+
+        rateButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                CustomDialog customDialog = new CustomDialog(getContext());
+                customDialog.show();
             }
         });
 

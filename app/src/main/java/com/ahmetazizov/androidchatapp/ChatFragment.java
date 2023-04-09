@@ -378,56 +378,56 @@ public class ChatFragment extends Fragment {
                     String status = value.getString("isOnline");
                     Timestamp lastOnline = value.getTimestamp("lastOnline");
 
-                    String lastSeen;
-                    long lastOnlineMilli = lastOnline.toDate().getTime();
-                    long currentTime = System.currentTimeMillis();
-
-                    SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
-                    SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
-                    int lastOnlineHour = Integer.parseInt(hourFormat.format(lastOnlineMilli));
-                    int currentHour = Integer.parseInt(hourFormat.format(currentTime));
-                    int lastOnlineMinute = Integer.parseInt(minuteFormat.format(lastOnlineMilli));
-                    int currentMinute = Integer.parseInt(minuteFormat.format(currentTime));
-
-
-
-                    if (Math.abs(lastOnlineMilli - currentTime) > 86400000){
-                        SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
-                        String date = sdf.format(new Date(lastOnlineMilli));
-
-                        lastSeen = "last seen " + date;
-                    } else {
-                        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                        String date = sdf.format(new Date(lastOnlineMilli));
-
-                        if (currentHour <= lastOnlineHour) {
-
-                            lastSeen = "last seen yesterday at " + date;
-
-                        } else if(currentHour == lastOnlineHour) {
-
-                            if (currentMinute < lastOnlineMinute) lastSeen = "last seen yesterday at " + date;
-                            else lastSeen = "last seen today at " + date;
-
-                        } else {
-
-                            lastSeen = "last seen today at " + date;
-
-                        }
-
-                        Log.d(TAG, "currentHour: " + currentHour + "  lastOnlineHour: " + lastOnlineHour);
-                        Log.d(TAG, "currentMinute: " + currentMinute + "  lastOnlineMinute: " + lastOnlineMinute);
-                    }
-
-
                     if (status.equals("true")) infoLabel.setText("Online");
-                    else infoLabel.setText(lastSeen);
+                    else infoLabel.setText(lastSeen(lastOnline));
 
                 } else {
                     Log.d(TAG, "Current data: null");
                 }
             }
         });
+    }
+
+
+
+
+    private String lastSeen(Timestamp lastOnline) {
+        long lastOnlineMilli = lastOnline.toDate().getTime();
+        long currentTime = System.currentTimeMillis();
+
+        SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+        SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+        int lastOnlineHour = Integer.parseInt(hourFormat.format(lastOnlineMilli));
+        int currentHour = Integer.parseInt(hourFormat.format(currentTime));
+        int lastOnlineMinute = Integer.parseInt(minuteFormat.format(lastOnlineMilli));
+        int currentMinute = Integer.parseInt(minuteFormat.format(currentTime));
+
+
+
+        if (Math.abs(lastOnlineMilli - currentTime) > 86400000){
+            SimpleDateFormat sdf = new SimpleDateFormat("MMM d, yyyy");
+            String date = sdf.format(new Date(lastOnlineMilli));
+
+            return "last seen " + date;
+        } else {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+            String date = sdf.format(new Date(lastOnlineMilli));
+
+            if (currentHour <= lastOnlineHour) {
+
+                return "last seen yesterday at " + date;
+
+            } else if(currentHour == lastOnlineHour) {
+
+                if (currentMinute < lastOnlineMinute) return "last seen yesterday at " + date;
+                else return "last seen today at " + date;
+
+            } else {
+
+                return "last seen today at " + date;
+
+            }
+        }
     }
 
 }

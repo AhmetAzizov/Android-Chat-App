@@ -255,7 +255,6 @@ public class RegisterFragment extends Fragment {
             return false;
         }
 
-
         for (String user : users) {
             if (user.equalsIgnoreCase(username)) {
                 Toast.makeText(getContext(), "Username already taken, please choose another one", Toast.LENGTH_LONG).show();
@@ -263,11 +262,8 @@ public class RegisterFragment extends Fragment {
             }
         }
 
-
-
         return true;
     }
-
 
 
 
@@ -301,9 +297,6 @@ public class RegisterFragment extends Fragment {
                                     progressBar.setProgress(0);
                                 }
                             }, 1000);
-
-
-
 
                             // Here we get the download url from the specific database reference
                             fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
