@@ -39,7 +39,8 @@
                 android:layout_width="50dp"
                 android:layout_height="50dp"
                 android:layout_margin="10dp"
-                android:src="@drawable/ic_back" />
+                android:src="@drawable/ic_arrow_left"
+                app:tint="@color/black"/>
 
 
         </androidx.cardview.widget.CardView>

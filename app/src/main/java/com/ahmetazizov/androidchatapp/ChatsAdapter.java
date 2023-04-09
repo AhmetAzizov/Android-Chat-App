@@ -1,7 +1,7 @@
 package com.ahmetazizov.androidchatapp;
 
-import static com.ahmetazizov.androidchatapp.Message.LAYOUT_RECEIVER;
-import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
+//import static com.ahmetazizov.androidchatapp.Message.LAYOUT_RECEIVER;
+//import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -38,8 +38,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
 
         switch (CASE) {
-            case 1: return LAYOUT_SENDER;
-            case 2: return LAYOUT_RECEIVER;
+            case 1: return 1;
+            case 2: return 2;
 
             default: return -1;
         }
@@ -51,10 +51,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     @Override
     public RecyclerView.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
         switch (viewType) {
-            case LAYOUT_SENDER:
+            case 1:
                 View layoutSender = LayoutInflater.from(context).inflate(R.layout.sender_chat_row, parent, false);
                 return new SenderMessageViewHolder(layoutSender);
-            case LAYOUT_RECEIVER:
+            case 2:
                 View layoutReceiver = LayoutInflater.from(context).inflate(R.layout.receiver_chat_row, parent, false);
                 return new ReceiverMessageViewHolder(layoutReceiver);
             default: return null;

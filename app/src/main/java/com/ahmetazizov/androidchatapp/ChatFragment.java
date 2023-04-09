@@ -413,7 +413,7 @@ public class ChatFragment extends Fragment {
             SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
             String date = sdf.format(new Date(lastOnlineMilli));
 
-            if (currentHour <= lastOnlineHour) {
+            if (currentHour < lastOnlineHour) {
 
                 return "last seen yesterday at " + date;
 

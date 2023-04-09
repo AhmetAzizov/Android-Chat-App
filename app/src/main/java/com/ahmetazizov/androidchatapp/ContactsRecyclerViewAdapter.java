@@ -52,12 +52,6 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
         holder.chatName.setText(chats.get(position).getUsername());
 
 
-//        Glide.with(context)
-//                .load(chats.get(position).getImageURL())
-//                .override(300, 300)
-//                .centerCrop()
-//                .into(holder.chatImage);
-
         Glide.with(context)
                 .load(chats.get(position).getImageURL())
                 .override(300, 300)
@@ -68,7 +62,6 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
                         // Handle image loading failure
                         return false;
                     }
-
                     @Override
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                         // Handle successful image loading
@@ -85,6 +78,18 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
             @Override
             public void onClick(View v) {
                 sendToDataToFragment(holder);
+            }
+        });
+
+
+        holder.chatImage.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+//                ProfileDialog customDialog = new ProfileDialog(v.getContext(), chats.get(holder.getAdapterPosition()));
+//                customDialog.show();
+
+                ProfileDialog2 customDialog = ProfileDialog2.newInstance(chats.get(holder.getAdapterPosition()));
+                customDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "customDialog");
             }
         });
     }

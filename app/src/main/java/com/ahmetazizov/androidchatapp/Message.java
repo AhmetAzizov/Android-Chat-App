@@ -4,8 +4,8 @@ import java.util.Date;
 
 public class Message {
 
-    public static final int LAYOUT_SENDER = 1;
-    public static final int LAYOUT_RECEIVER = 2;
+//    public static final int LAYOUT_SENDER = 1;
+//    public static final int LAYOUT_RECEIVER = 2;
 
     String sender;
     String content;

@@ -15,11 +15,16 @@ public class CustomDialog extends Dialog {
 
     public CustomDialog(@NonNull Context context) {
         super(context);
-        setContentView(R.layout.layout_dialog); // Replace 'custom_dialog' with the name of your layout file
+        setContentView(R.layout.layout_dialog);
 
         // Set the window background to transparent
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
+        // To prevent the dialog from closing when clicked outside
+//        setCanceledOnTouchOutside(false);
+
+        // To prevent the dialog from closing when back button is pressed
+//        setCancelable(false);
 
         for (int i = 0; i < starArray.length; i++) {
             String id = "star" + (i + 1);
