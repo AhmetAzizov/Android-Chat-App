@@ -92,12 +92,20 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
                 customDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "customDialog");
             }
         });
+
+        holder.chatImage.setTransitionName("chat_image" + position);
     }
+
+
 
     @Override
     public int getItemCount() {
         return chats.size();
     }
+
+
+
+
 
     public static class MyViewHolder extends RecyclerView.ViewHolder {
 
@@ -148,6 +156,8 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
     private void sendToDataToFragment(ContactsRecyclerViewAdapter.MyViewHolder holder) {
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        fragmentTransaction.setCustomAnimations(0, R.anim.fade_in);
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();

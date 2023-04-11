@@ -1,7 +1,5 @@
 package com.ahmetazizov.androidchatapp;
 
-import android.content.Intent;
-import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
@@ -35,13 +33,11 @@ import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
-import com.google.firebase.firestore.FieldValue;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firestore.v1.DocumentTransform;
 
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
@@ -183,7 +179,6 @@ public class ChatFragment extends Fragment {
         contactName.setText(user.getUsername());
 
         getChats();
-//        getStatus();
 
 
 
@@ -219,6 +214,7 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
                 fragmentTransaction.replace(R.id.frameLayout, new ShowChats()).commit();
             }
         });
@@ -249,9 +245,13 @@ public class ChatFragment extends Fragment {
             @Override
             public void onClick(View v) {
                 sendChats();
+
+                chatsAdapter.clearDeleteButton(chatsRecyclerView);
             }
         });
     }
+
+
 
 
 
@@ -272,13 +272,17 @@ public class ChatFragment extends Fragment {
                 for (QueryDocumentSnapshot document : value) {
 
                     // Retrieves all the fields and puts it to a new Message object
+                    String id = document.getId();
                     String sender = document.getString("sender");
                     String content = document.getString("content");
                     String time = document.getString("time");
+                    String chatRef = user.getChatReference();
                     Timestamp timestamp = document.getTimestamp("exactTime");
                     Date date = timestamp.toDate();
 
-                    Message message = new Message(sender, content, time, date);
+                    Message message = new Message(id, sender, content, time, chatRef, date);
+
+                    Log.d(TAG, "chatRef: " + message.getChatRef());
 
                     chats.add(message);
 
@@ -390,7 +394,6 @@ public class ChatFragment extends Fragment {
 
 
 
-
     private String lastSeen(Timestamp lastOnline) {
         long lastOnlineMilli = lastOnline.toDate().getTime();
         long currentTime = System.currentTimeMillis();
@@ -429,5 +432,6 @@ public class ChatFragment extends Fragment {
             }
         }
     }
+
 
 }

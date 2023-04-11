@@ -4,21 +4,31 @@ package com.ahmetazizov.androidchatapp;
 //import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
 
 import android.content.Context;
+import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.google.android.gms.tasks.OnFailureListener;
+import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+
 import java.util.ArrayList;
 
 public class ChatsAdapter extends RecyclerView.Adapter {
 
-    Context context;
+    private final String TAG = "ChatsAdapter";
 
+    Context context;
     ArrayList<Message> list;
+    FirebaseFirestore db;
 
 
     public ChatsAdapter(Context context, ArrayList<Message> list) {
@@ -62,10 +72,16 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
-
+    private int longPressedItemPosition = -1;
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+        db = FirebaseFirestore.getInstance();
+        DocumentReference deleteDocRef = db.collection("chats").
+                document(list.get(position).getChatRef()).collection("messages").document(list.get(position).getId());
+
+        Log.d(TAG, "chatId: " + list.get(position).getId());
+
         int CASE;
         final String currentUser = MainActivity.username;
 
@@ -79,6 +95,54 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
                 ((SenderMessageViewHolder) holder).senderMessageContent.setText(senderMessage);
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
+
+
+                if (position == longPressedItemPosition) {
+                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
+                }
+//                else {
+//                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.GONE);
+//                }
+
+
+                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
+                    @Override
+                    public boolean onLongClick(View v) {
+                        ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
+
+                        longPressedItemPosition = holder.getAdapterPosition();
+
+                        notifyDataSetChanged();
+
+                        return true;
+                    }
+                });
+
+                ((SenderMessageViewHolder) holder).deleteButton.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (v.getVisibility() != View.GONE) {
+
+                            deleteDocRef.delete()
+                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                        @Override
+                                        public void onSuccess(Void aVoid) {
+                                            // Document successfully deleted
+                                            Log.d(TAG, "Document deleted successfully!");
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            // Handle errors
+                                            Log.e(TAG, "Error deleting document: " + e.getMessage());
+                                        }
+                                    });
+
+
+                        }
+                    }
+                });
 
                 break;
 
@@ -105,12 +169,14 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     class SenderMessageViewHolder extends RecyclerView.ViewHolder {
 
+        private final ImageView deleteButton;
         private final TextView senderMessageContent;
         private final TextView senderTimeSent;
 
         public SenderMessageViewHolder(@NonNull View itemView) {
             super(itemView);
 
+            deleteButton = itemView.findViewById(R.id.deleteButton);
             senderMessageContent = itemView.findViewById(R.id.senderMessageContent);
             senderTimeSent = itemView.findViewById(R.id.senderTimeSent);
         }
@@ -129,4 +195,25 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             receiverTimeSent = itemView.findViewById(R.id.receiverTimeSent);
         }
     }
+
+    public void clearDeleteButton(RecyclerView chatsRecyclerView) {
+        for (int i = 0; i < getItemCount(); i++) {
+            if (list.get(i).getSender().equals(MainActivity.username)) {
+
+                Log.d(TAG, "clearDeleteButton: " + list.get(i).getSender());
+
+                SenderMessageViewHolder holder = (SenderMessageViewHolder) chatsRecyclerView.findViewHolderForAdapterPosition(i);
+
+
+                if (holder != null) {
+
+                    holder.deleteButton.setVisibility(View.GONE);
+
+                }
+            }
+        }
+    }
+
+
+
 }
