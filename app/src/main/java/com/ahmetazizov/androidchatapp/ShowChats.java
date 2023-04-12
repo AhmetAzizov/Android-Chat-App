@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.graphics.PorterDuff;
 import android.os.Bundle;

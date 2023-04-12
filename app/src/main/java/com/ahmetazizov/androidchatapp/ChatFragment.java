@@ -47,6 +47,8 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
+import kotlin.contracts.ContractBuilder;
+
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link ChatFragment#newInstance} factory method to
@@ -108,7 +110,6 @@ public class ChatFragment extends Fragment {
 
 
 
-
     public final static String TAG = "ChatFragment";
     FirebaseFirestore db;
     ArrayList<Message> chats;
@@ -125,6 +126,12 @@ public class ChatFragment extends Fragment {
     CardView downArrow;
     ImageView downArrowIcon;
     boolean firstTime = true;
+
+
+    public ChatsAdapter getAdapter() {
+        return this.chatsAdapter;
+    }
+
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -147,13 +154,12 @@ public class ChatFragment extends Fragment {
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
 
-        chatsAdapter = new ChatsAdapter(getContext(), chats);
+        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView);
         chatsRecyclerView.setAdapter(chatsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         // This code makes the recyclerview scrollable
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         chatsRecyclerView.setLayoutManager(layoutManager);
-
 
         layoutManager.setReverseLayout(true);
         chatsRecyclerView.scrollToPosition(0);
@@ -246,13 +252,10 @@ public class ChatFragment extends Fragment {
             public void onClick(View v) {
                 sendChats();
 
-                chatsAdapter.clearDeleteButton(chatsRecyclerView);
+//                chatsAdapter.clearDeleteButton();
             }
         });
     }
-
-
-
 
 
     private void getChats() {

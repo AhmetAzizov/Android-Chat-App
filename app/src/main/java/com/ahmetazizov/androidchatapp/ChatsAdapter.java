@@ -4,7 +4,6 @@ package com.ahmetazizov.androidchatapp;
 //import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
 
 import android.content.Context;
-import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,14 +25,18 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     private final String TAG = "ChatsAdapter";
 
+    RecyclerView recyclerView;
     Context context;
     ArrayList<Message> list;
     FirebaseFirestore db;
 
+    ArrayList<Integer> deleteList = new ArrayList<Integer>();
 
-    public ChatsAdapter(Context context, ArrayList<Message> list) {
+
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView) {
         this.list = list;
         this.context = context;
+        this.recyclerView = recyclerView;
     }
 
 
@@ -71,11 +74,11 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         }
     }
 
-
-    private int longPressedItemPosition = -1;
+    int longPressedItemPosition = -1;
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
         db = FirebaseFirestore.getInstance();
         DocumentReference deleteDocRef = db.collection("chats").
                 document(list.get(position).getChatRef()).collection("messages").document(list.get(position).getId());
@@ -97,12 +100,12 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
 
 
-                if (position == longPressedItemPosition) {
+                if (deleteList.contains(position)) {
                     ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
                 }
-//                else {
-//                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.GONE);
-//                }
+                else {
+                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.GONE);
+                }
 
 
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -110,9 +113,11 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                     public boolean onLongClick(View v) {
                         ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
 
-                        longPressedItemPosition = holder.getAdapterPosition();
+                        deleteList.add(holder.getAdapterPosition());
 
-                        notifyDataSetChanged();
+                        Log.d(TAG, "current position: " + holder.getAdapterPosition());
+
+//                        notifyDataSetChanged();
 
                         return true;
                     }
@@ -196,13 +201,15 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         }
     }
 
-    public void clearDeleteButton(RecyclerView chatsRecyclerView) {
+
+
+    public void clearDeleteButton() {
         for (int i = 0; i < getItemCount(); i++) {
             if (list.get(i).getSender().equals(MainActivity.username)) {
 
                 Log.d(TAG, "clearDeleteButton: " + list.get(i).getSender());
 
-                SenderMessageViewHolder holder = (SenderMessageViewHolder) chatsRecyclerView.findViewHolderForAdapterPosition(i);
+                ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
 
 
                 if (holder != null) {
@@ -213,6 +220,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             }
         }
     }
+
+
 
 
 

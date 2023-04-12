@@ -169,6 +169,6 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
 
         // Replace the current fragment with the new one
-        fragmentTransaction.replace(R.id.frameLayout, chatFragment).commit();
+        fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
     }
 }

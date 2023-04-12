@@ -81,7 +81,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             // go to add fragment
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChats()).commit();
+            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChats(), "showChatsFragment").commit();
 
         } else {
             Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
@@ -122,7 +122,30 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        return;
+        // Get the FragmentManager instance
+        FragmentManager fragmentManager = getSupportFragmentManager();
+
+        // Loop through the list of fragments in the FragmentManager
+        for (Fragment fragments : fragmentManager.getFragments()) {
+            if (fragments != null && fragments.isVisible()) {
+                String fragmentTag = fragments.getTag(); // Get the tag of the currently active fragment
+
+                if (fragmentTag != null) {
+                    switch (fragmentTag) {
+                        case "chatFragment":
+                            ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
+                            fragment.getAdapter().clearDeleteButton();
+                            break;
+
+                        default:
+                            break;
+                    }
+                }
+
+                Log.d(TAG, "Currently active fragment tag: " + fragmentTag);
+                break;
+            }
+        }
     }
 
 
