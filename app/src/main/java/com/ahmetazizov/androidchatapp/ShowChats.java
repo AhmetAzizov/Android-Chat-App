@@ -130,7 +130,7 @@ public class ShowChats extends Fragment {
     private FirebaseAuth mAuth;
     public static ArrayList<User> contacts;
     private ArrayList<User> searchResult;
-    static ContactsRecyclerViewAdapter adapter;
+    ContactsRecyclerViewAdapter adapter;
     SearchAdapter searchAdapter;
     FirebaseFirestore db;
     MainActivity mainActivity;

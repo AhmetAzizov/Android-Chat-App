@@ -4,10 +4,16 @@ package com.ahmetazizov.androidchatapp;
 //import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.AccelerateInterpolator;
+import android.view.animation.AlphaAnimation;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
+import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -25,6 +31,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     private final String TAG = "ChatsAdapter";
 
+    ImageView deleteButton;
     RecyclerView recyclerView;
     Context context;
     ArrayList<Message> list;
@@ -33,10 +40,11 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     ArrayList<Integer> deleteList = new ArrayList<Integer>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
+        this.deleteButton = deleteButton;
     }
 
 
@@ -101,53 +109,58 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
 
                 if (deleteList.contains(position)) {
-                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
+                    holder.itemView.setBackgroundColor(Color.rgb(250, 150, 150));
                 }
                 else {
-                    ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.GONE);
+                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
                 }
 
 
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        ((SenderMessageViewHolder) holder).deleteButton.setVisibility(View.VISIBLE);
+                        deleteButtonVisible();
 
                         deleteList.add(holder.getAdapterPosition());
 
-                        Log.d(TAG, "current position: " + holder.getAdapterPosition());
-
-//                        notifyDataSetChanged();
+                        notifyDataSetChanged();
 
                         return true;
                     }
                 });
 
-                ((SenderMessageViewHolder) holder).deleteButton.setOnClickListener(new View.OnClickListener() {
+                deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (v.getVisibility() != View.GONE) {
-
-                            deleteDocRef.delete()
-                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                        @Override
-                                        public void onSuccess(Void aVoid) {
-                                            // Document successfully deleted
-                                            Log.d(TAG, "Document deleted successfully!");
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
-                                            // Handle errors
-                                            Log.e(TAG, "Error deleting document: " + e.getMessage());
-                                        }
-                                    });
-
-
-                        }
+                        v.setAlpha(0.0f);
                     }
                 });
+
+//                ((SenderMessageViewHolder) holder).deleteButton.setOnClickListener(new View.OnClickListener() {
+//                    @Override
+//                    public void onClick(View v) {
+//                        if (v.getVisibility() != View.GONE) {
+//
+//                            deleteDocRef.delete()
+//                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
+//                                        @Override
+//                                        public void onSuccess(Void aVoid) {
+//                                            // Document successfully deleted
+//                                            Log.d(TAG, "Document deleted successfully!");
+//                                        }
+//                                    })
+//                                    .addOnFailureListener(new OnFailureListener() {
+//                                        @Override
+//                                        public void onFailure(@NonNull Exception e) {
+//                                            // Handle errors
+//                                            Log.e(TAG, "Error deleting document: " + e.getMessage());
+//                                        }
+//                                    });
+//
+//
+//                        }
+//                    }
+//                });
 
                 break;
 
@@ -203,22 +216,39 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
 
 
+
+
+
+
+
+
+
+
+
+    private void deleteButtonVisible() {
+        deleteButton.setVisibility(View.VISIBLE);
+
+        deleteButton.animate().alpha(1).setDuration(700).setListener(null);
+    }
+
+
     public void clearDeleteButton() {
+        deleteButton.setAlpha(0.0f);
+        deleteButton.setVisibility(View.GONE);
+
         for (int i = 0; i < getItemCount(); i++) {
             if (list.get(i).getSender().equals(MainActivity.username)) {
 
-                Log.d(TAG, "clearDeleteButton: " + list.get(i).getSender());
-
                 ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-
 
                 if (holder != null) {
 
-                    holder.deleteButton.setVisibility(View.GONE);
+                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
 
                 }
             }
         }
+        deleteList.clear();
     }
 
 

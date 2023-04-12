@@ -157,7 +157,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.setCustomAnimations(0, R.anim.fade_in);
+        fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();

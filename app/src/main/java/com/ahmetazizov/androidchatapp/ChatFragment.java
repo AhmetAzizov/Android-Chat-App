@@ -125,6 +125,7 @@ public class ChatFragment extends Fragment {
     ImageView backButton;
     CardView downArrow;
     ImageView downArrowIcon;
+    ImageView deleteButton;
     boolean firstTime = true;
 
 
@@ -138,7 +139,11 @@ public class ChatFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Bundle bundle = getArguments();
-        user = (User) bundle.getSerializable("user");
+        if (bundle != null) {
+            user = (User) bundle.getSerializable("user");
+        } else {
+            Log.e(TAG, "bundle is null!");
+        }
 
 
         db = FirebaseFirestore.getInstance();
@@ -153,8 +158,9 @@ public class ChatFragment extends Fragment {
         backButton = view.findViewById(R.id.backButton);
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
+        deleteButton = view.findViewById(R.id.deleteButton);
 
-        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView);
+        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton);
         chatsRecyclerView.setAdapter(chatsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         // This code makes the recyclerview scrollable

@@ -131,19 +131,18 @@ public class MainActivity extends AppCompatActivity {
                 String fragmentTag = fragments.getTag(); // Get the tag of the currently active fragment
 
                 if (fragmentTag != null) {
-                    switch (fragmentTag) {
-                        case "chatFragment":
-                            ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-                            fragment.getAdapter().clearDeleteButton();
-                            break;
+                switch (fragmentTag) {
+                    case "chatFragment":
+                        ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
+                        fragment.getAdapter().clearDeleteButton();
+                        break;
 
-                        default:
-                            break;
-                    }
+                    default: break;
+                }
                 }
 
                 Log.d(TAG, "Currently active fragment tag: " + fragmentTag);
-                break;
+                break; // Break out of the loop after finding the active fragment
             }
         }
     }
