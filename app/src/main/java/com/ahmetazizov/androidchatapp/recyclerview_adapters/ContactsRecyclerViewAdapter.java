@@ -1,23 +1,27 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.cardview.widget.CardView;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.ProfileDialog2;
+import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -32,10 +36,12 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
     public final static String TAG = "ChatsRecycler";
     static Context context;
     ArrayList<User> chats;
+    CardView cover;
 
-    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats){
+    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats, CardView cover){
         this.context = context;
         this.chats = chats;
+        this.cover = cover;
     }
 
     @NonNull
@@ -126,30 +132,26 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
 
     private void loadingScreenGone() {
-        AlphaAnimation fadeAnimation = new AlphaAnimation(1.0f, 0.0f);
-        fadeAnimation.setDuration(500); // set the duration of the animation in milliseconds
-
-        fadeAnimation.setAnimationListener(new Animation.AnimationListener() {
+        cover.animate().alpha(0.0f).setDuration(500).setListener(new Animator.AnimatorListener() {
             @Override
-            public void onAnimationStart(Animation animation) {
-                // Animation started
+            public void onAnimationStart(@NonNull Animator animation) {
             }
 
             @Override
-            public void onAnimationEnd(Animation animation) {
-                // Animation ended
-                // Perform any actions you want to do after the animation ends
-                ShowChats.cover.setVisibility(View.GONE);
+            public void onAnimationEnd(@NonNull Animator animation) {
+                cover.setVisibility(View.GONE);
             }
 
             @Override
-            public void onAnimationRepeat(Animation animation) {
-                // Animation repeated
+            public void onAnimationCancel(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(@NonNull Animator animation) {
+
             }
         });
-
-
-        ShowChats.cover.startAnimation(fadeAnimation);
     }
 
 

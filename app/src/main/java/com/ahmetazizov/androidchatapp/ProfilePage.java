@@ -1,7 +1,5 @@
 package com.ahmetazizov.androidchatapp;
 
-import static com.google.android.material.internal.ViewUtils.dpToPx;
-
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,14 +11,14 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.util.DisplayMetrics;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;

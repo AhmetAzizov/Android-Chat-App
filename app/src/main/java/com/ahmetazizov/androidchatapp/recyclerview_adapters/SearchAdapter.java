@@ -1,10 +1,7 @@
-package com.ahmetazizov.androidchatapp;
-
-import static java.security.AccessController.getContext;
+package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Parcelable;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +14,11 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.MainActivity;
+import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
+import com.ahmetazizov.androidchatapp.models.User;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
@@ -67,7 +69,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
 
 
-                for (User user : ShowChats.contacts) {
+                for (User user : ShowChatsFragment.contacts) {
                     if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
                         sendToDataToFragment(holder);
                         return;

@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.models;
 
 import java.util.Date;
 

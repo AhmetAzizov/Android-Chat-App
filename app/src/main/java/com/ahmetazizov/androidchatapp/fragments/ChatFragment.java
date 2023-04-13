@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.fragments;
 
 import android.graphics.PorterDuff;
 import android.os.Bundle;
@@ -19,12 +19,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
+import com.ahmetazizov.androidchatapp.MainActivity;
+import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.ProfilePage;
+import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -42,12 +47,9 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
-
-import kotlin.contracts.ContractBuilder;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -126,6 +128,7 @@ public class ChatFragment extends Fragment {
     CardView downArrow;
     ImageView downArrowIcon;
     ImageView deleteButton;
+    public static CardView infoPanel;
     boolean firstTime = true;
 
 
@@ -159,6 +162,8 @@ public class ChatFragment extends Fragment {
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
         deleteButton = view.findViewById(R.id.deleteButton);
+        infoPanel = view.findViewById(R.id.infoPanel);
+
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton);
         chatsRecyclerView.setAdapter(chatsAdapter);
@@ -227,7 +232,7 @@ public class ChatFragment extends Fragment {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
                 fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
-                fragmentTransaction.replace(R.id.frameLayout, new ShowChats()).commit();
+                fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment()).commit();
             }
         });
 

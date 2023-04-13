@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.models;
 
 import android.os.Parcel;
 import android.os.Parcelable;

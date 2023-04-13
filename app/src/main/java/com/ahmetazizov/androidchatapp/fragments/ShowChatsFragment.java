@@ -1,14 +1,10 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.fragments;
 
-import android.annotation.SuppressLint;
-import android.content.Intent;
-import android.graphics.PorterDuff;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
-import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -17,9 +13,6 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 
-import android.text.Editable;
-import android.text.TextWatcher;
-import android.transition.AutoTransition;
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
 import android.util.Log;
@@ -32,37 +25,34 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
+import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
+import com.ahmetazizov.androidchatapp.CustomDialog;
+import com.ahmetazizov.androidchatapp.MainActivity;
+import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
+import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.UserProfilePage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
-import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
-import com.google.firebase.firestore.SetOptions;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
 
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 
 /**
  * A simple {@link Fragment} subclass.
- * Use the {@link ShowChats#newInstance} factory method to
+ * Use the {@link ShowChatsFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class ShowChats extends Fragment {
+public class ShowChatsFragment extends Fragment {
 
     // TODO: Rename parameter arguments, choose names that match
     // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -73,7 +63,7 @@ public class ShowChats extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    public ShowChats() {
+    public ShowChatsFragment() {
         // Required empty public constructor
     }
 
@@ -83,11 +73,11 @@ public class ShowChats extends Fragment {
      *
      * @param param1 Parameter 1.
      * @param param2 Parameter 2.
-     * @return A new instance of fragment ShowChats.
+     * @return A new instance of fragment ShowChatsFragment.
      */
     // TODO: Rename and change types and number of parameters
-    public static ShowChats newInstance(String param1, String param2) {
-        ShowChats fragment = new ShowChats();
+    public static ShowChatsFragment newInstance(String param1, String param2) {
+        ShowChatsFragment fragment = new ShowChatsFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -126,7 +116,7 @@ public class ShowChats extends Fragment {
 
 
 
-    public final static String TAG = "ShowChats";
+    public final static String TAG = "ShowChatsFragment";
     private FirebaseAuth mAuth;
     public static ArrayList<User> contacts;
     private ArrayList<User> searchResult;
@@ -135,7 +125,7 @@ public class ShowChats extends Fragment {
     FirebaseFirestore db;
     MainActivity mainActivity;
     RecyclerView recyclerView;
-    static CardView cover;
+    CardView cover;
     ProgressBar loadingScreenProgressBar;
     CardView settingsButton;
     CardView rateButton;
@@ -167,7 +157,7 @@ public class ShowChats extends Fragment {
         searchCardInput = view.findViewById(R.id.searchCardInput);
         searchCardLayout = view.findViewById(R.id.searchCardLayout);
 
-        adapter = new ContactsRecyclerViewAdapter(getContext(), contacts);
+        adapter = new ContactsRecyclerViewAdapter(getContext(), contacts, cover);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager contactLayoutManager = new LinearLayoutManager(getContext());
         contactLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

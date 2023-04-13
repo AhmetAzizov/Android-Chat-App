@@ -1,27 +1,25 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
-//import static com.ahmetazizov.androidchatapp.Message.LAYOUT_RECEIVER;
-//import static com.ahmetazizov.androidchatapp.Message.LAYOUT_SENDER;
+//import static com.ahmetazizov.androidchatapp.models.Message.LAYOUT_RECEIVER;
+//import static com.ahmetazizov.androidchatapp.models.Message.LAYOUT_SENDER;
 
+import android.animation.Animator;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.AccelerateInterpolator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
-import android.view.animation.DecelerateInterpolator;
 import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
+import com.ahmetazizov.androidchatapp.MainActivity;
+import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -37,7 +35,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     ArrayList<Message> list;
     FirebaseFirestore db;
 
-    ArrayList<Integer> deleteList = new ArrayList<Integer>();
+    ArrayList<String> deleteList = new ArrayList<String>();
 
 
     public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton) {
@@ -91,8 +89,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         DocumentReference deleteDocRef = db.collection("chats").
                 document(list.get(position).getChatRef()).collection("messages").document(list.get(position).getId());
 
-        Log.d(TAG, "chatId: " + list.get(position).getId());
-
         int CASE;
         final String currentUser = MainActivity.username;
 
@@ -108,8 +104,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
 
 
-                if (deleteList.contains(position)) {
-                    holder.itemView.setBackgroundColor(Color.rgb(250, 150, 150));
+                if (deleteList.contains(list.get(position).getId())) {
+                    holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
                 }
                 else {
                     holder.itemView.setBackgroundColor(Color.TRANSPARENT);
@@ -119,9 +115,9 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        deleteButtonVisible();
+                        deleteButtonVisibility(1.0f);
 
-                        deleteList.add(holder.getAdapterPosition());
+                        deleteList.add(list.get(holder.getAdapterPosition()).getId());
 
                         notifyDataSetChanged();
 
@@ -132,7 +128,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        v.setAlpha(0.0f);
+                        ChatFragment.infoPanel.animate().translationY(dptoPixels(-71)).setDuration(500).setListener(null);
+                        Log.e(TAG, "onClick: ");
                     }
                 });
 
@@ -187,14 +184,12 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     class SenderMessageViewHolder extends RecyclerView.ViewHolder {
 
-        private final ImageView deleteButton;
         private final TextView senderMessageContent;
         private final TextView senderTimeSent;
 
         public SenderMessageViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            deleteButton = itemView.findViewById(R.id.deleteButton);
             senderMessageContent = itemView.findViewById(R.id.senderMessageContent);
             senderTimeSent = itemView.findViewById(R.id.senderTimeSent);
         }
@@ -225,16 +220,35 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
 
 
-    private void deleteButtonVisible() {
-        deleteButton.setVisibility(View.VISIBLE);
+    private void deleteButtonVisibility(float alpha) {
+        if (alpha == 1.0f) deleteButton.setVisibility(View.VISIBLE);
 
-        deleteButton.animate().alpha(1).setDuration(700).setListener(null);
+        deleteButton.animate().alpha(alpha).setDuration(700).setListener(new Animator.AnimatorListener() {
+            @Override
+            public void onAnimationStart(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationEnd(@NonNull Animator animation) {
+                if (alpha == 0.0f) deleteButton.setVisibility(View.GONE);
+            }
+
+            @Override
+            public void onAnimationCancel(@NonNull Animator animation) {
+
+            }
+
+            @Override
+            public void onAnimationRepeat(@NonNull Animator animation) {
+
+            }
+        });
     }
 
 
     public void clearDeleteButton() {
-        deleteButton.setAlpha(0.0f);
-        deleteButton.setVisibility(View.GONE);
+        deleteButtonVisibility(0.0f);
 
         for (int i = 0; i < getItemCount(); i++) {
             if (list.get(i).getSender().equals(MainActivity.username)) {
@@ -251,8 +265,9 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         deleteList.clear();
     }
 
-
-
-
-
+    private int dptoPixels(int dps) {
+        float density = context.getResources().getDisplayMetrics().density;
+        int pixels = (int) (dps * density);
+        return pixels;
+    }
 }
