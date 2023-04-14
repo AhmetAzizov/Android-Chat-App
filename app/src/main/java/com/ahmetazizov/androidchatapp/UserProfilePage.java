@@ -134,7 +134,7 @@ public class UserProfilePage extends Fragment {
         mAuth = FirebaseAuth.getInstance();
         FirebaseUser authUser = mAuth.getCurrentUser();
 
-        DocumentReference currentUser = db.collection("users").document(MainActivity.username);
+        DocumentReference currentUser = db.collection("users").document(Constants.currentUser);
 
         currentUser.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
             @Override
@@ -220,7 +220,7 @@ public class UserProfilePage extends Fragment {
                 data.put("isOnline", "false");
                 data.put("lastOnline", timestamp);
 
-                DocumentReference docRef = db.collection("users").document(MainActivity.username);
+                DocumentReference docRef = db.collection("users").document(Constants.currentUser);
 
                 docRef.update(data)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

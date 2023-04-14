@@ -14,6 +14,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -69,14 +70,14 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
 
 
-                for (User user : ShowChatsFragment.contacts) {
+                for (User user : Constants.contacts) {
                     if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
                         sendToDataToFragment(holder);
                         return;
                     }
                 }
 
-                String newChatRef = MainActivity.username + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
+                String newChatRef = Constants.currentUser + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
                 CollectionReference colRef = db.collection("chats");
 
                 Timestamp timestamp = Timestamp.now();
@@ -132,7 +133,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", (Serializable) searchResult.get(holder.getAdapterPosition()));
+        bundle.putSerializable("user", searchResult.get(holder.getAdapterPosition()));
 
         // Create a new instance of the fragment and set the bundle
         ChatFragment chatFragment = new ChatFragment();

@@ -24,6 +24,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.models.Message;
@@ -332,7 +333,7 @@ public class ChatFragment extends Fragment {
 
 
         // Creates a new Message object, fills it with specified information and sends it to the database
-        Message newMessage = new Message(MainActivity.username, message, formattedTime, timestamp.toDate());
+        Message newMessage = new Message(Constants.currentUser, message, formattedTime, timestamp.toDate());
 
 
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");

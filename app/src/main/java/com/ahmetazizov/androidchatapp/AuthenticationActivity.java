@@ -12,7 +12,7 @@ import com.google.firebase.auth.FirebaseUser;
 public class AuthenticationActivity extends AppCompatActivity {
 
 
-    public final static String TAG = "AuthenticationActivity";
+    private final static String TAG = "AuthenticationActivity";
     private FirebaseAuth mAuth;
 
     @Override
@@ -25,7 +25,7 @@ public class AuthenticationActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
-            MainActivity.username = currentUser.getDisplayName();
+            Constants.currentUser = currentUser.getDisplayName();
 
             Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
             startActivity(intent);
@@ -38,51 +38,4 @@ public class AuthenticationActivity extends AppCompatActivity {
             }
         }
     }
-
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_authentication);
-
-//        Log.d("registerFragment", "activity onCreate: " + registerFragment.imageUri);
-    }
-
-//    @Override
-//    protected void onResume() {
-//        super.onResume();
-//
-//        Log.d("registerFragment", "activity onResume: " + registerFragment.imageUri);
-//    }
-//
-//    @Override
-//    protected void onPause() {
-//        super.onPause();
-//
-//        Log.d("registerFragment", "activity onPause: " + registerFragment.imageUri);
-//    }
-//
-//    @Override
-//    protected void onStop() {
-//        super.onStop();
-//
-//        Log.d("registerFragment", "activity onStop: " + registerFragment.imageUri);
-//    }
-//
-//    @Override
-//    protected void onDestroy() {
-//        super.onDestroy();
-//
-//        Log.d("registerFragment", "activity onDestroy: " + registerFragment.imageUri);
-//    }
-
-    //    @Override
-//    protected void onSaveInstanceState(Bundle outState) {
-//        super.onSaveInstanceState(outState);
-//
-//        //Save the fragment's instance
-//        getSupportFragmentManager().putFragment(outState, "myFragmentName", myFragment);
-//
-//        Log.d(TAG, "onSaveInstanceState: " + myFragment);
-//    }
 }

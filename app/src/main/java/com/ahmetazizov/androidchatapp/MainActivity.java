@@ -29,9 +29,6 @@ public class MainActivity extends AppCompatActivity {
 
 
     public final String TAG = "MainActivity";
-    public static ArrayList<String> chats;
-    public static ArrayList<User> users;
-    public static String username;
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
 
@@ -40,20 +37,18 @@ public class MainActivity extends AppCompatActivity {
         super.onStart();
         Log.d(TAG, "onStart: ");
         db = FirebaseFirestore.getInstance();
-        chats = new ArrayList<String>();
-        users = new ArrayList<User>();
         mAuth = FirebaseAuth.getInstance();
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
-            username = currentUser.getDisplayName();
+            Constants.currentUser = currentUser.getDisplayName();
 
             Map<String, Object> data = new HashMap<>();
             data.put("isOnline", "true");
 
-            DocumentReference docRef = db.collection("users").document(username);
+            DocumentReference docRef = db.collection("users").document(Constants.currentUser);
 
             docRef.update(data)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -149,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
         data.put("lastOnline", timestamp);
 
 
-        DocumentReference docRef = db.collection("users").document(username);
+        DocumentReference docRef = db.collection("users").document(Constants.currentUser);
 
         docRef.update(data)
                 .addOnSuccessListener(new OnSuccessListener<Void>() {

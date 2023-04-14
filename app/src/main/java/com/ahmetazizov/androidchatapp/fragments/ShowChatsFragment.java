@@ -26,6 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.CustomDialog;
 import com.ahmetazizov.androidchatapp.MainActivity;
@@ -118,27 +119,25 @@ public class ShowChatsFragment extends Fragment {
 
     public final static String TAG = "ShowChatsFragment";
     private FirebaseAuth mAuth;
-    public static ArrayList<User> contacts;
     private ArrayList<User> searchResult;
-    ContactsRecyclerViewAdapter adapter;
-    SearchAdapter searchAdapter;
-    FirebaseFirestore db;
-    MainActivity mainActivity;
-    RecyclerView recyclerView;
-    CardView cover;
-    ProgressBar loadingScreenProgressBar;
-    CardView settingsButton;
-    CardView rateButton;
+    private ContactsRecyclerViewAdapter adapter;
+    private SearchAdapter searchAdapter;
+    private FirebaseFirestore db;
+    private RecyclerView recyclerView;
+    private CardView cover;
+    private ProgressBar loadingScreenProgressBar;
+    private CardView settingsButton;
+    private CardView rateButton;
 
     CardView addContactCard;
     TextView txtAddContact;
     Button buttonAddContact;
     LinearLayout addContactLayout;
 
-    CardView searchCard;
-    RecyclerView searchCardList;
-    SearchView searchCardInput;
-    LinearLayout searchCardLayout;
+    private CardView searchCard;
+    private RecyclerView searchCardList;
+    private SearchView searchCardInput;
+    private LinearLayout searchCardLayout;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -147,7 +146,6 @@ public class ShowChatsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.chatsRecyclerView);
         cover = view.findViewById(R.id.loadingScreen);
         loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
-        contacts = new ArrayList<>();
         searchResult = new ArrayList<>();
         settingsButton = view.findViewById(R.id.settingsButton);
         rateButton = view.findViewById(R.id.rateButton);
@@ -157,7 +155,7 @@ public class ShowChatsFragment extends Fragment {
         searchCardInput = view.findViewById(R.id.searchCardInput);
         searchCardLayout = view.findViewById(R.id.searchCardLayout);
 
-        adapter = new ContactsRecyclerViewAdapter(getContext(), contacts, cover);
+        adapter = new ContactsRecyclerViewAdapter(getContext(), Constants.contacts, cover);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager contactLayoutManager = new LinearLayoutManager(getContext());
         contactLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -385,9 +383,9 @@ public class ShowChatsFragment extends Fragment {
 
         searchResult.clear();
 
-        for (User contact : MainActivity.users) {
+        for (User contact : Constants.users) {
 
-            if (contact.getUsername().equals(MainActivity.username)) continue;
+            if (contact.getUsername().equals(Constants.currentUser)) continue;
 
             if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
 
@@ -413,13 +411,13 @@ public class ShowChatsFragment extends Fragment {
                     return;
                 }
 
-                MainActivity.users.clear();
+                Constants.users.clear();
 
 
                 for (QueryDocumentSnapshot document : value) {
                     User user = document.toObject(User.class);
 
-                    MainActivity.users.add(user);
+                    Constants.users.add(user);
 
                 }
             }
@@ -438,14 +436,14 @@ public class ShowChatsFragment extends Fragment {
                     return;
                 }
 
-                mainActivity.chats.clear();
-                contacts.clear();
+                Constants.chats.clear();
+                Constants.contacts.clear();
 
                 for (QueryDocumentSnapshot document : value) {
 
                     String[] separateNames = document.getId().split("-");
 
-                    if (separateNames[0].equalsIgnoreCase(MainActivity.username) || separateNames[1].equalsIgnoreCase(MainActivity.username)) {
+                    if (separateNames[0].equalsIgnoreCase(Constants.currentUser) || separateNames[1].equalsIgnoreCase(Constants.currentUser)) {
 
 //                        setChatListener(document.getId());
 
@@ -455,7 +453,7 @@ public class ShowChatsFragment extends Fragment {
                 }
 
 
-                if (contacts.isEmpty()) cover.setAlpha(0.0f);
+                if (Constants.contacts.isEmpty()) cover.setAlpha(0.0f);
 
                 adapter.notifyDataSetChanged();
             }
@@ -467,15 +465,15 @@ public class ShowChatsFragment extends Fragment {
         String[] chatRefSplit = chatReference.split("-");
         String tempUsername;
 
-        if (chatRefSplit[1].equals(MainActivity.username)) tempUsername = chatRefSplit[0];
+        if (chatRefSplit[1].equals(Constants.currentUser)) tempUsername = chatRefSplit[0];
         else tempUsername = chatRefSplit[1];
 
 
-        for (User user : MainActivity.users) {
+        for (User user : Constants.users) {
 
             if (user.getUsername().equals(tempUsername)) {
                 user.setChatReference(chatReference);
-                contacts.add(user);
+                Constants.contacts.add(user);
             }
         }
     }

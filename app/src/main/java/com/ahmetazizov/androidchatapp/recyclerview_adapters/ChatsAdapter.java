@@ -16,6 +16,7 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -49,11 +50,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         int CASE;
-        String currentUser = MainActivity.username;
+        String currentUser = Constants.currentUser;
 
-        if (list.get(position).getSender().equals(MainActivity.username)) CASE = 1;
+        if (list.get(position).getSender().equals(currentUser)) CASE = 1;
         else CASE = 2;
-
 
 
         switch (CASE) {
@@ -90,9 +90,9 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 document(list.get(position).getChatRef()).collection("messages").document(list.get(position).getId());
 
         int CASE;
-        final String currentUser = MainActivity.username;
+        final String currentUser = Constants.currentUser;
 
-        if (list.get(position).getSender().equals(MainActivity.username)) CASE = 1;
+        if (list.get(position).getSender().equals(currentUser)) CASE = 1;
         else CASE = 2;
 
         switch (CASE) {
@@ -251,7 +251,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         deleteButtonVisibility(0.0f);
 
         for (int i = 0; i < getItemCount(); i++) {
-            if (list.get(i).getSender().equals(MainActivity.username)) {
+            if (list.get(i).getSender().equals(Constants.currentUser)) {
 
                 ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
 
