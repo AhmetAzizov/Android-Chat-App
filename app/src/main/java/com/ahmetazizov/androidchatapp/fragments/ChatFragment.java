@@ -129,7 +129,6 @@ public class ChatFragment extends Fragment {
     CardView downArrow;
     ImageView downArrowIcon;
     ImageView deleteButton;
-    public static CardView infoPanel;
     boolean firstTime = true;
 
 
@@ -163,7 +162,6 @@ public class ChatFragment extends Fragment {
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
         deleteButton = view.findViewById(R.id.deleteButton);
-        infoPanel = view.findViewById(R.id.infoPanel);
 
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton);
@@ -297,8 +295,6 @@ public class ChatFragment extends Fragment {
 
                     Message message = new Message(id, sender, content, time, chatRef, date);
 
-                    Log.d(TAG, "chatRef: " + message.getChatRef());
-
                     chats.add(message);
 
                 }
@@ -354,8 +350,6 @@ public class ChatFragment extends Fragment {
                 });
 
         messageInput.setText("");
-        messageInput.clearFocus();
-
 
         final DocumentReference docRef = db.collection("chats").document(user.getChatReference());
 

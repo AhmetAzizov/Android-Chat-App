@@ -116,6 +116,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                     @Override
                     public boolean onLongClick(View v) {
                         deleteButtonVisibility(1.0f);
+                        deleteButton.animate().translationX(dpToPixels(0)).setDuration(300).setListener(null);
 
                         deleteList.add(list.get(holder.getAdapterPosition()).getId());
 
@@ -128,7 +129,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        ChatFragment.infoPanel.animate().translationY(dptoPixels(-71)).setDuration(500).setListener(null);
+                        deleteButton.animate().translationX(dpToPixels(60)).setDuration(300).setListener(null);
                         Log.e(TAG, "onClick: ");
                     }
                 });
@@ -249,23 +250,27 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     public void clearDeleteButton() {
         deleteButtonVisibility(0.0f);
+        deleteButton.animate().translationX(dpToPixels(60)).setDuration(300).setListener(null);
 
-        for (int i = 0; i < getItemCount(); i++) {
-            if (list.get(i).getSender().equals(Constants.currentUser)) {
+//        for (int i = 0; i < getItemCount(); i++) {
+//            if (list.get(i).getSender().equals(Constants.currentUser)) {
+//
+//                ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
+//
+//                if (holder != null) {
+//
+//                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+//
+//                }
+//            }
+//        }
 
-                ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-
-                if (holder != null) {
-
-                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-
-                }
-            }
-        }
         deleteList.clear();
+
+        notifyDataSetChanged();
     }
 
-    private int dptoPixels(int dps) {
+    private int dpToPixels(int dps) {
         float density = context.getResources().getDisplayMetrics().density;
         int pixels = (int) (dps * density);
         return pixels;

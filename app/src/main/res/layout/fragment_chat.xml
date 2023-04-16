@@ -54,34 +54,20 @@
 
                 </androidx.cardview.widget.CardView>
 
-                <androidx.cardview.widget.CardView
-                    android:id="@+id/infoPanel"
-                    android:layout_width="match_parent"
-                    android:layout_height="70dp"
-                    app:cardBackgroundColor="@color/Gray"
+
+                <ImageView
+                    android:id="@+id/deleteButton"
+                    android:layout_width="30dp"
+                    android:layout_height="30dp"
+                    android:layout_margin="20dp"
+                    android:alpha="1"
+                    android:visibility="visible"
+                    android:translationX="60dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" >
+                    app:srcCompat="@drawable/ic_delete"
+                    app:tint="@color/Red" />
 
-                    <androidx.constraintlayout.widget.ConstraintLayout
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent">
-
-                        <ImageView
-                            android:id="@+id/deleteButton"
-                            android:layout_width="30dp"
-                            android:layout_height="30dp"
-                            android:alpha="0"
-                            android:visibility="gone"
-                            android:layout_margin="20dp"
-                            app:layout_constraintBottom_toBottomOf="parent"
-                            app:layout_constraintEnd_toEndOf="parent"
-                            app:layout_constraintTop_toTopOf="parent"
-                            app:srcCompat="@drawable/ic_delete"
-                            app:tint="@color/Red" />
-
-                    </androidx.constraintlayout.widget.ConstraintLayout>
-                </androidx.cardview.widget.CardView>
 
                 <TextView
                     android:id="@+id/contactName"
@@ -148,14 +134,15 @@
                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="textPersonName"
-                    android:textSize="18sp"
                     android:background="@null"
-                    android:layout_marginRight="10dp"
-                    android:layout_marginLeft="10dp"
                     android:hint="send a message"
+                    android:inputType="textPersonName"
                     android:textColorHint="#737373"
+                    android:textSize="26sp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="30dp"
                     app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent" />
 
