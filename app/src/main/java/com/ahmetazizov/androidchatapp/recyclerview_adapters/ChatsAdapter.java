@@ -25,6 +25,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
+import java.util.List;
 
 public class ChatsAdapter extends RecyclerView.Adapter {
 
@@ -36,7 +37,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     ArrayList<Message> list;
     FirebaseFirestore db;
 
-    ArrayList<String> deleteList = new ArrayList<String>();
+    List<String> deleteList = new ArrayList<>();
 
 
     public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton) {
@@ -125,6 +126,24 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                         return true;
                     }
                 });
+
+
+                holder.itemView.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        if (!deleteList.isEmpty()) {
+                            if (deleteList.contains(list.get(holder.getAdapterPosition()).getId())) {
+                                deleteList.remove(list.get(holder.getAdapterPosition()).getId());
+                            } else {
+                                deleteList.add(list.get(holder.getAdapterPosition()).getId());
+                            }
+
+                            notifyDataSetChanged();
+                        }
+                        Log.d(TAG, "array length: " + deleteList.size());
+                    }
+                });
+
 
                 deleteButton.setOnClickListener(new View.OnClickListener() {
                     @Override
