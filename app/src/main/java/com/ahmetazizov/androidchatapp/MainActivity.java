@@ -7,6 +7,8 @@ import androidx.fragment.app.FragmentManager;
 
 
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -31,6 +33,8 @@ public class MainActivity extends AppCompatActivity {
     public final String TAG = "MainActivity";
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
+    private NetworkStateReceiver networkStateReceiver;
+
 
     @Override
     protected void onStart() {
@@ -78,6 +82,13 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        // Register the BroadcastReceiver to listen for network state changes
+        networkStateReceiver = new NetworkStateReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkStateReceiver, intentFilter);
+
 
         Log.d(TAG, "onCreate: ");
     }
