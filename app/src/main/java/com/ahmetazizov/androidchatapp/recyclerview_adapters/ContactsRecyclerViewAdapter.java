@@ -80,23 +80,12 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
                 })
                 .into(holder.chatImage);
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendToDataToFragment(holder);
-            }
-        });
+        holder.itemView.setOnClickListener(v -> sendToDataToFragment(holder));
 
 
-        holder.chatImage.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-//                ProfileDialog customDialog = new ProfileDialog(v.getContext(), chats.get(holder.getAdapterPosition()));
-//                customDialog.show();
-
-                ProfileDialog2 customDialog = ProfileDialog2.newInstance(chats.get(holder.getAdapterPosition()));
-                customDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "customDialog");
-            }
+        holder.chatImage.setOnClickListener(v -> {
+            ProfileDialog2 customDialog = ProfileDialog2.newInstance(chats.get(holder.getAdapterPosition()));
+            customDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "customDialog");
         });
 
         holder.chatImage.setTransitionName("chat_image" + position);

@@ -26,9 +26,7 @@ import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.models.Message;
-import com.ahmetazizov.androidchatapp.ProfilePage;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
@@ -50,7 +48,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.Locale;
 import java.util.Map;
 
 /**
@@ -241,8 +238,10 @@ public class ChatFragment extends Fragment {
         profileCardView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
 
                 // Create a Bundle object and set the data you want to pass
                 Bundle bundle = new Bundle();
@@ -251,7 +250,6 @@ public class ChatFragment extends Fragment {
                 // Create a new instance of the fragment and set the bundle
                 ProfilePage profilePage = new ProfilePage();
                 profilePage.setArguments(bundle);
-
 
                 // Replace the current fragment with the new one
                 fragmentTransaction.replace(R.id.frameLayout, profilePage).commit();

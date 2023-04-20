@@ -3,7 +3,6 @@ package com.ahmetazizov.androidchatapp.fragments;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -29,11 +28,9 @@ import android.widget.TextView;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.CustomDialog;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
 import com.ahmetazizov.androidchatapp.models.User;
-import com.ahmetazizov.androidchatapp.UserProfilePage;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
@@ -228,12 +225,7 @@ public class ShowChatsFragment extends Fragment {
 //            }
 //        });
 
-        searchCardInput.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                searchCardInput.setIconified(false);
-            }
-        });
+        searchCardInput.setOnClickListener(v -> searchCardInput.setIconified(false));
 
 
         searchCardInput.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
@@ -344,21 +336,15 @@ public class ShowChatsFragment extends Fragment {
 //            }
 //        });
 
-        settingsButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
-            }
+        settingsButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
         });
 
-        rateButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                CustomDialog customDialog = new CustomDialog(getContext());
-                customDialog.show();
-            }
+        rateButton.setOnClickListener(v -> {
+            CustomDialog customDialog = new CustomDialog(getContext());
+            customDialog.show();
         });
 
 
@@ -368,10 +354,6 @@ public class ShowChatsFragment extends Fragment {
 
         getChats();
     }
-
-
-
-
 
 
 

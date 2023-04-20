@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.fragments;
 
 import android.os.Bundle;
 
@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 
@@ -125,6 +125,8 @@ public class ProfilePage extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+                fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_top);
 
                 // Create a Bundle object and set the data you want to pass
                 Bundle bundle = new Bundle();
