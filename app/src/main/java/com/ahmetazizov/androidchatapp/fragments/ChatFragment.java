@@ -50,6 +50,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -130,7 +131,7 @@ public class ChatFragment extends Fragment {
     ImageView downArrowIcon;
     ImageView deleteButton;
     CardView selectionOptions;
-    ImageView cancelSelectionButton;
+    ImageView cancelSelectionButton, selectionCopyButton;
     TextView selectionCount;
     boolean firstTime = true;
 
@@ -168,6 +169,7 @@ public class ChatFragment extends Fragment {
         selectionOptions = view.findViewById(R.id.selectionOptions);
         cancelSelectionButton = view.findViewById(R.id.cancelSelectionButton);
         selectionCount = view.findViewById(R.id.selectionCount);
+        selectionCopyButton = view.findViewById(R.id.selectionCopyButton);
 
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton, selectionOptions, selectionCount);
@@ -216,6 +218,13 @@ public class ChatFragment extends Fragment {
                 }
             });
         });
+
+        selectionCopyButton.setOnClickListener(v -> {
+            List<Message> deleteList = chatsAdapter.getDeleteList();
+
+            
+        });
+
 
         chatsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override

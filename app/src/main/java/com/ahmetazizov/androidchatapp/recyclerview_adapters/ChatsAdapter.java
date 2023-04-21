@@ -46,7 +46,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     CardView selectionOptions;
     TextView selectionCount;
 
-    List<String> deleteList = new ArrayList<>();
+    List<Message> deleteList = new ArrayList<>();
 
 
     public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton, CardView selectionOptions, TextView selectionCount) {
@@ -114,7 +114,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
 
 
-                if (deleteList.contains(list.get(position).getId())) {
+                if (deleteList.contains(list.get(position))) {
                     holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
                 }
                 else {
@@ -273,9 +273,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
+
     private void checkDeleteList(int position) {
-        if (deleteList.contains(list.get(position).getId())) {
-            deleteList.remove(list.get(position).getId());
+        if (deleteList.contains(list.get(position))) {
+            deleteList.remove(list.get(position));
 
             if (deleteList.isEmpty()) {
                 selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
@@ -288,7 +289,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             }
 
         } else {
-            deleteList.add(list.get(position).getId());
+            deleteList.add(list.get(position));
         }
 
         String currentCount = String.valueOf(deleteList.size());
@@ -302,5 +303,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         float density = context.getResources().getDisplayMetrics().density;
         int pixels = (int) (dps * density);
         return pixels;
+    }
+
+
+    public List<Message> getDeleteList() {
+        return deleteList;
     }
 }
