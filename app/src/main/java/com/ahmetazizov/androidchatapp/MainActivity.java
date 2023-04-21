@@ -129,7 +129,7 @@ public class MainActivity extends AppCompatActivity {
                 switch (fragmentTag) {
                     case "chatFragment":
                         ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-                        fragment.getAdapter().clearDeleteButton();
+                        if (fragment.getAdapter() != null) fragment.getAdapter().clearDeleteButton();
                         break;
 
                     default: break;

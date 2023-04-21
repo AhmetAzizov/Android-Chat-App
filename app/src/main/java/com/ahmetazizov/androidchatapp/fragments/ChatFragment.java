@@ -1,5 +1,7 @@
 package com.ahmetazizov.androidchatapp.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
@@ -127,6 +129,9 @@ public class ChatFragment extends Fragment {
     CardView downArrow;
     ImageView downArrowIcon;
     ImageView deleteButton;
+    CardView selectionOptions;
+    ImageView cancelSelectionButton;
+    TextView selectionCount;
     boolean firstTime = true;
 
 
@@ -160,9 +165,12 @@ public class ChatFragment extends Fragment {
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
         deleteButton = view.findViewById(R.id.deleteButton);
+        selectionOptions = view.findViewById(R.id.selectionOptions);
+        cancelSelectionButton = view.findViewById(R.id.cancelSelectionButton);
+        selectionCount = view.findViewById(R.id.selectionCount);
 
 
-        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton);
+        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton, selectionOptions, selectionCount);
         chatsRecyclerView.setAdapter(chatsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         // This code makes the recyclerview scrollable
@@ -195,7 +203,19 @@ public class ChatFragment extends Fragment {
         getChats();
 
 
+        selectionOptions.setOnClickListener(null);
 
+        cancelSelectionButton.setOnClickListener(v -> {
+            chatsAdapter.clearDeleteButton();
+
+            selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    selectionOptions.setVisibility(View.GONE);
+                }
+            });
+        });
 
         chatsRecyclerView.addOnScrollListener(new RecyclerView.OnScrollListener() {
             @Override
@@ -213,56 +233,44 @@ public class ChatFragment extends Fragment {
         });
 
 
-        downArrow.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                chatsRecyclerView.scrollToPosition(0);
-                downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.Gray), PorterDuff.Mode.SRC_IN);
-            }
+        downArrow.setOnClickListener(v -> {
+            chatsRecyclerView.scrollToPosition(0);
+            downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.Gray), PorterDuff.Mode.SRC_IN);
         });
 
 
 
-        backButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
-                fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment()).commit();
-            }
+        backButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
+            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment()).commit();
         });
 
 
 
-        profileCardView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        profileCardView.setOnClickListener(v -> {
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
+            fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
 
-                // Create a Bundle object and set the data you want to pass
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", (Serializable) user);
+            // Create a Bundle object and set the data you want to pass
+            Bundle bundle1 = new Bundle();
+            bundle1.putSerializable("user", (Serializable) user);
 
-                // Create a new instance of the fragment and set the bundle
-                ProfilePage profilePage = new ProfilePage();
-                profilePage.setArguments(bundle);
+            // Create a new instance of the fragment and set the bundle
+            ProfilePage profilePage = new ProfilePage();
+            profilePage.setArguments(bundle1);
 
-                // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, profilePage).commit();
-            }
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.frameLayout, profilePage).commit();
         });
 
-        sendButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                sendChats();
+        sendButton.setOnClickListener(v -> {
+            sendChats();
 
 //                chatsAdapter.clearDeleteButton();
-            }
         });
     }
 

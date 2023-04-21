@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.dialogs;
 
 import android.app.Dialog;
 import android.content.Context;
@@ -9,11 +9,13 @@ import android.widget.ImageView;
 
 import androidx.annotation.NonNull;
 
-public class CustomDialog extends Dialog {
+import com.ahmetazizov.androidchatapp.R;
+
+public class RatingDialog extends Dialog {
 
     ImageView[] starArray = new ImageView[5];
 
-    public CustomDialog(@NonNull Context context) {
+    public RatingDialog(@NonNull Context context) {
         super(context);
         setContentView(R.layout.layout_dialog);
 

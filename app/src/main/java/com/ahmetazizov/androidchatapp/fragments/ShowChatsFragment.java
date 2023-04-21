@@ -27,7 +27,7 @@ import android.widget.TextView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
-import com.ahmetazizov.androidchatapp.CustomDialog;
+import com.ahmetazizov.androidchatapp.dialogs.RatingDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
 import com.ahmetazizov.androidchatapp.models.User;
@@ -343,8 +343,8 @@ public class ShowChatsFragment extends Fragment {
         });
 
         rateButton.setOnClickListener(v -> {
-            CustomDialog customDialog = new CustomDialog(getContext());
-            customDialog.show();
+            RatingDialog ratingDialog = new RatingDialog(getContext());
+            ratingDialog.show();
         });
 
 

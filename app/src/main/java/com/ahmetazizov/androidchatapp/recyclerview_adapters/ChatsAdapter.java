@@ -4,6 +4,7 @@ package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 //import static com.ahmetazizov.androidchatapp.models.Message.LAYOUT_SENDER;
 
 import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
 import android.util.Log;
@@ -14,6 +15,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
+import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
@@ -24,8 +26,13 @@ import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
+import org.w3c.dom.Text;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Timer;
+import java.util.TimerTask;
+import java.util.logging.Handler;
 
 public class ChatsAdapter extends RecyclerView.Adapter {
 
@@ -36,15 +43,19 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     Context context;
     ArrayList<Message> list;
     FirebaseFirestore db;
+    CardView selectionOptions;
+    TextView selectionCount;
 
     List<String> deleteList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton, CardView selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
         this.deleteButton = deleteButton;
+        this.selectionOptions = selectionOptions;
+        this.selectionCount = selectionCount;
     }
 
 
@@ -81,8 +92,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         }
     }
 
-    int longPressedItemPosition = -1;
-
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
@@ -116,12 +125,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
                     @Override
                     public boolean onLongClick(View v) {
-                        deleteButtonVisibility(1.0f);
-                        deleteButton.animate().translationX(dpToPixels(0)).setDuration(300).setListener(null);
+                        selectionOptions.setVisibility(View.VISIBLE);
+                        selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
 
-                        deleteList.add(list.get(holder.getAdapterPosition()).getId());
-
-                        notifyDataSetChanged();
+                        checkDeleteList(holder.getAdapterPosition());
 
                         return true;
                     }
@@ -132,15 +139,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
                         if (!deleteList.isEmpty()) {
-                            if (deleteList.contains(list.get(holder.getAdapterPosition()).getId())) {
-                                deleteList.remove(list.get(holder.getAdapterPosition()).getId());
-                            } else {
-                                deleteList.add(list.get(holder.getAdapterPosition()).getId());
-                            }
-
-                            notifyDataSetChanged();
+                            checkDeleteList(holder.getAdapterPosition());
                         }
-                        Log.d(TAG, "array length: " + deleteList.size());
                     }
                 });
 
@@ -149,7 +149,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                     @Override
                     public void onClick(View v) {
                         deleteButton.animate().translationX(dpToPixels(60)).setDuration(300).setListener(null);
-                        Log.e(TAG, "onClick: ");
                     }
                 });
 
@@ -200,8 +199,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
-
-
     class SenderMessageViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView senderMessageContent;
@@ -243,25 +240,11 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     private void deleteButtonVisibility(float alpha) {
         if (alpha == 1.0f) deleteButton.setVisibility(View.VISIBLE);
 
-        deleteButton.animate().alpha(alpha).setDuration(700).setListener(new Animator.AnimatorListener() {
+        deleteButton.animate().alpha(alpha).setDuration(700).setListener(new AnimatorListenerAdapter() {
             @Override
-            public void onAnimationStart(@NonNull Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationEnd(@NonNull Animator animation) {
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
                 if (alpha == 0.0f) deleteButton.setVisibility(View.GONE);
-            }
-
-            @Override
-            public void onAnimationCancel(@NonNull Animator animation) {
-
-            }
-
-            @Override
-            public void onAnimationRepeat(@NonNull Animator animation) {
-
             }
         });
     }
@@ -288,6 +271,32 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
         notifyDataSetChanged();
     }
+
+
+    private void checkDeleteList(int position) {
+        if (deleteList.contains(list.get(position).getId())) {
+            deleteList.remove(list.get(position).getId());
+
+            if (deleteList.isEmpty()) {
+                selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        super.onAnimationEnd(animation);
+                        selectionOptions.setVisibility(View.GONE);
+                    }
+                });
+            }
+
+        } else {
+            deleteList.add(list.get(position).getId());
+        }
+
+        String currentCount = String.valueOf(deleteList.size());
+        selectionCount.setText(currentCount);
+
+        notifyDataSetChanged();
+    }
+
 
     private int dpToPixels(int dps) {
         float density = context.getResources().getDisplayMetrics().density;

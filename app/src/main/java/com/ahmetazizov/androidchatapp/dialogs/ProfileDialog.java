@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp;
+package com.ahmetazizov.androidchatapp.dialogs;
 
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
@@ -16,13 +16,14 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;
 
-public class ProfileDialog2 extends DialogFragment {
+public class ProfileDialog extends DialogFragment {
 
     private final String TAG = "profileDialog";
 
@@ -31,9 +32,9 @@ public class ProfileDialog2 extends DialogFragment {
     ImageView chatButton;
     TextView username;
 
-    public static ProfileDialog2 newInstance(User user) {
+    public static ProfileDialog newInstance(User user) {
 
-        ProfileDialog2 dialogFragment = new ProfileDialog2();
+        ProfileDialog dialogFragment = new ProfileDialog();
 
         Bundle args = new Bundle();
         args.putSerializable("user", user);

@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
-import com.ahmetazizov.androidchatapp.ProfileDialog2;
+import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.models.User;
@@ -34,7 +34,7 @@ import java.util.ArrayList;
 public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.MyViewHolder> {
 
     public final static String TAG = "ChatsRecycler";
-    static Context context;
+    Context context;
     ArrayList<User> chats;
     CardView cover;
 
@@ -84,7 +84,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
 
         holder.chatImage.setOnClickListener(v -> {
-            ProfileDialog2 customDialog = ProfileDialog2.newInstance(chats.get(holder.getAdapterPosition()));
+            ProfileDialog customDialog = ProfileDialog.newInstance(chats.get(holder.getAdapterPosition()));
             customDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "customDialog");
         });
 
