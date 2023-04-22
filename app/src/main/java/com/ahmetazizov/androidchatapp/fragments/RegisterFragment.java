@@ -206,7 +206,7 @@ public class RegisterFragment extends Fragment {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                fragmentTransaction.replace(R.id.AuthFrameLayout, new LoginFragment()).commit();
+                fragmentTransaction.replace(R.id.AuthFrameLayout, new LoginFragment(), "loginFragment").commit();
 
             }
         });

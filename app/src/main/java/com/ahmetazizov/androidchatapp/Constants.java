@@ -13,5 +13,4 @@ public class Constants {
     public static ArrayList<String> chats = new ArrayList<>();
 
     public static ArrayList<User> contacts = new ArrayList<>();
-
 }

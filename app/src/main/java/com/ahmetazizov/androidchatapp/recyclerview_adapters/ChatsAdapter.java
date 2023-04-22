@@ -7,11 +7,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
@@ -19,26 +17,18 @@ import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import org.w3c.dom.Text;
-
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
-import java.util.logging.Handler;
 
 public class ChatsAdapter extends RecyclerView.Adapter {
 
     private final String TAG = "ChatsAdapter";
 
-    ImageView deleteButton;
     RecyclerView recyclerView;
     Context context;
     ArrayList<Message> list;
@@ -46,14 +36,13 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     CardView selectionOptions;
     TextView selectionCount;
 
-    List<Message> deleteList = new ArrayList<>();
+    List<Message> selectionList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, ImageView deleteButton, CardView selectionOptions, TextView selectionCount) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, CardView selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
-        this.deleteButton = deleteButton;
         this.selectionOptions = selectionOptions;
         this.selectionCount = selectionCount;
     }
@@ -114,7 +103,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
 
 
-                if (deleteList.contains(list.get(position))) {
+                if (selectionList.contains(list.get(position))) {
                     holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
                 }
                 else {
@@ -128,7 +117,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                         selectionOptions.setVisibility(View.VISIBLE);
                         selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
 
-                        checkDeleteList(holder.getAdapterPosition());
+                        checkSelectionList(holder.getAdapterPosition());
 
                         return true;
                     }
@@ -138,19 +127,12 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 holder.itemView.setOnClickListener(new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
-                        if (!deleteList.isEmpty()) {
-                            checkDeleteList(holder.getAdapterPosition());
+                        if (!selectionList.isEmpty()) {
+                            checkSelectionList(holder.getAdapterPosition());
                         }
                     }
                 });
 
-
-                deleteButton.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        deleteButton.animate().translationX(dpToPixels(60)).setDuration(300).setListener(null);
-                    }
-                });
 
 //                ((SenderMessageViewHolder) holder).deleteButton.setOnClickListener(new View.OnClickListener() {
 //                    @Override
@@ -237,62 +219,24 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
 
 
-    private void deleteButtonVisibility(float alpha) {
-        if (alpha == 1.0f) deleteButton.setVisibility(View.VISIBLE);
-
-        deleteButton.animate().alpha(alpha).setDuration(700).setListener(new AnimatorListenerAdapter() {
-            @Override
-            public void onAnimationEnd(Animator animation) {
-                super.onAnimationEnd(animation);
-                if (alpha == 0.0f) deleteButton.setVisibility(View.GONE);
-            }
-        });
-    }
-
-
-    public void clearDeleteButton() {
-        deleteButtonVisibility(0.0f);
-        deleteButton.animate().translationX(dpToPixels(60)).setDuration(300).setListener(null);
-
-//        for (int i = 0; i < getItemCount(); i++) {
-//            if (list.get(i).getSender().equals(Constants.currentUser)) {
-//
-//                ChatsAdapter.SenderMessageViewHolder holder = (ChatsAdapter.SenderMessageViewHolder) recyclerView.findViewHolderForAdapterPosition(i);
-//
-//                if (holder != null) {
-//
-//                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-//
-//                }
-//            }
-//        }
-
-        deleteList.clear();
-
-        notifyDataSetChanged();
-    }
 
 
 
-    private void checkDeleteList(int position) {
-        if (deleteList.contains(list.get(position))) {
-            deleteList.remove(list.get(position));
 
-            if (deleteList.isEmpty()) {
-                selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        super.onAnimationEnd(animation);
-                        selectionOptions.setVisibility(View.GONE);
-                    }
-                });
+
+    private void checkSelectionList(int position) {
+        if (selectionList.contains(list.get(position))) {
+            selectionList.remove(list.get(position));
+
+            if (selectionList.isEmpty()) {
+                closeSelectionList();
             }
 
         } else {
-            deleteList.add(list.get(position));
+            selectionList.add(list.get(position));
         }
 
-        String currentCount = String.valueOf(deleteList.size());
+        String currentCount = String.valueOf(selectionList.size());
         selectionCount.setText(currentCount);
 
         notifyDataSetChanged();
@@ -306,7 +250,24 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
-    public List<Message> getDeleteList() {
-        return deleteList;
+    public void closeSelectionList() {
+        selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+            @Override
+            public void onAnimationEnd(Animator animation) {
+                super.onAnimationEnd(animation);
+                selectionOptions.setVisibility(View.GONE);
+            }
+        });
+    }
+
+    public void clearSelection() {
+        selectionList.clear();
+
+        notifyDataSetChanged();
+    }
+
+
+    public List<Message> getSelectionList() {
+        return selectionList;
     }
 }

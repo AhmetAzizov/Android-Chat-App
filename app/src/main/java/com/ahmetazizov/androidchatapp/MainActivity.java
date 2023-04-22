@@ -4,6 +4,7 @@ import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 
 import android.content.Intent;
@@ -14,7 +15,7 @@ import android.util.Log;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
@@ -23,8 +24,8 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
-import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -129,10 +130,24 @@ public class MainActivity extends AppCompatActivity {
                 switch (fragmentTag) {
                     case "chatFragment":
                         ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-                        if (fragment.getAdapter() != null) fragment.getAdapter().clearDeleteButton();
+                        if (fragment != null) {
+                            if (fragment.getAdapter() != null) {
+                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
+                                if (deleteList.size() == 0) {
+                                    FragmentManager fragmentManager2 = getSupportFragmentManager();
+                                    FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
+                                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
+                                    fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+                                } else {
+                                    fragment.getAdapter().clearSelection();
+                                    fragment.getAdapter().closeSelectionList();
+                                }
+                            }
+                        }
                         break;
+                    case "showChatsFragment": break;
 
-                    default: break;
+                    default: super.onBackPressed();
                 }
                 }
 

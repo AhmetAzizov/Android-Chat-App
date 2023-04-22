@@ -56,20 +56,6 @@
                 </androidx.cardview.widget.CardView>
 
 
-                <ImageView
-                    android:id="@+id/deleteButton"
-                    android:layout_width="30dp"
-                    android:layout_height="30dp"
-                    android:layout_margin="20dp"
-                    android:alpha="1"
-                    android:visibility="visible"
-                    android:translationX="60dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintEnd_toEndOf="parent"
-                    app:srcCompat="@drawable/ic_delete"
-                    app:tint="@color/Red" />
-
-
                 <TextView
                     android:id="@+id/contactName"
                     android:layout_width="wrap_content"
@@ -107,8 +93,8 @@
             android:id="@+id/selectionOptions"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:visibility="gone"
-            android:alpha="0"
+            android:visibility="visible"
+            android:alpha="1"
             app:cardBackgroundColor="#272727"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
@@ -139,6 +125,17 @@
                     app:layout_constraintEnd_toStartOf="@+id/selectionCopyButton"
                     app:layout_constraintTop_toTopOf="parent"
                     app:srcCompat="@drawable/ic_delete" />
+
+                <ImageView
+                    android:id="@+id/selectionFavoriteButton"
+                    android:layout_width="30dp"
+                    android:layout_height="0dp"
+                    android:layout_marginEnd="20dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintDimensionRatio="1:1"
+                    app:layout_constraintEnd_toStartOf="@+id/selectionDeleteButton"
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_star" />
 
                 <ImageView
                     android:id="@+id/cancelSelectionButton"

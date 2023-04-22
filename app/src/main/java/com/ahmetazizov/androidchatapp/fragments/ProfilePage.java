@@ -138,7 +138,7 @@ public class ProfilePage extends Fragment {
 
 
                 // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, chatFragment).commit();
+                fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
             }
         });
 

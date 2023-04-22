@@ -339,7 +339,7 @@ public class ShowChatsFragment extends Fragment {
         settingsButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage()).commit();
+            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
         });
 
         rateButton.setOnClickListener(v -> {

@@ -2,6 +2,9 @@ package com.ahmetazizov.androidchatapp.fragments;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
+import android.content.ClipData;
+import android.content.ClipboardManager;
+import android.content.Context;
 import android.graphics.PorterDuff;
 import android.os.Bundle;
 
@@ -43,9 +46,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
-import java.io.Serializable;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -129,9 +130,8 @@ public class ChatFragment extends Fragment {
     ImageView backButton;
     CardView downArrow;
     ImageView downArrowIcon;
-    ImageView deleteButton;
     CardView selectionOptions;
-    ImageView cancelSelectionButton, selectionCopyButton;
+    ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton;
     TextView selectionCount;
     boolean firstTime = true;
 
@@ -165,14 +165,14 @@ public class ChatFragment extends Fragment {
         backButton = view.findViewById(R.id.backButton);
         downArrow = view.findViewById(R.id.downArrow);
         downArrowIcon = view.findViewById(R.id.downArrowIcon);
-        deleteButton = view.findViewById(R.id.deleteButton);
         selectionOptions = view.findViewById(R.id.selectionOptions);
         cancelSelectionButton = view.findViewById(R.id.cancelSelectionButton);
         selectionCount = view.findViewById(R.id.selectionCount);
         selectionCopyButton = view.findViewById(R.id.selectionCopyButton);
+        selectionFavoriteButton = view.findViewById(R.id.selectionFavoriteButton);
 
 
-        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, deleteButton, selectionOptions, selectionCount);
+        chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, selectionOptions, selectionCount);
         chatsRecyclerView.setAdapter(chatsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
         // This code makes the recyclerview scrollable
@@ -205,10 +205,12 @@ public class ChatFragment extends Fragment {
         getChats();
 
 
+
+
         selectionOptions.setOnClickListener(null);
 
         cancelSelectionButton.setOnClickListener(v -> {
-            chatsAdapter.clearDeleteButton();
+            chatsAdapter.clearSelection();
 
             selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
                 @Override
@@ -220,9 +222,50 @@ public class ChatFragment extends Fragment {
         });
 
         selectionCopyButton.setOnClickListener(v -> {
-            List<Message> deleteList = chatsAdapter.getDeleteList();
+            List<Message> deleteList = chatsAdapter.getSelectionList();
 
-            
+            if (deleteList.isEmpty()) return;
+
+            StringBuilder copyContent = new StringBuilder();
+            SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
+
+            for (Message message : deleteList) {
+                String messageDate = dateFormat.format(message.getExactTime());
+                copyContent.append('[' + messageDate + "] " + message.getContent() + "\n");
+            }
+
+
+            // Get the system clipboard manager
+            ClipboardManager clipboard = (ClipboardManager) getContext().getSystemService(Context.CLIPBOARD_SERVICE);
+
+            // Create a new ClipData object to hold the text to be copied
+            ClipData clip = ClipData.newPlainText("copied messages", copyContent);
+
+            // Copy the text to the clipboard
+            clipboard.setPrimaryClip(clip);
+
+            if (deleteList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getContext(), deleteList.size() + " messages copied", Toast.LENGTH_SHORT).show();
+
+            chatsAdapter.clearSelection();
+
+            selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
+                @Override
+                public void onAnimationEnd(Animator animation) {
+                    super.onAnimationEnd(animation);
+                    selectionOptions.setVisibility(View.GONE);
+                }
+            });
+        });
+
+        selectionFavoriteButton.setOnClickListener(v -> {
+
+
+            List<Message> favoriteList = chatsAdapter.getSelectionList();
+
+            for (Message message : favoriteList) {
+                Message favoriteMessage = new Message(message.getSender(), message.getContent(), message.getTime(), message.getExactTime());
+            }
         });
 
 
@@ -253,7 +296,7 @@ public class ChatFragment extends Fragment {
             FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
-            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment()).commit();
+            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
         });
 
 
@@ -266,14 +309,14 @@ public class ChatFragment extends Fragment {
 
             // Create a Bundle object and set the data you want to pass
             Bundle bundle1 = new Bundle();
-            bundle1.putSerializable("user", (Serializable) user);
+            bundle1.putSerializable("user", user);
 
             // Create a new instance of the fragment and set the bundle
             ProfilePage profilePage = new ProfilePage();
             profilePage.setArguments(bundle1);
 
             // Replace the current fragment with the new one
-            fragmentTransaction.replace(R.id.frameLayout, profilePage).commit();
+            fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
         });
 
         sendButton.setOnClickListener(v -> {
@@ -287,17 +330,15 @@ public class ChatFragment extends Fragment {
     private void getChats() {
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
 
-        chatRef.orderBy("exactTime", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
+        chatRef.orderBy("exactTime", Query.Direction.DESCENDING).addSnapshotListener((value, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
 
-                chats.clear();
+            chats.clear();
 
-
+            if (value != null) {
                 for (QueryDocumentSnapshot document : value) {
 
                     // Retrieves all the fields and puts it to a new Message object
@@ -305,26 +346,26 @@ public class ChatFragment extends Fragment {
                     String sender = document.getString("sender");
                     String content = document.getString("content");
                     String time = document.getString("time");
-                    String chatRef = user.getChatReference();
+                    String chatRef1 = user.getChatReference();
                     Timestamp timestamp = document.getTimestamp("exactTime");
                     Date date = timestamp.toDate();
 
-                    Message message = new Message(id, sender, content, time, chatRef, date);
+                    Message message = new Message(id, sender, content, time, chatRef1, date);
 
                     chats.add(message);
 
                 }
-
-                if (!firstTime) {
-                    if (getContext() != null) {
-                        downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
-                    }
-                } else {
-                    firstTime = false;
-                }
-
-                chatsAdapter.notifyDataSetChanged();
             }
+
+            if (!firstTime) {
+                if (getContext() != null) {
+                    downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
+                }
+            } else {
+                firstTime = false;
+            }
+
+            chatsAdapter.notifyDataSetChanged();
         });
     }
 

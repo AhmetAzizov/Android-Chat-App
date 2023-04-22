@@ -179,9 +179,7 @@ public class UserProfilePage extends Fragment {
             public void onClick(View v) {
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment()).commit();
+                fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
             }
         });
 

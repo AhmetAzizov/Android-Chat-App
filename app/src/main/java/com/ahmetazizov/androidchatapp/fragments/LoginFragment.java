@@ -130,7 +130,7 @@ public class LoginFragment extends Fragment{
                 FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
                 FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                fragmentTransaction.replace(R.id.AuthFrameLayout, new RegisterFragment()).commit();
+                fragmentTransaction.replace(R.id.AuthFrameLayout, new RegisterFragment(), "registerFragment").commit();
             }
         });
     }

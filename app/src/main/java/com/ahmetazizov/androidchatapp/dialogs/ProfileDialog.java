@@ -96,7 +96,7 @@ public class ProfileDialog extends DialogFragment {
                 chatFragment.setArguments(bundle);
 
                 // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, chatFragment).commit();
+                fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
 
                 dismiss();
             }
