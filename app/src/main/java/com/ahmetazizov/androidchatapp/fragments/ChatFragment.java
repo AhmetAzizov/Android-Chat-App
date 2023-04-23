@@ -28,6 +28,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
@@ -46,6 +47,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -115,7 +117,7 @@ public class ChatFragment extends Fragment {
 
 
 
-    public final static String TAG = "ChatFragment";
+    private final static String TAG = "ChatFragment";
     FirebaseFirestore db;
     ArrayList<Message> chats;
     ImageView contactImage;
@@ -125,13 +127,13 @@ public class ChatFragment extends Fragment {
     RecyclerView chatsRecyclerView;
     CardView sendButton;
     EditText messageInput;
-    CardView profileCardView;
+    Toolbar profileInfo;
     TextView infoLabel;
     ImageView backButton;
     CardView downArrow;
     ImageView downArrowIcon;
-    CardView selectionOptions;
-    ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton;
+    Toolbar selectionOptions;
+    ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView selectionCount;
     boolean firstTime = true;
 
@@ -160,7 +162,7 @@ public class ChatFragment extends Fragment {
         chats = new ArrayList<>();
         sendButton = view.findViewById(R.id.sendButton);
         messageInput = view.findViewById(R.id.messageInput);
-        profileCardView = view.findViewById(R.id.profileCardView);
+        profileInfo = view.findViewById(R.id.profileInfo);
         infoLabel = view.findViewById(R.id.infoLabel);
         backButton = view.findViewById(R.id.backButton);
         downArrow = view.findViewById(R.id.downArrow);
@@ -170,6 +172,7 @@ public class ChatFragment extends Fragment {
         selectionCount = view.findViewById(R.id.selectionCount);
         selectionCopyButton = view.findViewById(R.id.selectionCopyButton);
         selectionFavoriteButton = view.findViewById(R.id.selectionFavoriteButton);
+        selectionDeleteButton = view.findViewById(R.id.selectionDeleteButton);
 
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, selectionOptions, selectionCount);
@@ -221,15 +224,32 @@ public class ChatFragment extends Fragment {
             });
         });
 
-        selectionCopyButton.setOnClickListener(v -> {
+        selectionDeleteButton.setOnClickListener(v -> {
             List<Message> deleteList = chatsAdapter.getSelectionList();
+            List<Message> sortedDeleteList = new ArrayList<>();
 
-            if (deleteList.isEmpty()) return;
+            for (Message message : deleteList) {
+                if (!message.getSender().equals(Constants.currentUser)) {
+                    Toast.makeText(getContext(), "You can only delete your own messages!", Toast.LENGTH_SHORT).show();
+                    return;
+                }
+            }
+
+            Toast.makeText(getContext(), "Successfully deleted", Toast.LENGTH_SHORT).show();
+            chatsAdapter.clearSelection();
+            chatsAdapter.closeSelectionList();
+        });
+
+
+        selectionCopyButton.setOnClickListener(v -> {
+            List<Message> copyList = chatsAdapter.getSelectionList();
+
+            if (copyList.isEmpty()) return;
 
             StringBuilder copyContent = new StringBuilder();
             SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
 
-            for (Message message : deleteList) {
+            for (Message message : copyList) {
                 String messageDate = dateFormat.format(message.getExactTime());
                 copyContent.append('[' + messageDate + "] " + message.getContent() + "\n");
             }
@@ -244,8 +264,8 @@ public class ChatFragment extends Fragment {
             // Copy the text to the clipboard
             clipboard.setPrimaryClip(clip);
 
-            if (deleteList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(getContext(), deleteList.size() + " messages copied", Toast.LENGTH_SHORT).show();
+            if (copyList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getContext(), copyList.size() + " messages copied", Toast.LENGTH_SHORT).show();
 
             chatsAdapter.clearSelection();
 
@@ -259,13 +279,53 @@ public class ChatFragment extends Fragment {
         });
 
         selectionFavoriteButton.setOnClickListener(v -> {
-
-
+            final CollectionReference favMessageRef = db.collection("users").document(Constants.currentUser).collection("favorites");
+            List<String> currentFavorites = new ArrayList<>();
+            List<Message> sortedFavorites = new ArrayList<>();
             List<Message> favoriteList = chatsAdapter.getSelectionList();
 
-            for (Message message : favoriteList) {
-                Message favoriteMessage = new Message(message.getSender(), message.getContent(), message.getTime(), message.getExactTime());
-            }
+
+            favMessageRef.get().addOnCompleteListener(task -> {
+                        if (task.isSuccessful()) {
+                            for (QueryDocumentSnapshot document : task.getResult()) {
+                                currentFavorites.add(document.getString("id"));
+                            }
+                        } else {
+                            Log.d(TAG, "Error getting documents: ", task.getException());
+                        }
+                    }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
+                @Override
+                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
+                    for (Message message : favoriteList) {
+                        if (!currentFavorites.contains(message.getId())) {
+                            Message favoriteMessage = new Message(message.getId() ,message.getSender(), message.getContent(), message.getTime(), message.getChatRef(), message.getExactTime());
+                            sortedFavorites.add(favoriteMessage);
+                        }
+                    }
+
+                    if (!sortedFavorites.isEmpty()) {
+                        for (Message sortedMessage : sortedFavorites) {
+
+                            favMessageRef.add(sortedMessage)
+                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
+                                        @Override
+                                        public void onSuccess(DocumentReference documentReference) {
+                                            Toast.makeText(getContext(), "Successfully added to favorites", Toast.LENGTH_SHORT).show();
+                                        }
+                                    })
+                                    .addOnFailureListener(new OnFailureListener() {
+                                        @Override
+                                        public void onFailure(@NonNull Exception e) {
+                                            Log.w(TAG, "Error adding document", e);
+                                            Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                        }
+                    } else {
+                        Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
+                    }
+                }
+            });
         });
 
 
@@ -301,7 +361,7 @@ public class ChatFragment extends Fragment {
 
 
 
-        profileCardView.setOnClickListener(v -> {
+        profileInfo.setOnClickListener(v -> {
             FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 

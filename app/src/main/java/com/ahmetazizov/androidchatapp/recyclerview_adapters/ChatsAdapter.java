@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
+import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
 import androidx.cardview.widget.CardView;
@@ -33,13 +34,13 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     Context context;
     ArrayList<Message> list;
     FirebaseFirestore db;
-    CardView selectionOptions;
+    Toolbar selectionOptions;
     TextView selectionCount;
 
     List<Message> selectionList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, CardView selectionOptions, TextView selectionCount) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -50,21 +51,15 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        int CASE;
         String currentUser = Constants.currentUser;
 
-        if (list.get(position).getSender().equals(currentUser)) CASE = 1;
-        else CASE = 2;
-
+        int CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
 
         switch (CASE) {
             case 1: return 1;
             case 2: return 2;
-
             default: return -1;
         }
-
-
     }
 
     @NonNull
@@ -85,14 +80,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         db = FirebaseFirestore.getInstance();
-        DocumentReference deleteDocRef = db.collection("chats").
-                document(list.get(position).getChatRef()).collection("messages").document(list.get(position).getId());
 
-        int CASE;
         final String currentUser = Constants.currentUser;
 
-        if (list.get(position).getSender().equals(currentUser)) CASE = 1;
-        else CASE = 2;
+        int CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
 
         switch (CASE) {
             case 1:
@@ -101,78 +92,39 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
                 ((SenderMessageViewHolder) holder).senderMessageContent.setText(senderMessage);
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
-
-
-                if (selectionList.contains(list.get(position))) {
-                    holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
-                }
-                else {
-                    holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-                }
-
-
-                holder.itemView.setOnLongClickListener(new View.OnLongClickListener() {
-                    @Override
-                    public boolean onLongClick(View v) {
-                        selectionOptions.setVisibility(View.VISIBLE);
-                        selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
-
-                        checkSelectionList(holder.getAdapterPosition());
-
-                        return true;
-                    }
-                });
-
-
-                holder.itemView.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        if (!selectionList.isEmpty()) {
-                            checkSelectionList(holder.getAdapterPosition());
-                        }
-                    }
-                });
-
-
-//                ((SenderMessageViewHolder) holder).deleteButton.setOnClickListener(new View.OnClickListener() {
-//                    @Override
-//                    public void onClick(View v) {
-//                        if (v.getVisibility() != View.GONE) {
-//
-//                            deleteDocRef.delete()
-//                                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                        @Override
-//                                        public void onSuccess(Void aVoid) {
-//                                            // Document successfully deleted
-//                                            Log.d(TAG, "Document deleted successfully!");
-//                                        }
-//                                    })
-//                                    .addOnFailureListener(new OnFailureListener() {
-//                                        @Override
-//                                        public void onFailure(@NonNull Exception e) {
-//                                            // Handle errors
-//                                            Log.e(TAG, "Error deleting document: " + e.getMessage());
-//                                        }
-//                                    });
-//
-//
-//                        }
-//                    }
-//                });
-
                 break;
-
-
             case 2:
                 String receiverMessage = list.get(position).getContent();
                 String receiverTimeSent = list.get(position).getTime();
 
                 ((ReceiverMessageViewHolder) holder).receiverMessageContent.setText(receiverMessage);
                 ((ReceiverMessageViewHolder) holder).receiverTimeSent.setText(receiverTimeSent);
-
                 break;
         }
 
+        holder.itemView.setOnLongClickListener(v -> {
+            selectionOptions.setVisibility(View.VISIBLE);
+            selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
+
+            checkSelectionList(holder.getAdapterPosition());
+
+            return true;
+        });
+
+
+        holder.itemView.setOnClickListener(v -> {
+            if (!selectionList.isEmpty()) {
+                checkSelectionList(holder.getAdapterPosition());
+            }
+        });
+
+
+        if (selectionList.contains(list.get(position))) {
+            holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
+        }
+        else {
+            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+        }
     }
 
     @Override
@@ -181,7 +133,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
-    class SenderMessageViewHolder extends RecyclerView.ViewHolder {
+    static class SenderMessageViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView senderMessageContent;
         private final TextView senderTimeSent;
@@ -195,7 +147,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     }
 
 
-    class ReceiverMessageViewHolder extends RecyclerView.ViewHolder {
+    static class ReceiverMessageViewHolder extends RecyclerView.ViewHolder {
 
         private final TextView receiverMessageContent;
         private final TextView receiverTimeSent;
@@ -207,20 +159,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             receiverTimeSent = itemView.findViewById(R.id.receiverTimeSent);
         }
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 
@@ -245,8 +183,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     private int dpToPixels(int dps) {
         float density = context.getResources().getDisplayMetrics().density;
-        int pixels = (int) (dps * density);
-        return pixels;
+        return (int) (dps * density);
     }
 
 

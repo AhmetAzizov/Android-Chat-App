@@ -10,12 +10,19 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
-
-        <androidx.cardview.widget.CardView
-            android:id="@+id/profileCardView"
+        <Toolbar
+            android:id="@+id/profileInfo"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            app:cardBackgroundColor="#272727"
+            android:background="#272727"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:contentInsetRight="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -30,10 +37,10 @@
                     android:layout_width="50dp"
                     android:layout_height="match_parent"
                     android:padding="5dp"
-                    android:src="@drawable/ic_arrow_left"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent" />
+                    app:layout_constraintTop_toTopOf="parent"
+                    app:srcCompat="@drawable/ic_arrow_left" />
 
 
                 <androidx.cardview.widget.CardView
@@ -85,17 +92,25 @@
                     app:layout_constraintTop_toBottomOf="@+id/contactName" />
 
             </androidx.constraintlayout.widget.ConstraintLayout>
-        </androidx.cardview.widget.CardView>
+        </Toolbar>
 
 
 
-        <androidx.cardview.widget.CardView
+        <Toolbar
             android:id="@+id/selectionOptions"
             android:layout_width="match_parent"
             android:layout_height="70dp"
-            android:visibility="visible"
-            android:alpha="1"
-            app:cardBackgroundColor="#272727"
+            android:visibility="gone"
+            android:alpha="0"
+            android:background="#272727"
+            android:contentInsetLeft="0dp"
+            android:contentInsetStart="0dp"
+            app:contentInsetLeft="0dp"
+            app:contentInsetStart="0dp"
+            android:contentInsetRight="0dp"
+            android:contentInsetEnd="0dp"
+            app:contentInsetRight="0dp"
+            app:contentInsetEnd="0dp"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">
@@ -163,7 +178,7 @@
 
             </androidx.constraintlayout.widget.ConstraintLayout>
 
-        </androidx.cardview.widget.CardView>
+        </Toolbar>
 
 
         <androidx.recyclerview.widget.RecyclerView
