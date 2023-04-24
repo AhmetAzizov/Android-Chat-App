@@ -4,6 +4,8 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -26,6 +28,7 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.ahmetazizov.androidchatapp.Constants;
+import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.dialogs.RatingDialog;
 import com.ahmetazizov.androidchatapp.R;
@@ -337,9 +340,20 @@ public class ShowChatsFragment extends Fragment {
 //        });
 
         settingsButton.setOnClickListener(v -> {
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
+//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
+
+            MainActivity activity = (MainActivity) getActivity();
+
+
+            DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
+
+            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                drawerLayout.closeDrawer(GravityCompat.START);
+            } else {
+                drawerLayout.openDrawer(GravityCompat.START);
+            }
         });
 
         rateButton.setOnClickListener(v -> {
