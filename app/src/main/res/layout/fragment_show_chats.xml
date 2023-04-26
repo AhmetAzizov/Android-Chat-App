@@ -21,14 +21,15 @@
                     android:layout_height="wrap_content"
                     android:layout_margin="10dp"
                     app:cardCornerRadius="15dp"
-                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent">
 
                         <ImageView
                             android:layout_width="50dp"
                             android:layout_height="50dp"
                             android:padding="10dp"
-                            android:src="@drawable/ic_settings" />
+                            app:srcCompat="@drawable/ic_menu"
+                            app:tint="@color/black"/>
 
                 </androidx.cardview.widget.CardView>
 
@@ -40,7 +41,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="80dp"
+                    android:layout_marginTop="70dp"
                     />
 
 
@@ -120,8 +121,8 @@
                     android:id="@+id/cardView2"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginRight="70dp"
-                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginLeft="70dp"
                     android:layout_marginTop="10dp"
                     app:cardBackgroundColor="#2C2C2C"
                     app:cardCornerRadius="10dp"
@@ -138,7 +139,6 @@
                             app:layout_constraintTop_toTopOf="@+id/searchCard"
                             app:startIconDrawable="@drawable/ic_email">
 
-
                                 <SearchView
                                     android:id="@+id/searchCardInput"
                                     style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox.Dense"
@@ -147,16 +147,10 @@
                                     android:background="@null"
                                     android:queryHint="Add New Contact" />
 
-                                <ScrollView
-                                    android:layout_width="match_parent"
-                                    android:layout_height="wrap_content">
-
                                         <androidx.recyclerview.widget.RecyclerView
                                             android:id="@+id/searchCardList"
                                             android:layout_width="match_parent"
                                             android:layout_height="wrap_content" />
-
-                                </ScrollView>
 
                         </LinearLayout>
 
@@ -207,7 +201,7 @@
                     android:id="@+id/loadingScreen"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:visibility="visible"
+                    android:visibility="gone"
                     app:cardBackgroundColor="#131313"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"

@@ -2,6 +2,8 @@ package com.ahmetazizov.androidchatapp;
 
 import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -30,6 +32,7 @@ import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
 
+    DrawerLayout drawerLayout;
 
     public final String TAG = "MainActivity";
     FirebaseFirestore db;
@@ -43,6 +46,7 @@ public class MainActivity extends AppCompatActivity {
         Log.d(TAG, "onStart: ");
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
+        drawerLayout = findViewById(R.id.drawer_layout);
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
@@ -154,6 +158,11 @@ public class MainActivity extends AppCompatActivity {
                 Log.d(TAG, "Currently active fragment tag: " + fragmentTag);
                 break; // Break out of the loop after finding the active fragment
             }
+        }
+
+        // This closes the navigation drawer if it is open
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
         }
     }
 

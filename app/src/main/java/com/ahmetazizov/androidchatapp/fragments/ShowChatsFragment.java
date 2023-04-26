@@ -346,13 +346,14 @@ public class ShowChatsFragment extends Fragment {
 
             MainActivity activity = (MainActivity) getActivity();
 
+            if (activity != null) {
+                DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
 
-            DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
-
-            if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                drawerLayout.closeDrawer(GravityCompat.START);
-            } else {
-                drawerLayout.openDrawer(GravityCompat.START);
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
             }
         });
 
