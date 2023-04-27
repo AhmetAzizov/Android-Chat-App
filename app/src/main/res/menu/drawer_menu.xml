@@ -3,17 +3,9 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:showIn="navigation_view">
 
-    <group android:checkableBehavior="single">
-        <item android:id="@+id/nav_profilePage"
-            android:icon="@drawable/ic_person"
-            android:title="Profile Page"/>
-
         <item android:id="@+id/nav_favorites"
             android:icon="@drawable/ic_star"
             android:title="Favorite Messages"/>
-
-
-    </group>
 
 
     <item android:title="Account Settings:">

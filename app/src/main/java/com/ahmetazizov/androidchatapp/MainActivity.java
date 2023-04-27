@@ -14,12 +14,15 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.MenuItem;
+import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -38,6 +41,7 @@ public class MainActivity extends AppCompatActivity {
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private NetworkStateReceiver networkStateReceiver;
+    NavigationView navigationView;
 
 
     @Override
@@ -47,9 +51,54 @@ public class MainActivity extends AppCompatActivity {
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         drawerLayout = findViewById(R.id.drawer_layout);
+        navigationView = findViewById(R.id.navigation_view);
 
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
+
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.nav_favorites:
+                    Toast.makeText(MainActivity.this, "favorites", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case R.id.nav_changePassword:
+                    Toast.makeText(MainActivity.this, "change password", Toast.LENGTH_SHORT).show();
+                    break;
+
+                case R.id.nav_logOut:
+                    Timestamp timestamp = Timestamp.now();
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("isOnline", "false");
+                    data.put("lastOnline", timestamp);
+
+                    DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+
+                    docRef.update(data)
+                            .addOnSuccessListener(new OnSuccessListener<Void>() {
+                                @Override
+                                public void onSuccess(Void aVoid) {
+                                }
+                            })
+                            .addOnFailureListener(new OnFailureListener() {
+                                @Override
+                                public void onFailure(@NonNull Exception e) {
+                                    Log.w(TAG, "Error writing document", e);
+                                }
+                            });
+
+                    FirebaseAuth.getInstance().signOut();
+
+                    Intent intent = new Intent(MainActivity.this, AuthenticationActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+
+
+            return true;
+        });
+
 
         if(currentUser != null){
             Constants.currentUser = currentUser.getDisplayName();
