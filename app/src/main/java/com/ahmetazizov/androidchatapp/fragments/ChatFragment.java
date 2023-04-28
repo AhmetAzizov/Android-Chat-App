@@ -1,11 +1,15 @@
 package com.ahmetazizov.androidchatapp.fragments;
 
+import static android.app.Activity.RESULT_OK;
+
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.net.Uri;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -31,6 +35,8 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
+import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
+import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.R;
@@ -50,57 +56,21 @@ import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
+import java.time.Instant;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TimeZone;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ChatFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
 public class ChatFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
 
     public ChatFragment() {
         // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ChatFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ChatFragment newInstance(String param1, String param2) {
-        ChatFragment fragment = new ChatFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
     }
 
     @Override
@@ -111,13 +81,8 @@ public class ChatFragment extends Fragment {
     }
 
 
-
-
-
-
-
-
     private final static String TAG = "ChatFragment";
+    private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseFirestore db;
     ArrayList<Message> chats;
     ImageView contactImage;
@@ -125,7 +90,7 @@ public class ChatFragment extends Fragment {
     User user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
-    CardView sendButton;
+    CardView sendButton, pickImageButton;
     EditText messageInput;
     Toolbar profileInfo;
     TextView infoLabel;
@@ -161,6 +126,7 @@ public class ChatFragment extends Fragment {
         chatsRecyclerView = view.findViewById(R.id.chatsRecyclerView);
         chats = new ArrayList<>();
         sendButton = view.findViewById(R.id.sendButton);
+        pickImageButton = view.findViewById(R.id.pickImageButton);
         messageInput = view.findViewById(R.id.messageInput);
         profileInfo = view.findViewById(R.id.profileInfo);
         infoLabel = view.findViewById(R.id.infoLabel);
@@ -379,6 +345,10 @@ public class ChatFragment extends Fragment {
             fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
         });
 
+        pickImageButton.setOnClickListener(v -> {
+            openFileChooser();
+        });
+
         sendButton.setOnClickListener(v -> {
             sendChats("text");
         });
@@ -403,13 +373,24 @@ public class ChatFragment extends Fragment {
                     String id = document.getId();
                     String sender = document.getString("sender");
                     String content = document.getString("content");
-                    String time = document.getString("time");
                     String chatRef1 = user.getChatReference();
                     String messageType = document.getString("messageType");
                     Timestamp timestamp = document.getTimestamp("exactTime");
-                    Date date = timestamp.toDate();
 
-                    Message message = new Message(id, sender, content, time, chatRef1, messageType, date);
+                    SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
+                    SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
+                    hourFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
+                    int timeHour = Integer.parseInt(hourFormat.format(timestamp.toDate()));
+                    String timeMinute = minuteFormat.format(timestamp.toDate());
+
+                    TimeZone tz = TimeZone.getDefault();
+                    Date now = new Date();
+                    int offsetFromUtc = (tz.getOffset(now.getTime()) / 1000) / 3600;
+                    timeHour += offsetFromUtc;
+
+                    String time = timeHour + ":" + timeMinute;
+
+                    Message message = new Message(id, sender, content, time, chatRef1, messageType, timestamp);
 
                     chats.add(message);
 
@@ -435,17 +416,16 @@ public class ChatFragment extends Fragment {
 
         if (message.isEmpty()) return;
 
-
         Timestamp timestamp = Timestamp.now();
-
 
         // This converts the current to HH:mm format
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
         String formattedTime = sdf.format(timestamp.toDate());
 
 
         // Creates a new Message object, fills it with specified information and sends it to the database
-        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp.toDate());
+        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp);
 
 
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
@@ -558,5 +538,39 @@ public class ChatFragment extends Fragment {
         }
     }
 
+
+    private static Date UTCtoLocal(Timestamp utcTimestamp) {
+        Date date = utcTimestamp.toDate();
+        TimeZone utc = TimeZone.getTimeZone("UTC");
+        TimeZone local = TimeZone.getDefault();
+        long utcMillis = date.getTime();
+        int offset = local.getOffset(utcMillis) - utc.getOffset(utcMillis);
+        Date localDate = new Date(utcMillis + offset);
+
+        return localDate;
+    }
+
+
+    private void openFileChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+
+        startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    @Override
+    public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
+        super.onActivityResult(requestCode, resultCode, data);
+
+        if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
+                && data != null && data.getData() != null){
+
+            Uri imageUri = data.getData();
+
+            SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri);
+            sendImageDialog.show(getActivity().getSupportFragmentManager(), "sendImageDialog");
+        }
+    }
 
 }

@@ -18,6 +18,7 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -101,30 +102,35 @@ public class MainActivity extends AppCompatActivity {
 
 
         if(currentUser != null){
-            Constants.currentUser = currentUser.getDisplayName();
 
-            Map<String, Object> data = new HashMap<>();
-            data.put("isOnline", "true");
+            ChatFragment chatFragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
 
-            DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+            if (chatFragment == null) {
+                Constants.currentUser = currentUser.getDisplayName();
 
-            docRef.update(data)
-                    .addOnSuccessListener(new OnSuccessListener<Void>() {
-                        @Override
-                        public void onSuccess(Void aVoid) {
-                        }
-                    })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Log.w(TAG, "Error writing document", e);
-                        }
-                    });
+                Map<String, Object> data = new HashMap<>();
+                data.put("isOnline", "true");
+
+                DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+
+                docRef.update(data)
+                        .addOnSuccessListener(new OnSuccessListener<Void>() {
+                            @Override
+                            public void onSuccess(Void aVoid) {
+                            }
+                        })
+                        .addOnFailureListener(new OnFailureListener() {
+                            @Override
+                            public void onFailure(@NonNull Exception e) {
+                                Log.w(TAG, "Error writing document", e);
+                            }
+                        });
 
 
-            // go to add fragment
-            getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+                // go to add fragment
+                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
 
+            }
         } else {
             Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
             startActivity(intent);

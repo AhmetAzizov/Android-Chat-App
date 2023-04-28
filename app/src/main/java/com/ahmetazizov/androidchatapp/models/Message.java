@@ -1,5 +1,7 @@
 package com.ahmetazizov.androidchatapp.models;
 
+import com.google.firebase.Timestamp;
+
 import java.util.Date;
 
 public class Message {
@@ -13,13 +15,13 @@ public class Message {
     String time;
     String chatRef;
     String messageType;
-    Date exactTime;
+    Timestamp exactTime;
 
     public Message() {
         // Default no-argument constructor
     }
 
-    public Message(String sender, String content, String time, String messageType,Date exactTime) {
+    public Message(String sender, String content, String time, String messageType, Timestamp exactTime) {
         this.sender = sender;
         this.content = content;
         this.time = time;
@@ -27,7 +29,7 @@ public class Message {
         this.exactTime = exactTime;
     }
 
-    public Message(String id, String sender, String content, String time, String chatRef, String messageType, Date exactTime) {
+    public Message(String id, String sender, String content, String time, String chatRef, String messageType, Timestamp exactTime) {
         this.id = id;
         this.sender = sender;
         this.content = content;
@@ -83,11 +85,11 @@ public class Message {
         this.chatRef = chatRef;
     }
 
-    public Date getExactTime() {
+    public Timestamp getExactTime() {
         return exactTime;
     }
 
-    public void setExactTime(Date exactTime) {
+    public void setExactTime(Timestamp exactTime) {
         this.exactTime = exactTime;
     }
 }

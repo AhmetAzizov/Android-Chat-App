@@ -54,19 +54,27 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         String currentUser = Constants.currentUser;
         int CASE;
 
+        if (!list.isEmpty()) {
+            if (list.get(position).getMessageType().equals("text")) {
+                CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+            } else {
+                CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
+            }
 
-        if (list.get(position).getMessageType().equals("text")) {
-            CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+            switch (CASE) {
+                case 1:
+                    return 1;
+                case 2:
+                    return 2;
+                case 3:
+                    return 3;
+                case 4:
+                    return 4;
+                default:
+                    return -1;
+            }
         } else {
-            CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
-        }
-
-        switch (CASE) {
-            case 1: return 1;
-            case 2: return 2;
-            case 3: return 3;
-            case 4: return 4;
-            default: return -1;
+            return -1;
         }
     }
 
@@ -96,8 +104,17 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         db = FirebaseFirestore.getInstance();
 
         final String currentUser = Constants.currentUser;
+        int CASE;
 
-        int CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+        if (!list.isEmpty()) {
+            if (list.get(position).getMessageType().equals("text")) {
+                CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+            } else {
+                CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
+            }
+        } else {
+            CASE = -1;
+        }
 
         switch (CASE) {
             case 1:
@@ -114,6 +131,8 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ((ReceiverMessageViewHolder) holder).receiverMessageContent.setText(receiverMessage);
                 ((ReceiverMessageViewHolder) holder).receiverTimeSent.setText(receiverTimeSent);
                 break;
+
+            default: break;
         }
 
         holder.itemView.setOnLongClickListener(v -> {

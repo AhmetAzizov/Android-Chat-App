@@ -175,8 +175,6 @@ public class RegisterFragment extends Fragment {
             public void onClick(View v) {
                 // Method for choosing the image from device
                 openFileChooser();
-//                galleryLauncher.launch("image/*");
-
             }
         });
 
