@@ -120,26 +120,23 @@ public class ProfilePage extends Fragment {
         userEmail.setText(user.getEmail());
 
 
-        returnButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+        returnButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-                fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_top);
+            fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_top);
 
-                // Create a Bundle object and set the data you want to pass
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", (Serializable) user);
+            // Create a Bundle object and set the data you want to pass
+            Bundle bundle1 = new Bundle();
+            bundle1.putSerializable("user", (Serializable) user);
 
-                // Create a new instance of the fragment and set the bundle
-                ChatFragment chatFragment = new ChatFragment();
-                chatFragment.setArguments(bundle);
+            // Create a new instance of the fragment and set the bundle
+            ChatFragment chatFragment = new ChatFragment();
+            chatFragment.setArguments(bundle1);
 
 
-                // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
-            }
+            // Replace the current fragment with the new one
+            fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
         });
 
 

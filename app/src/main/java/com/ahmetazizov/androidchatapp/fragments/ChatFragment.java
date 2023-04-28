@@ -298,7 +298,7 @@ public class ChatFragment extends Fragment {
                 public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
                     for (Message message : favoriteList) {
                         if (!currentFavorites.contains(message.getId())) {
-                            Message favoriteMessage = new Message(message.getId() ,message.getSender(), message.getContent(), message.getTime(), message.getChatRef(), message.getExactTime());
+                            Message favoriteMessage = new Message(message.getId() ,message.getSender(), message.getContent(), message.getTime(), message.getChatRef(), message.getMessageType(), message.getExactTime());
                             sortedFavorites.add(favoriteMessage);
                         }
                     }
@@ -380,9 +380,7 @@ public class ChatFragment extends Fragment {
         });
 
         sendButton.setOnClickListener(v -> {
-            sendChats();
-
-//                chatsAdapter.clearDeleteButton();
+            sendChats("text");
         });
     }
 
@@ -407,10 +405,11 @@ public class ChatFragment extends Fragment {
                     String content = document.getString("content");
                     String time = document.getString("time");
                     String chatRef1 = user.getChatReference();
+                    String messageType = document.getString("messageType");
                     Timestamp timestamp = document.getTimestamp("exactTime");
                     Date date = timestamp.toDate();
 
-                    Message message = new Message(id, sender, content, time, chatRef1, date);
+                    Message message = new Message(id, sender, content, time, chatRef1, messageType, date);
 
                     chats.add(message);
 
@@ -431,7 +430,7 @@ public class ChatFragment extends Fragment {
 
 
 
-    private void sendChats() {
+    private void sendChats(String messageType) {
         String message = messageInput.getText().toString().trim();
 
         if (message.isEmpty()) return;
@@ -446,7 +445,7 @@ public class ChatFragment extends Fragment {
 
 
         // Creates a new Message object, fills it with specified information and sends it to the database
-        Message newMessage = new Message(Constants.currentUser, message, formattedTime, timestamp.toDate());
+        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp.toDate());
 
 
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");

@@ -52,12 +52,20 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     @Override
     public int getItemViewType(int position) {
         String currentUser = Constants.currentUser;
+        int CASE;
 
-        int CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+
+        if (list.get(position).getMessageType().equals("text")) {
+            CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
+        } else {
+            CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
+        }
 
         switch (CASE) {
             case 1: return 1;
             case 2: return 2;
+            case 3: return 3;
+            case 4: return 4;
             default: return -1;
         }
     }
@@ -72,6 +80,12 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             case 2:
                 View layoutReceiver = LayoutInflater.from(context).inflate(R.layout.receiver_chat_row, parent, false);
                 return new ReceiverMessageViewHolder(layoutReceiver);
+            case 3:
+                View layoutSenderImage = LayoutInflater.from(context).inflate(R.layout.sender_image_row, parent, false);
+                return new ReceiverMessageViewHolder(layoutSenderImage);
+            case 4:
+                View layoutReceiverImage = LayoutInflater.from(context).inflate(R.layout.receiver_image_row, parent, false);
+                return new ReceiverMessageViewHolder(layoutReceiverImage);
             default: return null;
         }
     }
