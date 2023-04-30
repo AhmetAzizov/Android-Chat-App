@@ -1,6 +1,7 @@
 package com.ahmetazizov.androidchatapp;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -18,8 +19,10 @@ import android.view.MenuItem;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
 import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
+import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
@@ -27,8 +30,13 @@ import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.List;
@@ -38,7 +46,7 @@ public class MainActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
 
-    public final String TAG = "MainActivity";
+    private static final String TAG = "MainActivity";
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
     private NetworkStateReceiver networkStateReceiver;
@@ -57,10 +65,15 @@ public class MainActivity extends AppCompatActivity {
         // Check if user is signed in (non-null) and update UI accordingly.
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
+        getFavorites();
+
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_favorites:
-                    Toast.makeText(MainActivity.this, "favorites", Toast.LENGTH_SHORT).show();
+                    FragmentManager fragmentManager = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
+                    fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
                     break;
 
                 case R.id.nav_changePassword:
@@ -222,6 +235,44 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+
+
+
+
+
+
+    private void getFavorites() {
+        final CollectionReference favoritesRef = db.collection("users").document(Constants.currentUser).collection("favorites");
+
+        favoritesRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                return;
+            }
+
+            Constants.favorites.clear();
+
+            if (value != null) {
+                for (QueryDocumentSnapshot document : value) {
+
+                      String id = document.getString("id");
+                      String sender = document.getString("sender");
+                      String content = document.getString("content");
+                      String chatRef = document.getString("chatRef");
+                      String messageType = document.getString("messageType");
+                      Timestamp exactTime = document.getTimestamp("exactTime");
+                      String selfId = document.getId();
+
+                      FavoriteMessage favoriteMessage = new FavoriteMessage(id, sender, content, "null", chatRef, messageType, exactTime, selfId);
+
+                      Constants.favorites.add(favoriteMessage);
+                }
+            }
+
+            Log.d(TAG, "favorites list length: " + Constants.favorites.size());
+        });
+
+    }
 
 
 

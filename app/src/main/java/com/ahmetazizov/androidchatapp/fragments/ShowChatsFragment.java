@@ -1,5 +1,7 @@
 package com.ahmetazizov.androidchatapp.fragments;
 
+import android.animation.Animator;
+import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -47,6 +49,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -118,24 +122,14 @@ public class ShowChatsFragment extends Fragment {
 
 
     public final static String TAG = "ShowChatsFragment";
-    private FirebaseAuth mAuth;
     private ArrayList<User> searchResult;
     private ContactsRecyclerViewAdapter adapter;
     private SearchAdapter searchAdapter;
     private FirebaseFirestore db;
-    private RecyclerView recyclerView;
+    private RecyclerView recyclerView, searchCardList;
     private CardView cover;
     private ProgressBar loadingScreenProgressBar;
-    private CardView settingsButton;
-    private CardView rateButton;
-
-    CardView addContactCard;
-    TextView txtAddContact;
-    Button buttonAddContact;
-    LinearLayout addContactLayout;
-
-    private CardView searchCard;
-    private RecyclerView searchCardList;
+    private CardView rateButton, searchCard, settingsButton;
     private SearchView searchCardInput;
     private LinearLayout searchCardLayout;
 
@@ -167,20 +161,11 @@ public class ShowChatsFragment extends Fragment {
         searchLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchCardList.setLayoutManager(searchLayoutManager);
 
-//        addContactCard = view.findViewById(R.id.addContactCard);
-//        txtAddContact = view.findViewById(R.id.txtAddContact);
-//        buttonAddContact = view.findViewById(R.id.buttonAddContact);
-//        addContactLayout = view.findViewById(R.id.addContactLayout);
-
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser authUser = mAuth.getCurrentUser();
-
         // Firestore database reference
         db = FirebaseFirestore.getInstance();
 
 
-        final CollectionReference usersRef = db.collection("users");
-
+        cover.animate().alpha(0.0f).setDuration(400);
 
 
 
@@ -196,37 +181,6 @@ public class ShowChatsFragment extends Fragment {
             }
         }).attachToRecyclerView(recyclerView);
 
-
-
-
-//        addContactCard.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//                int status = (txtAddContact.getVisibility() == View.GONE)? View.VISIBLE: View.GONE;
-//
-//                TransitionManager.beginDelayedTransition(addContactLayout, new AutoTransition());
-//                txtAddContact.setVisibility(status);
-//                buttonAddContact.setVisibility(status);
-//            }
-//        });
-
-
-//        searchCardInput.addTextChangedListener(new TextWatcher() {
-//            @Override
-//            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-//
-//            }
-//
-//            @Override
-//            public void onTextChanged(CharSequence s, int start, int before, int count) {
-//
-//            }
-//
-//            @Override
-//            public void afterTextChanged(Editable s) {
-//
-//            }
-//        });
 
         searchCardInput.setOnClickListener(v -> searchCardInput.setIconified(false));
 
@@ -272,73 +226,6 @@ public class ShowChatsFragment extends Fragment {
                         });
 
 
-
-//        buttonAddContact.setOnClickListener(new View.OnClickListener() {
-//            @Override
-//            public void onClick(View v) {
-//
-//                String searchResult = txtAddContact.getText().toString().trim();
-//
-//                boolean found = false;
-//
-//
-//                for (User contact : contacts) {
-//
-//                    if (searchResult.equalsIgnoreCase(contact.getUsername())) {
-//                        return;
-//                    }
-//
-//                }
-//
-//
-//                for (User user : MainActivity.users) {
-//
-//                    if (searchResult.equals(user.getUsername())) {
-//
-//                        found = true;
-//                        cover.setVisibility(View.VISIBLE);
-//                        String newChatRef = MainActivity.username + "-" + searchResult;
-//                        CollectionReference colRef = db.collection("chats");
-//
-//                        // Create an empty document inside "chats" collection
-//                        colRef.document(newChatRef)
-//                                .set(new HashMap<String, Object>(), SetOptions.merge())
-//                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-//                                    @Override
-//                                    public void onSuccess(Void unused) {
-//                                        Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
-//                                    }
-//                                }).addOnFailureListener(new OnFailureListener() {
-//                                    @Override
-//                                    public void onFailure(@androidx.annotation.NonNull Exception e) {
-//                                        Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-//                                    }
-//                                });
-//                    }
-//                }
-//
-//                if (!found) Toast.makeText(getContext(), "User does not exist!", Toast.LENGTH_LONG).show();
-//
-//
-//
-////                    FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-////                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-////
-////                    // Create a Bundle object and set the data you want to pass
-////                    Bundle bundle = new Bundle();
-////                    bundle.putString("myData", "Hello World");
-////
-////                    // Create a new instance of the fragment and set the bundle
-////                    AddFragment addFragment = new AddFragment();
-////                    addFragment.setArguments(bundle);
-////
-////                    // Replace the current fragment with the new one
-////                    fragmentTransaction.replace(R.id.frameLayout, addFragment).commit();
-//
-//
-//            }
-//        });
-
         settingsButton.setOnClickListener(v -> {
 //            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
 //            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
@@ -369,6 +256,8 @@ public class ShowChatsFragment extends Fragment {
 
         getChats();
     }
+
+
 
 
 
@@ -458,16 +347,17 @@ public class ShowChatsFragment extends Fragment {
     }
 
 
-    public void sortUser(String chatReference) {
+    private void sortUser(String chatReference) {
         String[] chatRefSplit = chatReference.split("-");
-        String tempUsername;
+//        String tempUsername;
 
-        if (chatRefSplit[1].equals(Constants.currentUser)) tempUsername = chatRefSplit[0];
-        else tempUsername = chatRefSplit[1];
+//        if (chatRefSplit[1].equals(Constants.currentUser)) tempUsername = chatRefSplit[0];
+//        else tempUsername = chatRefSplit[1];
+
+        String tempUsername = (chatRefSplit[1].equals(Constants.currentUser)) ? chatRefSplit[0] : chatRefSplit[1];
 
 
         for (User user : Constants.users) {
-
             if (user.getUsername().equals(tempUsername)) {
                 user.setChatReference(chatReference);
                 Constants.contacts.add(user);

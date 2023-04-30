@@ -7,7 +7,7 @@
 
     <androidx.cardview.widget.CardView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         app:cardBackgroundColor="@color/black"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -17,40 +17,46 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent">
 
-
             <androidx.cardview.widget.CardView
-                android:id="@+id/cardView"
+                android:id="@+id/cardView7"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginVertical="10dp"
-                android:layout_marginHorizontal="20dp"
+                android:layout_margin="10dp"
                 app:cardCornerRadius="100dp"
-                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
                 <ImageView
-                    android:id="@+id/chatImage"
-                    android:layout_width="50dp"
-                    android:layout_height="50dp"
-                    app:layout_constraintBottom_toBottomOf="parent"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_person"/>
-
+                    android:id="@+id/senderImage"
+                    android:layout_width="25dp"
+                    android:layout_height="25dp" />
             </androidx.cardview.widget.CardView>
 
+
             <TextView
-                android:id="@+id/txtChatName"
+                android:id="@+id/sender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_margin="20dp"
-                android:text="Username"
-                android:textColor="#AEABAB"
+                android:layout_marginLeft="20dp"
+                android:text="sender username"
+                android:textSize="15sp"
+                app:layout_constraintBottom_toBottomOf="@+id/cardView7"
+                app:layout_constraintStart_toEndOf="@+id/cardView7"
+                app:layout_constraintTop_toTopOf="@+id/cardView7" />
+
+
+            <TextView
+                android:id="@+id/messageContent"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:padding="15dp"
+                android:text="message content"
                 android:textSize="20sp"
+                app:layout_wrapBehaviorInParent="horizontal_only"
                 app:layout_constraintBottom_toBottomOf="parent"
-                app:layout_constraintStart_toEndOf="@+id/cardView"
-                app:layout_constraintTop_toTopOf="parent" />
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/sender" />
+
 
             <com.google.android.material.divider.MaterialDivider
                 android:layout_width="match_parent"

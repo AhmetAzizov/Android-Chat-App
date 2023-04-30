@@ -37,6 +37,7 @@ import android.widget.Toolbar;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
+import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.R;
@@ -65,6 +66,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.TimeZone;
 
 public class ChatFragment extends Fragment {
@@ -85,21 +87,15 @@ public class ChatFragment extends Fragment {
     private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseFirestore db;
     ArrayList<Message> chats;
-    ImageView contactImage;
-    TextView contactName;
+    ImageView contactImage, backButton, downArrowIcon;
+    ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
+    TextView contactName, infoLabel, selectionCount;
     User user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
-    CardView sendButton, pickImageButton;
+    CardView sendButton, pickImageButton, downArrow;
     EditText messageInput;
-    Toolbar profileInfo;
-    TextView infoLabel;
-    ImageView backButton;
-    CardView downArrow;
-    ImageView downArrowIcon;
-    Toolbar selectionOptions;
-    ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
-    TextView selectionCount;
+    Toolbar profileInfo, selectionOptions;
     boolean firstTime = true;
 
 
@@ -140,7 +136,6 @@ public class ChatFragment extends Fragment {
         selectionFavoriteButton = view.findViewById(R.id.selectionFavoriteButton);
         selectionDeleteButton = view.findViewById(R.id.selectionDeleteButton);
 
-
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, selectionOptions, selectionCount);
         chatsRecyclerView.setAdapter(chatsAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(getContext());
@@ -151,14 +146,9 @@ public class ChatFragment extends Fragment {
         layoutManager.setReverseLayout(true);
         chatsRecyclerView.scrollToPosition(0);
 
-
         Handler handler = new Handler();
-        handler.postDelayed(new Runnable() {
-            @Override
-            public void run() {
-//                infoLabel.setVisibility(View.GONE);
-                getStatus();
-            }
+        handler.postDelayed(() -> {
+            getStatus();
         }, 4500);
 
 
@@ -192,7 +182,6 @@ public class ChatFragment extends Fragment {
 
         selectionDeleteButton.setOnClickListener(v -> {
             List<Message> deleteList = chatsAdapter.getSelectionList();
-            List<Message> sortedDeleteList = new ArrayList<>();
 
             for (Message message : deleteList) {
                 if (!message.getSender().equals(Constants.currentUser)) {
@@ -259,39 +248,30 @@ public class ChatFragment extends Fragment {
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                    }).addOnSuccessListener(new OnSuccessListener<QuerySnapshot>() {
-                @Override
-                public void onSuccess(QuerySnapshot queryDocumentSnapshots) {
-                    for (Message message : favoriteList) {
-                        if (!currentFavorites.contains(message.getId())) {
-                            Message favoriteMessage = new Message(message.getId() ,message.getSender(), message.getContent(), message.getTime(), message.getChatRef(), message.getMessageType(), message.getExactTime());
-                            sortedFavorites.add(favoriteMessage);
+                    }).addOnSuccessListener(queryDocumentSnapshots -> {
+                        for (Message message : favoriteList) {
+                            if (!currentFavorites.contains(message.getId())) {
+                                FavoriteMessage favoriteMessage = new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), "null", message.getChatRef(), message.getMessageType(), message.getExactTime(), "null");
+                                sortedFavorites.add(favoriteMessage);
+                            }
                         }
-                    }
 
-                    if (!sortedFavorites.isEmpty()) {
-                        for (Message sortedMessage : sortedFavorites) {
+                        if (!sortedFavorites.isEmpty()) {
+                            for (Message sortedMessage : sortedFavorites) {
 
-                            favMessageRef.add(sortedMessage)
-                                    .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                                        @Override
-                                        public void onSuccess(DocumentReference documentReference) {
+                                favMessageRef.add(sortedMessage)
+                                        .addOnSuccessListener(documentReference -> {
                                             Toast.makeText(getContext(), "Successfully added to favorites", Toast.LENGTH_SHORT).show();
-                                        }
-                                    })
-                                    .addOnFailureListener(new OnFailureListener() {
-                                        @Override
-                                        public void onFailure(@NonNull Exception e) {
+                                        })
+                                        .addOnFailureListener(e -> {
                                             Log.w(TAG, "Error adding document", e);
                                             Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
+                                        });
+                            }
+                        } else {
+                            Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
                         }
-                    } else {
-                        Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
-                    }
-                }
-            });
+                    });
         });
 
 
@@ -299,7 +279,7 @@ public class ChatFragment extends Fragment {
             @Override
             public void onScrolled(@NonNull RecyclerView recyclerView, int dx, int dy) {
                 super.onScrolled(recyclerView, dx, dy);
-                int currentPosition = ((LinearLayoutManager) recyclerView.getLayoutManager())
+                int currentPosition = ((LinearLayoutManager) Objects.requireNonNull(recyclerView.getLayoutManager()))
                         .findFirstVisibleItemPosition();
 
                 if (currentPosition >= 1 && chatsAdapter.getItemCount() != 0) downArrow.setVisibility(View.VISIBLE);
@@ -345,20 +325,16 @@ public class ChatFragment extends Fragment {
             fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
         });
 
-        pickImageButton.setOnClickListener(v -> {
-            openFileChooser();
-        });
+        pickImageButton.setOnClickListener(v -> openFileChooser());
 
-        sendButton.setOnClickListener(v -> {
-            sendChats("text");
-        });
+        sendButton.setOnClickListener(v -> sendChats());
     }
 
 
     private void getChats() {
-        final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
+        final CollectionReference dbChatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
 
-        chatRef.orderBy("exactTime", Query.Direction.DESCENDING).addSnapshotListener((value, e) -> {
+        dbChatRef.orderBy("exactTime", Query.Direction.DESCENDING).addSnapshotListener((value, e) -> {
             if (e != null) {
                 Log.w(TAG, "Listen failed.", e);
                 return;
@@ -373,34 +349,24 @@ public class ChatFragment extends Fragment {
                     String id = document.getId();
                     String sender = document.getString("sender");
                     String content = document.getString("content");
-                    String chatRef1 = user.getChatReference();
+                    String chatRef = user.getChatReference();
                     String messageType = document.getString("messageType");
-                    Timestamp timestamp = document.getTimestamp("exactTime");
+                    Timestamp exactTime = document.getTimestamp("exactTime");
 
-                    SimpleDateFormat hourFormat = new SimpleDateFormat("HH");
-                    SimpleDateFormat minuteFormat = new SimpleDateFormat("mm");
-                    hourFormat.setTimeZone(TimeZone.getTimeZone("UTC"));
-                    int timeHour = Integer.parseInt(hourFormat.format(timestamp.toDate()));
-                    String timeMinute = minuteFormat.format(timestamp.toDate());
+                    // Converts the timestamp into local time and into a readable hour:minute format
+                    // .toDate() method automatically converts a timestamp into local time
+                    long timeMilli = exactTime.toDate().getTime();
+                    SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                    String time = timeFormat.format(timeMilli);
 
-                    TimeZone tz = TimeZone.getDefault();
-                    Date now = new Date();
-                    int offsetFromUtc = (tz.getOffset(now.getTime()) / 1000) / 3600;
-                    timeHour += offsetFromUtc;
-
-                    String time = timeHour + ":" + timeMinute;
-
-                    Message message = new Message(id, sender, content, time, chatRef1, messageType, timestamp);
+                    Message message = new Message(id, sender, content, time, chatRef, messageType, exactTime);
 
                     chats.add(message);
-
                 }
             }
 
-            if (!firstTime) {
-                if (getContext() != null) {
+            if (!firstTime && getContext() != null) {
                     downArrowIcon.setColorFilter(ContextCompat.getColor(getContext(), R.color.LimeGreen), PorterDuff.Mode.SRC_IN);
-                }
             } else {
                 firstTime = false;
             }
@@ -411,38 +377,30 @@ public class ChatFragment extends Fragment {
 
 
 
-    private void sendChats(String messageType) {
+    private void sendChats() {
         String message = messageInput.getText().toString().trim();
 
         if (message.isEmpty()) return;
 
         Timestamp timestamp = Timestamp.now();
 
-        // This converts the current to HH:mm format
-        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-        sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-        String formattedTime = sdf.format(timestamp.toDate());
-
-
         // Creates a new Message object, fills it with specified information and sends it to the database
-        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp);
+//        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp);
+
+        Map<String, Object> messageData = new HashMap<>();
+        messageData.put("sender", Constants.currentUser);
+        messageData.put("content", message);
+        messageData.put("messageType", "text");
+        messageData.put("exactTime", timestamp);
 
 
         final CollectionReference chatRef = db.collection("chats").document(user.getChatReference()).collection("messages");
 
-        chatRef.add(newMessage)
-                .addOnSuccessListener(new OnSuccessListener<DocumentReference>() {
-                    @Override
-                    public void onSuccess(DocumentReference documentReference) {
-                        chatsRecyclerView.scrollToPosition(0);
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error adding document", e);
-                        Toast.makeText(getContext(), "There was an error sending your message", Toast.LENGTH_SHORT).show();
-                    }
+        chatRef.add(messageData)
+                .addOnSuccessListener(documentReference -> chatsRecyclerView.scrollToPosition(0))
+                .addOnFailureListener(e -> {
+                    Log.w(TAG, "Error adding document", e);
+                    Toast.makeText(getContext(), "There was an error sending your message", Toast.LENGTH_SHORT).show();
                 });
 
         messageInput.setText("");
@@ -455,18 +413,8 @@ public class ChatFragment extends Fragment {
         data.put("time", docTimestamp);
 
         docRef.set(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                        Log.d(TAG, "DocumentSnapshot successfully written!");
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                .addOnSuccessListener(aVoid -> Log.d(TAG, "DocumentSnapshot successfully written!"))
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
     }
 
 
@@ -475,24 +423,21 @@ public class ChatFragment extends Fragment {
     private void getStatus() {
         final DocumentReference userRef = db.collection("users").document(user.getUsername());
 
-        userRef.addSnapshotListener(new EventListener<DocumentSnapshot>() {
-            @Override
-            public void onEvent(@Nullable DocumentSnapshot value, @Nullable FirebaseFirestoreException error) {
-                if (error != null) {
-                    Log.w(TAG, "Listen failed.", error);
-                    return;
-                }
+        userRef.addSnapshotListener((value, error) -> {
+            if (error != null) {
+                Log.w(TAG, "Listen failed.", error);
+                return;
+            }
 
-                if (value != null && value.exists()) {
-                    String status = value.getString("isOnline");
-                    Timestamp lastOnline = value.getTimestamp("lastOnline");
+            if (value != null && value.exists()) {
+                String status = value.getString("isOnline");
+                Timestamp lastOnline = value.getTimestamp("lastOnline");
 
-                    if (status.equals("true")) infoLabel.setText("Online");
-                    else infoLabel.setText(lastSeen(lastOnline));
+                if (status.equals("true")) infoLabel.setText("Online");
+                else infoLabel.setText(lastSeen(lastOnline));
 
-                } else {
-                    Log.d(TAG, "Current data: null");
-                }
+            } else {
+                Log.d(TAG, "Current data: null");
             }
         });
     }
@@ -538,19 +483,6 @@ public class ChatFragment extends Fragment {
         }
     }
 
-
-    private static Date UTCtoLocal(Timestamp utcTimestamp) {
-        Date date = utcTimestamp.toDate();
-        TimeZone utc = TimeZone.getTimeZone("UTC");
-        TimeZone local = TimeZone.getDefault();
-        long utcMillis = date.getTime();
-        int offset = local.getOffset(utcMillis) - utc.getOffset(utcMillis);
-        Date localDate = new Date(utcMillis + offset);
-
-        return localDate;
-    }
-
-
     private void openFileChooser(){
         Intent intent = new Intent();
         intent.setType("image/*");
@@ -569,7 +501,7 @@ public class ChatFragment extends Fragment {
             Uri imageUri = data.getData();
 
             SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri);
-            sendImageDialog.show(getActivity().getSupportFragmentManager(), "sendImageDialog");
+            sendImageDialog.show(requireActivity().getSupportFragmentManager(), "sendImageDialog");
         }
     }
 

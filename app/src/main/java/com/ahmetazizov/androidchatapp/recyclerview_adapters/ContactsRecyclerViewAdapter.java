@@ -72,9 +72,9 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
                     public boolean onResourceReady(Drawable resource, Object model, Target<Drawable> target, DataSource dataSource, boolean isFirstResource) {
                         // Handle successful image loading
 
-                        if (holder.getAdapterPosition() + 1 == getItemCount()){
-                            loadingScreenGone();
-                        }
+//                        if (holder.getAdapterPosition() + 1 == getItemCount()){
+//                            loadingScreenGone();
+//                        }
                         return false;
                     }
                 })
@@ -152,7 +152,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", (Serializable) chats.get(holder.getAdapterPosition()));
+        bundle.putSerializable("user", chats.get(holder.getAdapterPosition()));
 
         // Create a new instance of the fragment and set the bundle
         ChatFragment chatFragment = new ChatFragment();
