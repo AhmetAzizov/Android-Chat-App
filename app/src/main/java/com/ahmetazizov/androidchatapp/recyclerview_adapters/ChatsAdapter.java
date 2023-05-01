@@ -228,14 +228,11 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 selectionOptions.setVisibility(View.GONE);
             }
         });
-    }
 
-    public void clearSelection() {
         selectionList.clear();
 
         notifyDataSetChanged();
     }
-
 
     public List<Message> getSelectionList() {
         return selectionList;

@@ -35,7 +35,6 @@ import android.widget.Toast;
 import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
 import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
@@ -43,31 +42,21 @@ import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
-import java.time.Instant;
-import java.time.OffsetDateTime;
-import java.time.ZoneOffset;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import java.util.TimeZone;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 public class ChatFragment extends Fragment {
 
@@ -169,15 +158,7 @@ public class ChatFragment extends Fragment {
         selectionOptions.setOnClickListener(null);
 
         cancelSelectionButton.setOnClickListener(v -> {
-            chatsAdapter.clearSelection();
-
-            selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    selectionOptions.setVisibility(View.GONE);
-                }
-            });
+            chatsAdapter.closeSelectionList();
         });
 
         selectionDeleteButton.setOnClickListener(v -> {
@@ -186,12 +167,13 @@ public class ChatFragment extends Fragment {
             for (Message message : deleteList) {
                 if (!message.getSender().equals(Constants.currentUser)) {
                     Toast.makeText(getContext(), "You can only delete your own messages!", Toast.LENGTH_SHORT).show();
+                    chatsAdapter.closeSelectionList();
                     return;
                 }
             }
 
             Toast.makeText(getContext(), "Successfully deleted", Toast.LENGTH_SHORT).show();
-            chatsAdapter.clearSelection();
+
             chatsAdapter.closeSelectionList();
         });
 
@@ -205,7 +187,8 @@ public class ChatFragment extends Fragment {
             SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
 
             for (Message message : copyList) {
-                String messageDate = dateFormat.format(message.getExactTime());
+                long messageDateMilli = message.getExactTime().toDate().getTime();
+                String messageDate = dateFormat.format(messageDateMilli);
                 copyContent.append('[' + messageDate + "] " + message.getContent() + "\n");
             }
 
@@ -222,15 +205,7 @@ public class ChatFragment extends Fragment {
             if (copyList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
             else Toast.makeText(getContext(), copyList.size() + " messages copied", Toast.LENGTH_SHORT).show();
 
-            chatsAdapter.clearSelection();
-
-            selectionOptions.animate().alpha(0.0f).setDuration(300).setListener(new AnimatorListenerAdapter() {
-                @Override
-                public void onAnimationEnd(Animator animation) {
-                    super.onAnimationEnd(animation);
-                    selectionOptions.setVisibility(View.GONE);
-                }
-            });
+            chatsAdapter.closeSelectionList();
         });
 
         selectionFavoriteButton.setOnClickListener(v -> {
@@ -251,27 +226,30 @@ public class ChatFragment extends Fragment {
                     }).addOnSuccessListener(queryDocumentSnapshots -> {
                         for (Message message : favoriteList) {
                             if (!currentFavorites.contains(message.getId())) {
-                                FavoriteMessage favoriteMessage = new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), "null", message.getChatRef(), message.getMessageType(), message.getExactTime(), "null");
-                                sortedFavorites.add(favoriteMessage);
+                                sortedFavorites.add(new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), null, message.getChatRef(), message.getMessageType(), message.getExactTime(), null));
                             }
                         }
-
                         if (!sortedFavorites.isEmpty()) {
+                            AtomicBoolean error = new AtomicBoolean(false);
                             for (Message sortedMessage : sortedFavorites) {
-
                                 favMessageRef.add(sortedMessage)
-                                        .addOnSuccessListener(documentReference -> {
-                                            Toast.makeText(getContext(), "Successfully added to favorites", Toast.LENGTH_SHORT).show();
-                                        })
                                         .addOnFailureListener(e -> {
                                             Log.w(TAG, "Error adding document", e);
                                             Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
+                                            error.set(true);
                                         });
+                            }
+
+                            if (!error.get()) {
+                                if (sortedFavorites.size() == 1) Toast.makeText(getContext(), "Message added to favorites!", Toast.LENGTH_SHORT).show();
+                                else Toast.makeText(getContext(), sortedFavorites.size() + " messages added to favorites!", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
                         }
                     });
+
+            chatsAdapter.closeSelectionList();
         });
 
 
@@ -416,8 +394,6 @@ public class ChatFragment extends Fragment {
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "DocumentSnapshot successfully written!"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
     }
-
-
 
 
     private void getStatus() {

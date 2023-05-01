@@ -45,7 +45,6 @@ import java.util.Map;
 public class MainActivity extends AppCompatActivity {
 
     DrawerLayout drawerLayout;
-
     private static final String TAG = "MainActivity";
     FirebaseFirestore db;
     private FirebaseAuth mAuth;
@@ -72,8 +71,10 @@ public class MainActivity extends AppCompatActivity {
                 case R.id.nav_favorites:
                     FragmentManager fragmentManager = getSupportFragmentManager();
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
+//                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
                     fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
+
+                    drawerLayout.closeDrawer(GravityCompat.START);
                     break;
 
                 case R.id.nav_changePassword:
@@ -211,7 +212,6 @@ public class MainActivity extends AppCompatActivity {
                                     fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
                                     fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
                                 } else {
-                                    fragment.getAdapter().clearSelection();
                                     fragment.getAdapter().closeSelectionList();
                                 }
                             }
