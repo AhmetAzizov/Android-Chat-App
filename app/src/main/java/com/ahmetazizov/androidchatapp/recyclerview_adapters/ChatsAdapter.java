@@ -7,6 +7,7 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -139,7 +140,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             selectionOptions.setVisibility(View.VISIBLE);
             selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
 
-            checkSelectionList(holder.getAdapterPosition());
+            checkSelectionList(position);
 
             return true;
         });
@@ -147,7 +148,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
         holder.itemView.setOnClickListener(v -> {
             if (!selectionList.isEmpty()) {
-                checkSelectionList(holder.getAdapterPosition());
+                checkSelectionList(position);
             }
         });
 

@@ -28,11 +28,8 @@ public class AuthenticationActivity extends AppCompatActivity {
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
-            Constants.currentUser = currentUser.getDisplayName();
-
             Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
             startActivity(intent);
-
         } else {
             RegisterFragment fragment = (RegisterFragment) getSupportFragmentManager().findFragmentByTag("registerFragment");
 

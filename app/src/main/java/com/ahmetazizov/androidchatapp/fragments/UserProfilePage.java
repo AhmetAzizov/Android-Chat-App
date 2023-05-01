@@ -109,7 +109,6 @@ public class UserProfilePage extends Fragment {
 
 
     public final static String TAG = "UserProfilePage";
-    private FirebaseAuth mAuth;
     FirebaseFirestore db;
     ImageView profileImage;
     CardView profileImageContainer, returnButton;
@@ -133,38 +132,32 @@ public class UserProfilePage extends Fragment {
         returnButton = view.findViewById(R.id.returnButton);
         topView = view.findViewById(R.id.topView);
 
-        mAuth = FirebaseAuth.getInstance();
-        FirebaseUser authUser = mAuth.getCurrentUser();
-
         DocumentReference currentUser = db.collection("users").document(Constants.currentUser);
 
-        currentUser.get().addOnCompleteListener(new OnCompleteListener<DocumentSnapshot>() {
-            @Override
-            public void onComplete(@NonNull Task<DocumentSnapshot> task) {
-                if (task.isSuccessful()) {
-                    DocumentSnapshot document = task.getResult();
-                    if (document.exists()) {
-                        // document data exists, extract data and fill into object
+        currentUser.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // document data exists, extract data and fill into object
 
-                        currentUserData = document.toObject(User.class);
+                    currentUserData = document.toObject(User.class);
 
-                        Glide.with(getContext())
-                                .load(currentUserData.getImageURL())
-                                .override(1000, 1000)
-                                .centerCrop()
-                                .into(profileImage);
+                    Glide.with(getContext())
+                            .load(currentUserData.getImageURL())
+                            .override(1000, 1000)
+                            .centerCrop()
+                            .into(profileImage);
 
-                        username.setText(currentUserData.getUsername());
-                        userEmail.setText(currentUserData.getEmail());
+                    username.setText(currentUserData.getUsername());
+                    userEmail.setText(currentUserData.getEmail());
 
-                    } else {
-                        Log.d(TAG, "Error fetching user data");
-                        Toast.makeText(getContext(), "Error fetching user data", Toast.LENGTH_LONG).show();
-                    }
                 } else {
                     Log.d(TAG, "Error fetching user data");
                     Toast.makeText(getContext(), "Error fetching user data", Toast.LENGTH_LONG).show();
                 }
+            } else {
+                Log.d(TAG, "Error fetching user data");
+                Toast.makeText(getContext(), "Error fetching user data", Toast.LENGTH_LONG).show();
             }
         });
 

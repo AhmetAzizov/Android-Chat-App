@@ -214,42 +214,44 @@ public class ChatFragment extends Fragment {
             List<Message> sortedFavorites = new ArrayList<>();
             List<Message> favoriteList = chatsAdapter.getSelectionList();
 
-
             favMessageRef.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
                             for (QueryDocumentSnapshot document : task.getResult()) {
                                 currentFavorites.add(document.getString("id"));
+                                Log.d(TAG, "item id: " + document.getString("id"));
+                            }
+
+                            for (Message message : favoriteList) {
+                                Log.d(TAG, "message id: " + message.getId());
+                                if (!currentFavorites.contains(message.getId())) {
+                                    sortedFavorites.add(new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), null, message.getChatRef(), message.getMessageType(), message.getExactTime(), null));
+                                }
+                            }
+
+                            if (!sortedFavorites.isEmpty()) {
+                                AtomicBoolean error = new AtomicBoolean(false);
+                                for (Message sortedMessage : sortedFavorites) {
+                                    favMessageRef.add(sortedMessage)
+                                            .addOnFailureListener(e -> {
+                                                Log.w(TAG, "Error adding document", e);
+                                                Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
+                                                error.set(true);
+                                            });
+                                }
+
+                                if (!error.get()) {
+                                    if (sortedFavorites.size() == 1) Toast.makeText(getContext(), "Message added to favorites!", Toast.LENGTH_SHORT).show();
+                                    else Toast.makeText(getContext(), sortedFavorites.size() + " messages added to favorites!", Toast.LENGTH_SHORT).show();
+                                }
+
+                                chatsAdapter.closeSelectionList();
+                            } else {
+                                Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
                         }
-                    }).addOnSuccessListener(queryDocumentSnapshots -> {
-                        for (Message message : favoriteList) {
-                            if (!currentFavorites.contains(message.getId())) {
-                                sortedFavorites.add(new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), null, message.getChatRef(), message.getMessageType(), message.getExactTime(), null));
-                            }
-                        }
-                        if (!sortedFavorites.isEmpty()) {
-                            AtomicBoolean error = new AtomicBoolean(false);
-                            for (Message sortedMessage : sortedFavorites) {
-                                favMessageRef.add(sortedMessage)
-                                        .addOnFailureListener(e -> {
-                                            Log.w(TAG, "Error adding document", e);
-                                            Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
-                                            error.set(true);
-                                        });
-                            }
-
-                            if (!error.get()) {
-                                if (sortedFavorites.size() == 1) Toast.makeText(getContext(), "Message added to favorites!", Toast.LENGTH_SHORT).show();
-                                else Toast.makeText(getContext(), sortedFavorites.size() + " messages added to favorites!", Toast.LENGTH_SHORT).show();
-                            }
-                        } else {
-                            Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
-                        }
                     });
-
-            chatsAdapter.closeSelectionList();
         });
 
 

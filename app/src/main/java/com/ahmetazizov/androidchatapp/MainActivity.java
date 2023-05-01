@@ -16,6 +16,9 @@ import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -24,6 +27,8 @@ import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.models.User;
+import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.navigation.NavigationView;
@@ -32,6 +37,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
+import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
@@ -50,19 +56,28 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private NetworkStateReceiver networkStateReceiver;
     NavigationView navigationView;
+    ImageView drawerImage;
+    TextView drawerUsername, drawerEmail;
 
 
     @Override
     protected void onStart() {
         super.onStart();
-        Log.d(TAG, "onStart: ");
+
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
 
-        // Check if user is signed in (non-null) and update UI accordingly.
+        View navigationHeader = navigationView.getHeaderView(0);
+
+        drawerImage = navigationHeader.findViewById(R.id.drawer_image);
+        drawerUsername = navigationHeader.findViewById(R.id.drawer_username);
+        drawerEmail = navigationHeader.findViewById(R.id.drawer_email);
+
+        // Save the username of the current user
         FirebaseUser currentUser = mAuth.getCurrentUser();
+        Constants.currentUser = currentUser.getDisplayName();
 
         getFavorites();
 
@@ -117,6 +132,8 @@ public class MainActivity extends AppCompatActivity {
 
         if(currentUser != null){
 
+            fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
+
             ChatFragment chatFragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
 
             if (chatFragment == null) {
@@ -128,17 +145,7 @@ public class MainActivity extends AppCompatActivity {
                 DocumentReference docRef = db.collection("users").document(Constants.currentUser);
 
                 docRef.update(data)
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void aVoid) {
-                            }
-                        })
-                        .addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@NonNull Exception e) {
-                                Log.w(TAG, "Error writing document", e);
-                            }
-                        });
+                        .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
 
 
                 // go to add fragment
@@ -238,6 +245,37 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+    private void fillDrawerDetails(ImageView drawerImage, TextView drawerUsername, TextView drawerEmail) {
+        DocumentReference currentUser = db.collection("users").document(Constants.currentUser);
+
+        currentUser.get().addOnCompleteListener(task -> {
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+                    // document data exists, extract data and fill into object
+
+                    User currentUserData = document.toObject(User.class);
+
+                    Glide.with(this)
+                            .load(currentUserData.getImageURL())
+                            .override(1000, 1000)
+                            .centerCrop()
+                            .into(drawerImage);
+
+                    drawerUsername.setText(currentUserData.getUsername());
+                    drawerEmail.setText(currentUserData.getEmail());
+
+                } else {
+                    Log.d(TAG, "Error fetching user data");
+                    Toast.makeText(MainActivity.this, "Error fetching user data", Toast.LENGTH_LONG).show();
+                }
+            } else {
+                Log.d(TAG, "Error fetching user data");
+                Toast.makeText(MainActivity.this, "Error fetching user data", Toast.LENGTH_LONG).show();
+            }
+        });
+    }
 
 
 
