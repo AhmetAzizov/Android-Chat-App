@@ -63,49 +63,35 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         holder.searchContact.setText(searchResult.get(position).getUsername());
 
 
-        holder.itemView.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
+        holder.itemView.setOnClickListener(v -> {
 
-
-
-
-                for (User user : Constants.contacts) {
-                    if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
-                        sendToDataToFragment(holder);
-                        return;
-                    }
+            for (User user : Constants.contacts) {
+                if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
+                    sendToDataToFragment(holder);
+                    return;
                 }
-
-                String newChatRef = Constants.currentUser + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
-                CollectionReference colRef = db.collection("chats");
-
-                Timestamp timestamp = Timestamp.now();
-                Map<String, Object> data = new HashMap<>();
-                data.put("time", timestamp);
-
-                // Create an empty document inside "chats" collection
-                colRef.document(newChatRef)
-                        .set(data, SetOptions.merge())
-                        .addOnSuccessListener(new OnSuccessListener<Void>() {
-                            @Override
-                            public void onSuccess(Void unused) {
-                                Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
-
-                                // This will edit the new contacts chat reference so that it can be used in the next fragment
-                                searchResult.get(holder.getAdapterPosition()).setChatReference(newChatRef);
-
-                                // This method will navigate to the chat fragment and send a user object containing the users information
-                                sendToDataToFragment(holder);
-                            }
-                        }).addOnFailureListener(new OnFailureListener() {
-                            @Override
-                            public void onFailure(@androidx.annotation.NonNull Exception e) {
-                                Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show();
-                            }
-                        });
-
             }
+
+            String newChatRef = Constants.currentUser + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
+            CollectionReference colRef = db.collection("chats");
+
+            Timestamp timestamp = Timestamp.now();
+            Map<String, Object> data = new HashMap<>();
+            data.put("time", timestamp);
+
+            // Create an empty document inside "chats" collection
+            colRef.document(newChatRef)
+                    .set(data, SetOptions.merge())
+                    .addOnSuccessListener(unused -> {
+                        Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+
+                        // This will edit the new contacts chat reference so that it can be used in the next fragment
+                        searchResult.get(holder.getAdapterPosition()).setChatReference(newChatRef);
+
+                        // This method will navigate to the chat fragment and send a user object containing the users information
+                        sendToDataToFragment(holder);
+                    }).addOnFailureListener(e -> Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+
         });
     }
 

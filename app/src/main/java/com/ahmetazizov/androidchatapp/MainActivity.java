@@ -75,11 +75,7 @@ public class MainActivity extends AppCompatActivity {
         drawerUsername = navigationHeader.findViewById(R.id.drawer_username);
         drawerEmail = navigationHeader.findViewById(R.id.drawer_email);
 
-        // Save the username of the current user
-        FirebaseUser currentUser = mAuth.getCurrentUser();
-        Constants.currentUser = currentUser.getDisplayName();
-
-        getFavorites();
+        getUsers();
 
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
@@ -129,15 +125,19 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+        FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
+            Constants.currentUser = currentUser.getDisplayName();
+
+            //
+            getFavorites();
 
             fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
 
             ChatFragment chatFragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
 
             if (chatFragment == null) {
-                Constants.currentUser = currentUser.getDisplayName();
 
                 Map<String, Object> data = new HashMap<>();
                 data.put("isOnline", "true");
@@ -277,6 +277,28 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+
+    public void getUsers() {
+        final CollectionReference usersRef = db.collection("users");
+
+        usersRef.addSnapshotListener((value, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
+
+            Constants.users.clear();
+
+
+            for (QueryDocumentSnapshot document : value) {
+                User user = document.toObject(User.class);
+
+                Constants.users.add(user);
+
+            }
+        });
+    }
 
 
     private void getFavorites() {

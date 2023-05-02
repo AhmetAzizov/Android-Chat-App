@@ -132,6 +132,7 @@ public class ShowChatsFragment extends Fragment {
     private CardView rateButton, searchCard, settingsButton;
     private SearchView searchCardInput;
     private LinearLayout searchCardLayout;
+    Button addContactButton;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -143,6 +144,7 @@ public class ShowChatsFragment extends Fragment {
         searchResult = new ArrayList<>();
         settingsButton = view.findViewById(R.id.settingsButton);
         rateButton = view.findViewById(R.id.rateButton);
+        addContactButton = view.findViewById(R.id.addContactButton);
 
         searchCard = view.findViewById(R.id.searchCard);
         searchCardList = view.findViewById(R.id.searchCardList);
@@ -249,10 +251,11 @@ public class ShowChatsFragment extends Fragment {
             ratingDialog.show();
         });
 
-
-
-
-        getUsers();
+        addContactButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frameLayout, new AddContactFragment(), "addContactFragment").addToBackStack(null).commit();
+        });
 
         getChats();
     }
@@ -286,31 +289,6 @@ public class ShowChatsFragment extends Fragment {
     }
 
 
-    public void getUsers() {
-        final CollectionReference usersRef = db.collection("users");
-
-        usersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                Constants.users.clear();
-
-
-                for (QueryDocumentSnapshot document : value) {
-                    User user = document.toObject(User.class);
-
-                    Constants.users.add(user);
-
-                }
-            }
-        });
-    }
-
-
     public void getChats() {
         final CollectionReference chatsRef = db.collection("chats");
 
@@ -331,10 +309,7 @@ public class ShowChatsFragment extends Fragment {
 
                     if (separateNames[0].equalsIgnoreCase(Constants.currentUser) || separateNames[1].equalsIgnoreCase(Constants.currentUser)) {
 
-//                        setChatListener(document.getId());
-
                         sortUser(document.getId());
-
                     }
                 }
 
