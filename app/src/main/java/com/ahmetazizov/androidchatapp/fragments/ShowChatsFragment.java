@@ -1,7 +1,5 @@
 package com.ahmetazizov.androidchatapp.fragments;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -27,7 +25,6 @@ import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.SearchView;
-import android.widget.TextView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
@@ -36,8 +33,6 @@ import com.ahmetazizov.androidchatapp.dialogs.RatingDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
 import com.ahmetazizov.androidchatapp.models.User;
-import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -49,8 +44,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
-import java.util.Timer;
-import java.util.TimerTask;
 
 /**
  * A simple {@link Fragment} subclass.
@@ -133,6 +126,11 @@ public class ShowChatsFragment extends Fragment {
     private SearchView searchCardInput;
     private LinearLayout searchCardLayout;
     Button addContactButton;
+
+
+    public ContactsRecyclerViewAdapter getAdapter() {
+        return this.adapter;
+    }
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -249,15 +247,13 @@ public class ShowChatsFragment extends Fragment {
         rateButton.setOnClickListener(v -> {
             RatingDialog ratingDialog = new RatingDialog(getContext());
             ratingDialog.show();
-        });
+            });
 
         addContactButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.replace(R.id.frameLayout, new AddContactFragment(), "addContactFragment").addToBackStack(null).commit();
         });
-
-        getChats();
     }
 
 
@@ -272,87 +268,21 @@ public class ShowChatsFragment extends Fragment {
 
         searchResult.clear();
 
-        for (User contact : Constants.users) {
-
-            if (contact.getUsername().equals(Constants.currentUser)) continue;
-
+        for (User contact : Constants.contacts) {
             if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
-
                 searchResult.add(contact);
-
-                Log.d(TAG, "searchResult chatreference: " + contact.getChatReference());
             }
-
         }
+
 
         if (input.isEmpty()) searchResult.clear();
     }
 
-
-    public void getChats() {
-        final CollectionReference chatsRef = db.collection("chats");
-
-        chatsRef.orderBy("time", Query.Direction.DESCENDING).addSnapshotListener(new EventListener<QuerySnapshot>() {
-            @Override
-            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                if (e != null) {
-                    Log.w(TAG, "Listen failed.", e);
-                    return;
-                }
-
-                Constants.chats.clear();
-                Constants.contacts.clear();
-
-                for (QueryDocumentSnapshot document : value) {
-
-                    String[] separateNames = document.getId().split("-");
-
-                    if (separateNames[0].equalsIgnoreCase(Constants.currentUser) || separateNames[1].equalsIgnoreCase(Constants.currentUser)) {
-
-                        sortUser(document.getId());
-                    }
-                }
-
-
-                if (Constants.contacts.isEmpty()) cover.setAlpha(0.0f);
-
-                adapter.notifyDataSetChanged();
-            }
-        });
+    public ArrayList<User> getSearchResult() {
+        return searchResult;
     }
 
-
-    private void sortUser(String chatReference) {
-        String[] chatRefSplit = chatReference.split("-");
-//        String tempUsername;
-
-//        if (chatRefSplit[1].equals(Constants.currentUser)) tempUsername = chatRefSplit[0];
-//        else tempUsername = chatRefSplit[1];
-
-        String tempUsername = (chatRefSplit[1].equals(Constants.currentUser)) ? chatRefSplit[0] : chatRefSplit[1];
-
-
-        for (User user : Constants.users) {
-            if (user.getUsername().equals(tempUsername)) {
-                user.setChatReference(chatReference);
-                Constants.contacts.add(user);
-            }
-        }
+    public SearchAdapter getSearchAdapter() {
+        return searchAdapter;
     }
-
-
-//    private void setChatListener(String ref) {
-//        final CollectionReference chatRef = db.collection("chats").document(ref).collection("messages");
-//
-//        chatRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-//            @Override
-//            public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException error) {
-//
-//                for (QueryDocumentSnapshot document : value) {
-//                    Log.d(TAG, "sender: " + document.getString("sender") + "      content " + document.getString("content"));
-//                }
-//
-//            }
-//        });
-//    }
 }

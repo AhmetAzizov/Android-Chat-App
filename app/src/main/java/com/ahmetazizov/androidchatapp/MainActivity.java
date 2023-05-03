@@ -41,6 +41,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.FirebaseFirestoreException;
+import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
@@ -130,7 +131,7 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser != null){
             Constants.currentUser = currentUser.getDisplayName();
 
-            //
+            getChats();
             getFavorites();
 
             fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
@@ -146,7 +147,6 @@ public class MainActivity extends AppCompatActivity {
 
                 docRef.update(data)
                         .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
-
 
                 // go to add fragment
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
@@ -224,13 +224,19 @@ public class MainActivity extends AppCompatActivity {
                             }
                         }
                         break;
-                    case "showChatsFragment": break;
+                    case "showChatsFragment":
+                        ShowChatsFragment showChatsFragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
 
-                    default: super.onBackPressed();
+                        if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
+                            showChatsFragment.getSearchResult().clear();
+                            showChatsFragment.getSearchAdapter().notifyDataSetChanged();
+                        }
+                        break;
+
+                    default:
+                        super.onBackPressed();
                 }
                 }
-
-                Log.d(TAG, "Currently active fragment tag: " + fragmentTag);
                 break; // Break out of the loop after finding the active fragment
             }
         }
@@ -295,7 +301,6 @@ public class MainActivity extends AppCompatActivity {
                 User user = document.toObject(User.class);
 
                 Constants.users.add(user);
-
             }
         });
     }
@@ -334,8 +339,47 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void getChats() {
+        final CollectionReference chatsRef = db.collection("chats");
 
+        chatsRef.orderBy("time", Query.Direction.DESCENDING).addSnapshotListener((value, e) -> {
+            if (e != null) {
+                Log.w(TAG, "Listen failed.", e);
+                return;
+            }
 
+            Constants.contacts.clear();
+
+            for (QueryDocumentSnapshot document : value) {
+
+                String[] separateNames = document.getId().split("-");
+
+                if (separateNames[0].equalsIgnoreCase(Constants.currentUser) || separateNames[1].equalsIgnoreCase(Constants.currentUser)) {
+                    sortUser(document.getId());
+                }
+            }
+
+            ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+
+            if (fragment != null) {
+                fragment.getAdapter().notifyDataSetChanged();
+            }
+        });
+    }
+
+    private void sortUser(String chatReference) {
+        String[] chatRefSplit = chatReference.split("-");
+
+        String tempUsername = (chatRefSplit[1].equals(Constants.currentUser)) ? chatRefSplit[0] : chatRefSplit[1];
+
+        for (User user : Constants.users) {
+            if (user.getUsername().equals(tempUsername)) {
+                user.setChatReference(chatReference);
+                Constants.contacts.add(user);
+                break;
+            }
+        }
+    }
 
     private void isOffline() {
         Timestamp timestamp = Timestamp.now();
@@ -344,21 +388,10 @@ public class MainActivity extends AppCompatActivity {
         data.put("isOnline", "false");
         data.put("lastOnline", timestamp);
 
-
         DocumentReference docRef = db.collection("users").document(Constants.currentUser);
 
         docRef.update(data)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
-                    }
-                })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, "Error writing document", e);
-                    }
-                });
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
     }
 }
 

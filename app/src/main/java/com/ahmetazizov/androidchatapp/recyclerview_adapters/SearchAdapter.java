@@ -67,12 +67,12 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
             for (User user : Constants.contacts) {
                 if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
-                    sendToDataToFragment(holder);
+                    sendToDataToFragment(holder, position);
                     return;
                 }
             }
 
-            String newChatRef = Constants.currentUser + "-" + searchResult.get(holder.getAdapterPosition()).getUsername();
+            String newChatRef = Constants.currentUser + "-" + searchResult.get(position).getUsername();
             CollectionReference colRef = db.collection("chats");
 
             Timestamp timestamp = Timestamp.now();
@@ -86,10 +86,10 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
                         Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
 
                         // This will edit the new contacts chat reference so that it can be used in the next fragment
-                        searchResult.get(holder.getAdapterPosition()).setChatReference(newChatRef);
+                        searchResult.get(position).setChatReference(newChatRef);
 
                         // This method will navigate to the chat fragment and send a user object containing the users information
-                        sendToDataToFragment(holder);
+                        sendToDataToFragment(holder, position);
                     }).addOnFailureListener(e -> Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
 
         });
@@ -113,13 +113,13 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
     }
 
 
-    private void sendToDataToFragment(SearchAdapter.MyViewHolder holder) {
+    private void sendToDataToFragment(SearchAdapter.MyViewHolder holder, int position) {
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();
-        bundle.putSerializable("user", searchResult.get(holder.getAdapterPosition()));
+        bundle.putSerializable("user", searchResult.get(position));
 
         // Create a new instance of the fragment and set the bundle
         ChatFragment chatFragment = new ChatFragment();

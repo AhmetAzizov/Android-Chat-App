@@ -10,12 +10,20 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.Timestamp;
+import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.SetOptions;
+
+import java.util.HashMap;
+import java.util.Map;
 
 public class AddContactFragment extends Fragment {
 
@@ -30,7 +38,7 @@ public class AddContactFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_add_contact, container, false);
     }
 
-
+    FirebaseFirestore db;
     TextInputLayout addContactUsernameLayout;
     TextInputEditText addContactUsername;
     Button addContactButton;
@@ -39,7 +47,7 @@ public class AddContactFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-
+        db = FirebaseFirestore.getInstance();
         addContactUsernameLayout = view.findViewById(R.id.addContactUsernameLayout);
         addContactUsername = view.findViewById(R.id.addContactUsername);
         addContactButton = view.findViewById(R.id.addContactButton);
@@ -49,38 +57,67 @@ public class AddContactFragment extends Fragment {
 
         addContactButton.setOnClickListener(v -> {
             String username = addContactUsername.getText().toString().trim();
-            boolean found = false;
+            String checkedUsername = checkError(username);
 
-            if (username.isEmpty()) {
-                addContactUsernameLayout.setError("User Name is Empty!");
-                addContactUsernameLayout.requestFocus();
-                return;
-            } else if (username.length() > 15) {
-                addContactUsernameLayout.setError("Username length can't be more than 15!");
-                return;
-            } else {
-                addContactUsernameLayout.setError(null);
-            }
+            if (checkedUsername != null) {
+                String newChatRef = Constants.currentUser + "-" + checkedUsername;
+                CollectionReference colRef = db.collection("chats");
 
-            for (User user : Constants.users) {
-                if (user.getUsername().equals(Constants.currentUser)) {
-                    addContactUsernameLayout.setError("username should not be same as the users!");
-                    found = true;
-                    break;
-                }
+                Timestamp timestamp = Timestamp.now();
+                Map<String, Object> data = new HashMap<>();
+                data.put("time", timestamp);
 
-                if (user.getUsername().equalsIgnoreCase(username.toLowerCase())) {
-                    addContactUsernameLayout.setHelperText("correct!");
-                    addContactUsernameLayout.setError(null);
-                    found = true;
-                    break;
-                }
-            }
+                // Create an empty document inside "chats" collection
+                colRef.document(newChatRef)
+                        .set(data, SetOptions.merge())
+                        .addOnSuccessListener(unused -> {
+                            Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+                        }).addOnFailureListener(e -> Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
 
-            if (!found) {
-                addContactUsernameLayout.setError("No such user found!");
-                addContactUsernameLayout.requestFocus();
             }
         });
+    }
+
+
+    private String checkError(String username) {
+        boolean found = false;
+
+        if(username.contains("-") || username.contains("%") || username.contains(" ")) {
+            addContactUsernameLayout.setError("Username can not contain space or special characters!");
+            return null;
+        } else if (username.equalsIgnoreCase(Constants.currentUser)) {
+            addContactUsernameLayout.setError("Username should not be same as the current user!");
+            return null;
+        } else if (username.isEmpty()) {
+            addContactUsernameLayout.setError("User Name is Empty!");
+            addContactUsernameLayout.requestFocus();
+            return null;
+        } else if (username.length() > 15) {
+            addContactUsernameLayout.setError("Username length can't be more than 15!");
+            return null;
+        } else {
+            addContactUsernameLayout.setError(null);
+        }
+
+        for (User user : Constants.contacts) {
+            if (username.equalsIgnoreCase(user.getUsername())) {
+                addContactUsernameLayout.setError("User already in your contacts!");
+                return null;
+            }
+        }
+
+        for (User user : Constants.users) {
+            if (user.getUsername().equalsIgnoreCase(username)) {
+                addContactUsernameLayout.setHelperText("correct!");
+                addContactUsernameLayout.setError(null);
+                found = true;
+                return user.getUsername();
+            }
+        }
+
+        addContactUsernameLayout.setError("No such user found!");
+        addContactUsernameLayout.requestFocus();
+
+        return null;
     }
 }
