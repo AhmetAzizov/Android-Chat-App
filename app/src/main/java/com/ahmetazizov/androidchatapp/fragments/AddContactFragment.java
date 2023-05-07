@@ -5,11 +5,14 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentTransaction;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.Constants;
@@ -42,6 +45,7 @@ public class AddContactFragment extends Fragment {
     TextInputLayout addContactUsernameLayout;
     TextInputEditText addContactUsername;
     Button addContactButton;
+    ImageView backButton;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -51,9 +55,18 @@ public class AddContactFragment extends Fragment {
         addContactUsernameLayout = view.findViewById(R.id.addContactUsernameLayout);
         addContactUsername = view.findViewById(R.id.addContactUsername);
         addContactButton = view.findViewById(R.id.addContactButton);
+        backButton = view.findViewById(R.id.backButton);
 
 
 
+
+
+        backButton.setOnClickListener(v -> {
+            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
+            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+        });
 
         addContactButton.setOnClickListener(v -> {
             String username = addContactUsername.getText().toString().trim();

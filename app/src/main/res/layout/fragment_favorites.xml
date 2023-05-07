@@ -20,6 +20,7 @@
         android:background="@color/Gray">
 
         <ImageView
+            android:id="@+id/backButton"
             android:layout_width="60dp"
             android:layout_height="60dp"
             android:padding="8dp"
