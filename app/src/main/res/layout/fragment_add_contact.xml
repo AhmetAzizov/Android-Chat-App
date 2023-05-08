@@ -49,7 +49,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginHorizontal="20dp"
-            android:layout_marginTop="30dp"
+            android:layout_marginTop="40dp"
             app:boxStrokeWidth="2dp"
             app:counterEnabled="true"
             app:counterMaxLength="15"
@@ -77,19 +77,19 @@
 
         <Button
             android:id="@+id/addContactButton"
-            android:backgroundTint="@color/Gray"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp"
+            android:backgroundTint="@color/Gray"
+            android:fontFamily="sans-serif-black"
+            android:paddingHorizontal="30dp"
+            android:paddingVertical="10dp"
             android:text="Add Contact"
             android:textSize="20sp"
             android:textStyle="bold|italic"
-            android:fontFamily="sans-serif-black"
-            android:paddingVertical="10dp"
-            android:paddingHorizontal="30dp"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent" />
+            app:layout_constraintEnd_toEndOf="@+id/addContactUsernameLayout"
+            app:layout_constraintStart_toStartOf="@+id/addContactUsernameLayout"
+            app:layout_constraintTop_toBottomOf="@+id/addContactUsernameLayout" />
 
 
     </androidx.constraintlayout.widget.ConstraintLayout>

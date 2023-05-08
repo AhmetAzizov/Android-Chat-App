@@ -57,10 +57,6 @@ public class AddContactFragment extends Fragment {
         addContactButton = view.findViewById(R.id.addContactButton);
         backButton = view.findViewById(R.id.backButton);
 
-
-
-
-
         backButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
