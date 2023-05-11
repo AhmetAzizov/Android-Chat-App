@@ -20,6 +20,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -212,12 +213,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         selectionCount.setText(currentCount);
 
         notifyDataSetChanged();
-    }
-
-
-    private int dpToPixels(int dps) {
-        float density = context.getResources().getDisplayMetrics().density;
-        return (int) (dps * density);
     }
 
 
