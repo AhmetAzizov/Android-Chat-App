@@ -12,11 +12,8 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
-import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.Task;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -28,9 +25,9 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
     private static final String TAG = "FavoritesAdapter";
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     Context context;
-    ArrayList<FavoriteMessage> list;
+    ArrayList<FavoriteTextMessage> list;
 
-    public FavoritesAdapter(Context context, ArrayList<FavoriteMessage> list) {
+    public FavoritesAdapter(Context context, ArrayList<FavoriteTextMessage> list) {
         this.context = context;
         this.list = list;
     }

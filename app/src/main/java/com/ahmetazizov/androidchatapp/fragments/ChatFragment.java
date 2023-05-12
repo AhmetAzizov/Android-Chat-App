@@ -2,8 +2,6 @@ package com.ahmetazizov.androidchatapp.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.animation.Animator;
-import android.animation.AnimatorListenerAdapter;
 import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
@@ -14,7 +12,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
@@ -36,9 +33,9 @@ import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
-import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
+import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
+import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
-import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
@@ -75,7 +72,7 @@ public class ChatFragment extends Fragment {
     private final static String TAG = "ChatFragment";
     private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseFirestore db;
-    ArrayList<Message> chats;
+    ArrayList<TextMessage> chats;
     ImageView contactImage, backButton, downArrowIcon;
     ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView contactName, infoLabel, selectionCount;
@@ -162,10 +159,10 @@ public class ChatFragment extends Fragment {
         });
 
         selectionDeleteButton.setOnClickListener(v -> {
-            List<Message> deleteList = chatsAdapter.getSelectionList();
+            List<TextMessage> deleteList = chatsAdapter.getSelectionList();
 
-            for (Message message : deleteList) {
-                if (!message.getSender().equals(Constants.currentUser)) {
+            for (TextMessage textMessage : deleteList) {
+                if (!textMessage.getSender().equals(Constants.currentUser)) {
                     Toast.makeText(getContext(), "You can only delete your own messages!", Toast.LENGTH_SHORT).show();
                     chatsAdapter.closeSelectionList();
                     return;
@@ -179,17 +176,17 @@ public class ChatFragment extends Fragment {
 
 
         selectionCopyButton.setOnClickListener(v -> {
-            List<Message> copyList = chatsAdapter.getSelectionList();
+            List<TextMessage> copyList = chatsAdapter.getSelectionList();
 
             if (copyList.isEmpty()) return;
 
             StringBuilder copyContent = new StringBuilder();
             SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
 
-            for (Message message : copyList) {
-                long messageDateMilli = message.getExactTime().toDate().getTime();
+            for (TextMessage textMessage : copyList) {
+                long messageDateMilli = textMessage.getExactTime().toDate().getTime();
                 String messageDate = dateFormat.format(messageDateMilli);
-                copyContent.append('[' + messageDate + "] " + message.getContent() + "\n");
+                copyContent.append('[' + messageDate + "] " + textMessage.getContent() + "\n");
             }
 
 
@@ -202,7 +199,7 @@ public class ChatFragment extends Fragment {
             // Copy the text to the clipboard
             clipboard.setPrimaryClip(clip);
 
-            if (copyList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
+            if (copyList.size() == 1) Toast.makeText(getContext(), "TextMessage copied", Toast.LENGTH_SHORT).show();
             else Toast.makeText(getContext(), copyList.size() + " messages copied", Toast.LENGTH_SHORT).show();
 
             chatsAdapter.closeSelectionList();
@@ -211,8 +208,8 @@ public class ChatFragment extends Fragment {
         selectionFavoriteButton.setOnClickListener(v -> {
             final CollectionReference favMessageRef = db.collection("users").document(Constants.currentUser).collection("favorites");
             List<String> currentFavorites = new ArrayList<>();
-            List<Message> sortedFavorites = new ArrayList<>();
-            List<Message> favoriteList = chatsAdapter.getSelectionList();
+            List<TextMessage> sortedFavorites = new ArrayList<>();
+            List<TextMessage> favoriteList = chatsAdapter.getSelectionList();
 
             favMessageRef.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -221,17 +218,17 @@ public class ChatFragment extends Fragment {
                                 Log.d(TAG, "item id: " + document.getString("id"));
                             }
 
-                            for (Message message : favoriteList) {
-                                Log.d(TAG, "message id: " + message.getId());
-                                if (!currentFavorites.contains(message.getId())) {
-                                    sortedFavorites.add(new FavoriteMessage(message.getId(), message.getSender(), message.getContent(), null, message.getChatRef(), message.getMessageType(), message.getExactTime(), null));
+                            for (TextMessage textMessage : favoriteList) {
+                                Log.d(TAG, "textMessage id: " + textMessage.getId());
+                                if (!currentFavorites.contains(textMessage.getId())) {
+                                    sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), textMessage.getSender(), textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
                                 }
                             }
 
                             if (!sortedFavorites.isEmpty()) {
                                 AtomicBoolean error = new AtomicBoolean(false);
-                                for (Message sortedMessage : sortedFavorites) {
-                                    favMessageRef.add(sortedMessage)
+                                for (TextMessage sortedTextMessage : sortedFavorites) {
+                                    favMessageRef.add(sortedTextMessage)
                                             .addOnFailureListener(e -> {
                                                 Log.w(TAG, "Error adding document", e);
                                                 Toast.makeText(getContext(), "There was an error", Toast.LENGTH_SHORT).show();
@@ -240,13 +237,13 @@ public class ChatFragment extends Fragment {
                                 }
 
                                 if (!error.get()) {
-                                    if (sortedFavorites.size() == 1) Toast.makeText(getContext(), "Message added to favorites!", Toast.LENGTH_SHORT).show();
+                                    if (sortedFavorites.size() == 1) Toast.makeText(getContext(), "TextMessage added to favorites!", Toast.LENGTH_SHORT).show();
                                     else Toast.makeText(getContext(), sortedFavorites.size() + " messages added to favorites!", Toast.LENGTH_SHORT).show();
                                 }
 
                                 chatsAdapter.closeSelectionList();
                             } else {
-                                Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "TextMessage already added to favorites!", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());
@@ -325,7 +322,7 @@ public class ChatFragment extends Fragment {
             if (value != null) {
                 for (QueryDocumentSnapshot document : value) {
 
-                    // Retrieves all the fields and puts it to a new Message object
+                    // Retrieves all the fields and puts it to a new TextMessage object
                     String id = document.getId();
                     String sender = document.getString("sender");
                     String content = document.getString("content");
@@ -339,9 +336,9 @@ public class ChatFragment extends Fragment {
                     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
                     String time = timeFormat.format(timeMilli);
 
-                    Message message = new Message(id, sender, content, time, chatRef, messageType, exactTime);
+                    TextMessage textMessage = new TextMessage(id, sender, content, time, chatRef, messageType, exactTime);
 
-                    chats.add(message);
+                    chats.add(textMessage);
                 }
             }
 
@@ -364,8 +361,8 @@ public class ChatFragment extends Fragment {
 
         Timestamp timestamp = Timestamp.now();
 
-        // Creates a new Message object, fills it with specified information and sends it to the database
-//        Message newMessage = new Message(Constants.currentUser, message, formattedTime, messageType, timestamp);
+        // Creates a new TextMessage object, fills it with specified information and sends it to the database
+//        TextMessage newMessage = new TextMessage(Constants.currentUser, message, formattedTime, messageType, timestamp);
 
         Map<String, Object> messageData = new HashMap<>();
         messageData.put("sender", Constants.currentUser);

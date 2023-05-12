@@ -214,7 +214,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:background="@null"
-                    android:hint="send a message"
+                    android:hint="send a textMessage"
                     android:inputType="textPersonName"
                     android:textColorHint="#737373"
                     android:textSize="26sp"

@@ -2,44 +2,27 @@ package com.ahmetazizov.androidchatapp.models;
 
 import com.google.firebase.Timestamp;
 
-import java.util.Date;
-
 public class Message {
-
-//    public static final int LAYOUT_SENDER = 1;
-//    public static final int LAYOUT_RECEIVER = 2;
 
     String id;
     String sender;
-    String content;
-    String time;
     String chatRef;
     String messageType;
     Timestamp exactTime;
 
-    public Message() {
-        // Default no-argument constructor
-    }
+    public Message() {}
 
-    public Message(String sender, String content, String time, String messageType, Timestamp exactTime) {
-        this.sender = sender;
-        this.content = content;
-        this.time = time;
-        this.messageType = messageType;
-        this.exactTime = exactTime;
-    }
-
-    public Message(String id, String sender, String content, String time, String chatRef, String messageType, Timestamp exactTime) {
+    public Message(String id, String sender, String content, String chatRef, String messageType, Timestamp exactTime) {
         this.id = id;
         this.sender = sender;
-        this.content = content;
-        this.time = time;
         this.chatRef = chatRef;
         this.messageType = messageType;
         this.exactTime = exactTime;
     }
 
-    public String getId() { return id; }
+    public String getId() {
+        return id;
+    }
 
     public void setId(String id) {
         this.id = id;
@@ -53,20 +36,12 @@ public class Message {
         this.sender = sender;
     }
 
-    public String getContent() {
-        return content;
+    public String getChatRef() {
+        return chatRef;
     }
 
-    public void setContent(String content) {
-        this.content = content;
-    }
-
-    public String getTime() {
-        return time;
-    }
-
-    public void setTime(String time) {
-        this.time = time;
+    public void setChatRef(String chatRef) {
+        this.chatRef = chatRef;
     }
 
     public String getMessageType() {
@@ -75,14 +50,6 @@ public class Message {
 
     public void setMessageType(String messageType) {
         this.messageType = messageType;
-    }
-
-    public String getChatRef() {
-        return chatRef;
-    }
-
-    public void setChatRef(String chatRef) {
-        this.chatRef = chatRef;
     }
 
     public Timestamp getExactTime() {

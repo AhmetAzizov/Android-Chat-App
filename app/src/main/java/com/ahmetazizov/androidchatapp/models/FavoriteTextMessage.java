@@ -1,15 +1,14 @@
 package com.ahmetazizov.androidchatapp.models;
 
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
 import com.google.firebase.Timestamp;
 
-public class FavoriteMessage extends Message{
+public class FavoriteTextMessage extends TextMessage {
 
     private String selfId;
 
-    public FavoriteMessage() {}
+    public FavoriteTextMessage() {}
 
-    public FavoriteMessage(String id, String sender, String content, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
+    public FavoriteTextMessage(String id, String sender, String content, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
         super(id, sender, content, time, chatRef, messageType, exactTime);
         this.selfId = selfId;
     }

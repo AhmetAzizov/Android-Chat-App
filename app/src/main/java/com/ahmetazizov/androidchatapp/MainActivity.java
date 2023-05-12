@@ -1,7 +1,6 @@
 package com.ahmetazizov.androidchatapp;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -15,7 +14,6 @@ import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
 import android.util.Log;
-import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.TextView;
@@ -23,10 +21,9 @@ import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
-import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
-import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
-import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
+import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -38,12 +35,9 @@ import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.util.HashMap;
 import java.util.List;
@@ -212,7 +206,7 @@ public class MainActivity extends AppCompatActivity {
                         ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
                         if (fragment != null) {
                             if (fragment.getAdapter() != null) {
-                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
+                                List<TextMessage> deleteList = fragment.getAdapter().getSelectionList();
                                 if (deleteList.size() == 0) {
                                     FragmentManager fragmentManager2 = getSupportFragmentManager();
                                     FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
@@ -328,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                       Timestamp exactTime = document.getTimestamp("exactTime");
                       String selfId = document.getId();
 
-                      FavoriteMessage favoriteMessage = new FavoriteMessage(id, sender, content, "null", chatRef, messageType, exactTime, selfId);
+                      FavoriteTextMessage favoriteMessage = new FavoriteTextMessage(id, sender, content, "null", chatRef, messageType, exactTime, selfId);
 
                       Constants.favorites.add(favoriteMessage);
                 }

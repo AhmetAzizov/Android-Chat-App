@@ -1,13 +1,12 @@
 package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
-//import static com.ahmetazizov.androidchatapp.models.Message.LAYOUT_RECEIVER;
-//import static com.ahmetazizov.androidchatapp.models.Message.LAYOUT_SENDER;
+//import static com.ahmetazizov.androidchatapp.models.TextMessage.LAYOUT_RECEIVER;
+//import static com.ahmetazizov.androidchatapp.models.TextMessage.LAYOUT_SENDER;
 
 import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,14 +14,11 @@ import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.cardview.widget.CardView;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.FavoriteMessage;
-import com.ahmetazizov.androidchatapp.models.Message;
-import com.google.firebase.firestore.DocumentReference;
+import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -34,15 +30,15 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     RecyclerView recyclerView;
     Context context;
-    ArrayList<Message> list;
+    ArrayList<TextMessage> list;
     FirebaseFirestore db;
     Toolbar selectionOptions;
     TextView selectionCount;
 
-    List<Message> selectionList = new ArrayList<>();
+    List<TextMessage> selectionList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
+    public ChatsAdapter(Context context, ArrayList<TextMessage> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -230,7 +226,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
-    public List<Message> getSelectionList() {
+    public List<TextMessage> getSelectionList() {
         return selectionList;
     }
 }
