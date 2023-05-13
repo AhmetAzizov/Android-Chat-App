@@ -23,6 +23,7 @@ import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
+import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
@@ -206,7 +207,7 @@ public class MainActivity extends AppCompatActivity {
                         ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
                         if (fragment != null) {
                             if (fragment.getAdapter() != null) {
-                                List<TextMessage> deleteList = fragment.getAdapter().getSelectionList();
+                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
                                 if (deleteList.size() == 0) {
                                     FragmentManager fragmentManager2 = getSupportFragmentManager();
                                     FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();

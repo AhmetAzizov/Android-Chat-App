@@ -12,7 +12,7 @@ public class Message {
 
     public Message() {}
 
-    public Message(String id, String sender, String content, String chatRef, String messageType, Timestamp exactTime) {
+    public Message(String id, String sender, String chatRef, String messageType, Timestamp exactTime) {
         this.id = id;
         this.sender = sender;
         this.chatRef = chatRef;

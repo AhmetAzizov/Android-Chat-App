@@ -34,6 +34,7 @@ import android.widget.Toolbar;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
+import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.R;
@@ -72,7 +73,7 @@ public class ChatFragment extends Fragment {
     private final static String TAG = "ChatFragment";
     private static final int PICK_IMAGE_REQUEST = 1;
     FirebaseFirestore db;
-    ArrayList<TextMessage> chats;
+    ArrayList<Message> chats;
     ImageView contactImage, backButton, downArrowIcon;
     ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView contactName, infoLabel, selectionCount;
@@ -159,9 +160,9 @@ public class ChatFragment extends Fragment {
         });
 
         selectionDeleteButton.setOnClickListener(v -> {
-            List<TextMessage> deleteList = chatsAdapter.getSelectionList();
+            List<Message> deleteList = chatsAdapter.getSelectionList();
 
-            for (TextMessage textMessage : deleteList) {
+            for (Message textMessage : deleteList) {
                 if (!textMessage.getSender().equals(Constants.currentUser)) {
                     Toast.makeText(getContext(), "You can only delete your own messages!", Toast.LENGTH_SHORT).show();
                     chatsAdapter.closeSelectionList();
@@ -176,17 +177,19 @@ public class ChatFragment extends Fragment {
 
 
         selectionCopyButton.setOnClickListener(v -> {
-            List<TextMessage> copyList = chatsAdapter.getSelectionList();
+            List<Message> copyList = chatsAdapter.getSelectionList();
 
             if (copyList.isEmpty()) return;
 
             StringBuilder copyContent = new StringBuilder();
             SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
 
-            for (TextMessage textMessage : copyList) {
+            for (Message textMessage : copyList) {
+                TextMessage message = (TextMessage) textMessage;
+
                 long messageDateMilli = textMessage.getExactTime().toDate().getTime();
                 String messageDate = dateFormat.format(messageDateMilli);
-                copyContent.append('[' + messageDate + "] " + textMessage.getContent() + "\n");
+                copyContent.append('[' + messageDate + "] " + message.getContent() + "\n");
             }
 
 
@@ -208,8 +211,8 @@ public class ChatFragment extends Fragment {
         selectionFavoriteButton.setOnClickListener(v -> {
             final CollectionReference favMessageRef = db.collection("users").document(Constants.currentUser).collection("favorites");
             List<String> currentFavorites = new ArrayList<>();
-            List<TextMessage> sortedFavorites = new ArrayList<>();
-            List<TextMessage> favoriteList = chatsAdapter.getSelectionList();
+            List<Message> sortedFavorites = new ArrayList<>();
+            List<Message> favoriteList = chatsAdapter.getSelectionList();
 
             favMessageRef.get().addOnCompleteListener(task -> {
                         if (task.isSuccessful()) {
@@ -218,16 +221,22 @@ public class ChatFragment extends Fragment {
                                 Log.d(TAG, "item id: " + document.getString("id"));
                             }
 
-                            for (TextMessage textMessage : favoriteList) {
-                                Log.d(TAG, "textMessage id: " + textMessage.getId());
-                                if (!currentFavorites.contains(textMessage.getId())) {
-                                    sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), textMessage.getSender(), textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
+                            for (Message message : favoriteList) {
+                                Log.d(TAG, "textMessage id: " + message.getId());
+                                if (!currentFavorites.contains(message.getId())) {
+                                    if (message instanceof TextMessage) {
+                                        TextMessage textMessage = (TextMessage) message;
+                                        sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), textMessage.getSender(), textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
+                                    } else {
+
+                                    }
+
                                 }
                             }
 
                             if (!sortedFavorites.isEmpty()) {
                                 AtomicBoolean error = new AtomicBoolean(false);
-                                for (TextMessage sortedTextMessage : sortedFavorites) {
+                                for (Message sortedTextMessage : sortedFavorites) {
                                     favMessageRef.add(sortedTextMessage)
                                             .addOnFailureListener(e -> {
                                                 Log.w(TAG, "Error adding document", e);

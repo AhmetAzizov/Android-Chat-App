@@ -18,6 +18,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -30,15 +31,15 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     RecyclerView recyclerView;
     Context context;
-    ArrayList<TextMessage> list;
+    ArrayList<Message> list;
     FirebaseFirestore db;
     Toolbar selectionOptions;
     TextView selectionCount;
 
-    List<TextMessage> selectionList = new ArrayList<>();
+    List<Message> selectionList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<TextMessage> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -116,15 +117,19 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
         switch (CASE) {
             case 1:
-                String senderMessage = list.get(position).getContent();
-                String senderTimeSent = list.get(position).getTime();
+                TextMessage textMessage = (TextMessage) list.get(position);
+
+                String senderMessage = textMessage.getContent();
+                String senderTimeSent = textMessage.getTime();
 
                 ((SenderMessageViewHolder) holder).senderMessageContent.setText(senderMessage);
                 ((SenderMessageViewHolder) holder).senderTimeSent.setText(senderTimeSent);
                 break;
             case 2:
-                String receiverMessage = list.get(position).getContent();
-                String receiverTimeSent = list.get(position).getTime();
+                TextMessage textMessage2 = (TextMessage) list.get(position);
+
+                String receiverMessage = textMessage2.getContent();
+                String receiverTimeSent = textMessage2.getTime();
 
                 ((ReceiverMessageViewHolder) holder).receiverMessageContent.setText(receiverMessage);
                 ((ReceiverMessageViewHolder) holder).receiverTimeSent.setText(receiverTimeSent);
@@ -226,7 +231,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         notifyDataSetChanged();
     }
 
-    public List<TextMessage> getSelectionList() {
+    public List<Message> getSelectionList() {
         return selectionList;
     }
 }
