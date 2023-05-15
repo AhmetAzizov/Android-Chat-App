@@ -40,6 +40,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -323,7 +324,11 @@ public class MainActivity extends AppCompatActivity {
                       Timestamp exactTime = document.getTimestamp("exactTime");
                       String selfId = document.getId();
 
-                      FavoriteTextMessage favoriteMessage = new FavoriteTextMessage(id, sender, content, "null", chatRef, messageType, exactTime, selfId);
+                      long timeMilli = exactTime.toDate().getTime();
+                      SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
+                      String time = timeFormat.format(timeMilli);
+
+                      FavoriteTextMessage favoriteMessage = new FavoriteTextMessage(id, sender, content, time, chatRef, messageType, exactTime, selfId);
 
                       Constants.favorites.add(favoriteMessage);
                 }
