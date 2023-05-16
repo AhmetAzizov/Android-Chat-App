@@ -7,19 +7,29 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.net.Uri;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
+import androidx.annotation.Nullable;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
+import com.bumptech.glide.Glide;
+import com.bumptech.glide.load.DataSource;
+import com.bumptech.glide.load.engine.GlideException;
+import com.bumptech.glide.request.RequestListener;
+import com.bumptech.glide.request.target.Target;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -60,18 +70,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
             }
 
-            switch (CASE) {
-                case 1:
-                    return 1;
-                case 2:
-                    return 2;
-                case 3:
-                    return 3;
-                case 4:
-                    return 4;
-                default:
-                    return -1;
-            }
+            return CASE;
         } else {
             return -1;
         }
@@ -89,10 +88,10 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 return new ReceiverMessageViewHolder(layoutReceiver);
             case 3:
                 View layoutSenderImage = LayoutInflater.from(context).inflate(R.layout.sender_image_row, parent, false);
-                return new ReceiverMessageViewHolder(layoutSenderImage);
+                return new SenderImageViewHolder(layoutSenderImage);
             case 4:
                 View layoutReceiverImage = LayoutInflater.from(context).inflate(R.layout.receiver_image_row, parent, false);
-                return new ReceiverMessageViewHolder(layoutReceiverImage);
+                return new ReceiverImageViewHolder(layoutReceiverImage);
             default: return null;
         }
     }
@@ -133,6 +132,28 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
                 ((ReceiverMessageViewHolder) holder).receiverMessageContent.setText(receiverMessage);
                 ((ReceiverMessageViewHolder) holder).receiverTimeSent.setText(receiverTimeSent);
+                break;
+            case 3:
+                ImageMessage imageMessage = (ImageMessage) list.get(position);
+
+                String url = imageMessage.getUrl();
+
+                Glide.with(context)
+                        .load(url)
+                        .override(500, 500)
+                        .centerCrop()
+                        .into(((SenderImageViewHolder) holder).senderImageContainer);
+                break;
+            case 4:
+                ImageMessage imageMessage2 = (ImageMessage) list.get(position);
+
+                String url2 = imageMessage2.getUrl();
+
+                Glide.with(context)
+                        .load(url2)
+                        .override(500, 500)
+                        .centerCrop()
+                        .into(((ReceiverImageViewHolder) holder).receiverImageContainer);
                 break;
 
             default: break;
@@ -193,6 +214,29 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
             receiverMessageContent = itemView.findViewById(R.id.receiverMessageContent);
             receiverTimeSent = itemView.findViewById(R.id.receiverTimeSent);
+        }
+    }
+
+
+    static class SenderImageViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView senderImageContainer;
+
+        public SenderImageViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            senderImageContainer = itemView.findViewById(R.id.imageContainer);
+        }
+    }
+
+    static class ReceiverImageViewHolder extends RecyclerView.ViewHolder {
+
+        ImageView receiverImageContainer;
+
+        public ReceiverImageViewHolder(@NonNull View itemView) {
+            super(itemView);
+
+            receiverImageContainer = itemView.findViewById(R.id.imageContainer);
         }
     }
 

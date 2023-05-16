@@ -29,6 +29,7 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
@@ -74,7 +75,6 @@ public class RegisterFragment extends Fragment {
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
     public final static String TAG = "RegisterFragment";
-    ActivityResultLauncher<String> mGetContentLauncher;
     private static final int PICK_IMAGE_REQUEST = 1;
     private Button selectImageButton, registerButton;
     private ArrayList<String> users;
@@ -113,7 +113,7 @@ public class RegisterFragment extends Fragment {
 
 
         dbUsersRef = db.collection("users");
-        storageRef = FirebaseStorage.getInstance().getReference("imageUploads");
+        storageRef = FirebaseStorage.getInstance().getReference("userImages");
 
         usersListener();
 
@@ -211,59 +211,40 @@ public class RegisterFragment extends Fragment {
 
 
 
-    // This method is used for getting the file extension of specified Uri
-    private String getFileExtension(Uri uri) {
-        ContentResolver cR = requireContext().getContentResolver();
-        MimeTypeMap mime = MimeTypeMap.getSingleton();
-        return mime.getExtensionFromMimeType(cR.getType(uri));
-    }
+//    // This method is used for getting the file extension of specified Uri
+//    private String getFileExtension(Uri uri) {
+//        ContentResolver cR = requireContext().getContentResolver();
+//        MimeTypeMap mime = MimeTypeMap.getSingleton();
+//        return mime.getExtensionFromMimeType(cR.getType(uri));
+//    }
 
 
 
     private void uploadFile(String username, String email, String password) {
         if (imageUri != null) {
-            StorageReference fileRef = storageRef.child(System.currentTimeMillis() + "." + getFileExtension(imageUri));
+            StorageReference fileRef = storageRef.child(System.currentTimeMillis() + "." + Constants.getFileExtension(imageUri, requireContext()));
 
             fileRef.putFile(imageUri)
-                    .addOnSuccessListener(new OnSuccessListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onSuccess(UploadTask.TaskSnapshot taskSnapshot) {
+                    .addOnSuccessListener(taskSnapshot -> {
 
-                            // This code delays the progress bar resetting by 1 second
-                            Handler handler = new Handler();
-                            handler.postDelayed(new Runnable() {
-                                @Override
-                                public void run() {
-                                    progressBar.setProgress(0);
-                                }
-                            }, 1000);
+                        // This code delays the progress bar resetting by 1 second
+                        Handler handler = new Handler();
+                        handler.postDelayed(() -> progressBar.setProgress(0), 1000);
 
-                            // Here we get the download url from the specific database reference
-                            fileRef.getDownloadUrl().addOnSuccessListener(new OnSuccessListener<Uri>() {
-                                @Override
-                                public void onSuccess(Uri uri) {
+                        // Here we get the download url from the specific database reference
+                        fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
-                                    // We create a new user object
-                                    User user = new User(username, email, uri.toString());
+                            // We create a new user object
+                            User user = new User(username, email, uri.toString());
 
-                                    registerUser(email, password, user);
+                            registerUser(email, password, user);
 
-                                }
-                            });
-                        }
+                        });
                     })
-                    .addOnFailureListener(new OnFailureListener() {
-                        @Override
-                        public void onFailure(@NonNull Exception e) {
-                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-                        }
-                    })
-                    .addOnProgressListener(new OnProgressListener<UploadTask.TaskSnapshot>() {
-                        @Override
-                        public void onProgress(@NonNull UploadTask.TaskSnapshot snapshot) {
-                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                            progressBar.setProgress((int) progress);
-                        }
+                    .addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show())
+                    .addOnProgressListener(snapshot -> {
+                        double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+                        progressBar.setProgress((int) progress);
                     });
         } else {
             Toast.makeText(getContext(), "No File Selected", Toast.LENGTH_SHORT).show();

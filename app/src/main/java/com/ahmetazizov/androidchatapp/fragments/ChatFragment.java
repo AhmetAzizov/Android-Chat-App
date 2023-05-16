@@ -34,6 +34,7 @@ import android.widget.Toolbar;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
+import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
@@ -335,6 +336,7 @@ public class ChatFragment extends Fragment {
                     String id = document.getId();
                     String sender = document.getString("sender");
                     String content = document.getString("content");
+                    String imageURL = document.getString("url");
                     String chatRef = user.getChatReference();
                     String messageType = document.getString("messageType");
                     Timestamp exactTime = document.getTimestamp("exactTime");
@@ -345,9 +347,14 @@ public class ChatFragment extends Fragment {
                     SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
                     String time = timeFormat.format(timeMilli);
 
-                    TextMessage textMessage = new TextMessage(id, sender, content, time, chatRef, messageType, exactTime);
+//                    if (messageType.equals("text"))
 
-                    chats.add(textMessage);
+                    Message message = (messageType.equals("text")) ? new TextMessage(id, sender, content, time, chatRef, messageType, exactTime)
+                            : new ImageMessage(id, sender, chatRef, messageType, exactTime, imageURL, time);
+
+//                    TextMessage textMessage = new TextMessage(id, sender, content, time, chatRef, messageType, exactTime);
+
+                    chats.add(message);
                 }
             }
 
@@ -371,7 +378,7 @@ public class ChatFragment extends Fragment {
         Timestamp timestamp = Timestamp.now();
 
         // Creates a new TextMessage object, fills it with specified information and sends it to the database
-//        TextMessage newMessage = new TextMessage(Constants.currentUser, message, formattedTime, messageType, timestamp);
+        // TextMessage newMessage = new TextMessage(Constants.currentUser, message, formattedTime, messageType, timestamp);
 
         Map<String, Object> messageData = new HashMap<>();
         messageData.put("sender", Constants.currentUser);
@@ -484,7 +491,7 @@ public class ChatFragment extends Fragment {
 
             Uri imageUri = data.getData();
 
-            SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri);
+            SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri, user);
             sendImageDialog.show(requireActivity().getSupportFragmentManager(), "sendImageDialog");
         }
     }
