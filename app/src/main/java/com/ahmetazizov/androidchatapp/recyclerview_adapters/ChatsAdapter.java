@@ -45,7 +45,6 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     FirebaseFirestore db;
     Toolbar selectionOptions;
     TextView selectionCount;
-
     List<Message> selectionList = new ArrayList<>();
 
 
@@ -254,8 +253,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             selectionList.add(list.get(position));
         }
 
-        String currentCount = String.valueOf(selectionList.size());
-        selectionCount.setText(currentCount);
+        selectionCount.setText(String.valueOf(selectionList.size()));
 
         notifyDataSetChanged();
     }

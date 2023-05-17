@@ -12,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
@@ -52,7 +53,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
                 View textLayout = LayoutInflater.from(context).inflate(R.layout.favorites_text_row, parent, false);
                 return new TextMessage(textLayout);
             case 2:
-                View imageLayout = LayoutInflater.from(context).inflate(R.layout.favorites_text_row, parent, false);
+                View imageLayout = LayoutInflater.from(context).inflate(R.layout.favorites_image_row, parent, false);
                 return new ImageMessage(imageLayout);
             default: return null;
         }
@@ -60,6 +61,8 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
 
     @Override
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
+
+        DocumentReference docRef = db.collection("users").document(list.get(position).getSender());
         int CASE;
 
         if (!list.isEmpty()) {
@@ -70,8 +73,6 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
 
         switch (CASE) {
             case 1:
-                DocumentReference docRef = db.collection("users").document(list.get(position).getSender());
-
                 FavoriteTextMessage favoriteTextMessage = (FavoriteTextMessage) list.get(position);
 
                 String sender = favoriteTextMessage.getSender();
@@ -102,7 +103,43 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
                         Log.d(TAG, "get failed with ", task.getException());
                     }
                 });
+                break;
 
+            case 2:
+                FavoriteImageMessage favoriteImageMessage = (FavoriteImageMessage) list.get(position);
+
+                String sender2 = favoriteImageMessage.getSender();
+                String url = favoriteImageMessage.getUrl();
+                String time2 = favoriteImageMessage.getTime();
+
+                ((ImageMessage) holder).sender.setText(sender2);
+                ((ImageMessage) holder).timeSent.setText(time2);
+
+                Glide.with(context)
+                        .load(url)
+                        .override(500, 500)
+                        .centerCrop()
+                        .into((((ImageMessage) holder).imageContent));
+
+                docRef.get().addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+                        DocumentSnapshot document = task.getResult();
+
+                        if (document.exists()) {
+                            String imageURL = document.getString("imageURL");
+
+                            Glide.with(context)
+                                    .load(imageURL)
+                                    .override(100, 100)
+                                    .centerCrop()
+                                    .into(((ImageMessage) holder).senderImage);
+                        } else {
+                            Log.d(TAG, "No such document");
+                        }
+                    } else {
+                        Log.d(TAG, "get failed with ", task.getException());
+                    }
+                });
 
                 break;
 
@@ -133,8 +170,16 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
 
     public static class ImageMessage extends RecyclerView.ViewHolder {
 
+        TextView sender, timeSent;
+        ImageView senderImage, imageContent;
+
         public ImageMessage(@NonNull View itemView) {
             super(itemView);
+
+            sender = itemView.findViewById(R.id.sender);
+            timeSent = itemView.findViewById(R.id.timeSent);
+            imageContent = itemView.findViewById(R.id.imageContent);
+            senderImage = itemView.findViewById(R.id.senderImage);
         }
     }
 }

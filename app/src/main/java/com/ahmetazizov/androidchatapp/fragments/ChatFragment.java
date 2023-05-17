@@ -7,6 +7,7 @@ import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.PorterDuff;
+import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -33,6 +34,7 @@ import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
+import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
@@ -40,6 +42,7 @@ import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
 import com.bumptech.glide.Glide;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -229,7 +232,8 @@ public class ChatFragment extends Fragment {
                                         TextMessage textMessage = (TextMessage) message;
                                         sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), textMessage.getSender(), textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
                                     } else {
-
+                                        ImageMessage imageMessage = (ImageMessage) message;
+                                        sortedFavorites.add(new FavoriteImageMessage(imageMessage.getId(), imageMessage.getSender(), imageMessage.getUrl(), null, imageMessage.getChatRef(), imageMessage.getMessageType(), imageMessage.getExactTime(), null));
                                     }
 
                                 }
@@ -253,7 +257,7 @@ public class ChatFragment extends Fragment {
 
                                 chatsAdapter.closeSelectionList();
                             } else {
-                                Toast.makeText(getContext(), "TextMessage already added to favorites!", Toast.LENGTH_SHORT).show();
+                                Toast.makeText(getContext(), "Message already added to favorites!", Toast.LENGTH_SHORT).show();
                             }
                         } else {
                             Log.d(TAG, "Error getting documents: ", task.getException());

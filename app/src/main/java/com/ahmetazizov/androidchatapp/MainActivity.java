@@ -22,6 +22,7 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
+import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
@@ -319,6 +320,7 @@ public class MainActivity extends AppCompatActivity {
                       String id = document.getString("id");
                       String sender = document.getString("sender");
                       String content = document.getString("content");
+                      String imageURL = document.getString("url");
                       String chatRef = document.getString("chatRef");
                       String messageType = document.getString("messageType");
                       Timestamp exactTime = document.getTimestamp("exactTime");
@@ -328,9 +330,12 @@ public class MainActivity extends AppCompatActivity {
                       SimpleDateFormat timeFormat = new SimpleDateFormat("HH:mm");
                       String time = timeFormat.format(timeMilli);
 
-                      FavoriteTextMessage favoriteMessage = new FavoriteTextMessage(id, sender, content, time, chatRef, messageType, exactTime, selfId);
+                      if (messageType.equals("text")) {
+                          Constants.favorites.add(new FavoriteTextMessage(id, sender, content, time, chatRef, messageType, exactTime, selfId));
+                      } else {
+                          Constants.favorites.add(new FavoriteImageMessage(id, sender, imageURL, time, chatRef, messageType, exactTime, selfId));
+                      }
 
-                      Constants.favorites.add(favoriteMessage);
                 }
             }
 
