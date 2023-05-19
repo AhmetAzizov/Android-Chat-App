@@ -8,7 +8,7 @@
 
     <Toolbar
         android:layout_width="match_parent"
-        android:layout_height="60dp"
+        android:layout_height="40dp"
         android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
         app:contentInsetLeft="0dp"
@@ -17,15 +17,15 @@
         android:contentInsetEnd="0dp"
         app:contentInsetRight="0dp"
         app:contentInsetEnd="0dp"
-        android:background="@color/Gray">
+        android:background="#1E1E1E">
 
         <ImageView
             android:id="@+id/backButton"
-            android:layout_width="60dp"
-            android:layout_height="60dp"
-            android:padding="8dp"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:padding="4dp"
             app:srcCompat="@drawable/ic_arrow_left"
-            app:tint="@color/black" />
+            app:tint="#5E5E5E" />
 
         <TextView
             android:layout_width="wrap_content"
@@ -34,7 +34,7 @@
             android:layout_gravity="center"
             android:textSize="20sp"
             android:fontFamily="sans-serif-black"
-            android:textColor="@color/black"/>
+            android:textColor="#5E5E5E"/>
 
     </Toolbar>
 
@@ -43,5 +43,5 @@
         android:id="@+id/favoritesRecyclerview"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_marginTop="60dp"/>
+        android:layout_marginTop="40dp"/>
 </FrameLayout>

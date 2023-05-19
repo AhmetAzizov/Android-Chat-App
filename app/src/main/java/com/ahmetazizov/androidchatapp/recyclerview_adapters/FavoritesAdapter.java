@@ -63,87 +63,75 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
     public void onBindViewHolder(@NonNull RecyclerView.ViewHolder holder, int position) {
 
         DocumentReference docRef = db.collection("users").document(list.get(position).getSender());
-        int CASE;
 
-        if (!list.isEmpty()) {
-            CASE = (list.get(position).getMessageType().equals("text")) ? 1 : 2;
+
+        if (list.get(position).getMessageType().equals("text")) {
+
+            FavoriteTextMessage favoriteTextMessage = (FavoriteTextMessage) list.get(position);
+
+            String sender = favoriteTextMessage.getSender();
+            String messageContent = favoriteTextMessage.getContent();
+            String time = favoriteTextMessage.getTime();
+
+            ((TextMessage) holder).sender.setText(sender);
+            ((TextMessage) holder).messageContent.setText(messageContent);
+            ((TextMessage) holder).timeSent.setText(time);
+
+
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
+
+                    if (document.exists()) {
+                        String imageURL = document.getString("imageURL");
+
+                        Glide.with(context)
+                                .load(imageURL)
+                                .override(100, 100)
+                                .centerCrop()
+                                .into(((TextMessage) holder).senderImage);
+                    } else {
+                        Log.d(TAG, "No such document");
+                    }
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            });
         } else {
-            CASE = -1;
-        }
+            FavoriteImageMessage favoriteImageMessage = (FavoriteImageMessage) list.get(position);
 
-        switch (CASE) {
-            case 1:
-                FavoriteTextMessage favoriteTextMessage = (FavoriteTextMessage) list.get(position);
+            String sender2 = favoriteImageMessage.getSender();
+            String url = favoriteImageMessage.getUrl();
+            String time2 = favoriteImageMessage.getTime();
 
-                String sender = favoriteTextMessage.getSender();
-                String messageContent = favoriteTextMessage.getContent();
-                String time = favoriteTextMessage.getTime();
+            ((ImageMessage) holder).sender.setText(sender2);
+            ((ImageMessage) holder).timeSent.setText(time2);
 
-                ((TextMessage) holder).sender.setText(sender);
-                ((TextMessage) holder).messageContent.setText(messageContent);
-                ((TextMessage) holder).timeSent.setText(time);
+            Glide.with(context)
+                    .load(url)
+                    .override(500, 500)
+                    .centerCrop()
+                    .into((((ImageMessage) holder).imageContent));
 
+            docRef.get().addOnCompleteListener(task -> {
+                if (task.isSuccessful()) {
+                    DocumentSnapshot document = task.getResult();
 
-                docRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
+                    if (document.exists()) {
+                        String imageURL = document.getString("imageURL");
 
-                        if (document.exists()) {
-                            String imageURL = document.getString("imageURL");
-
-                            Glide.with(context)
-                                    .load(imageURL)
-                                    .override(100, 100)
-                                    .centerCrop()
-                                    .into(((TextMessage) holder).senderImage);
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
+                        Glide.with(context)
+                                .load(imageURL)
+                                .override(100, 100)
+                                .centerCrop()
+                                .into(((ImageMessage) holder).senderImage);
                     } else {
-                        Log.d(TAG, "get failed with ", task.getException());
+                        Log.d(TAG, "No such document");
                     }
-                });
-                break;
-
-            case 2:
-                FavoriteImageMessage favoriteImageMessage = (FavoriteImageMessage) list.get(position);
-
-                String sender2 = favoriteImageMessage.getSender();
-                String url = favoriteImageMessage.getUrl();
-                String time2 = favoriteImageMessage.getTime();
-
-                ((ImageMessage) holder).sender.setText(sender2);
-                ((ImageMessage) holder).timeSent.setText(time2);
-
-                Glide.with(context)
-                        .load(url)
-                        .override(500, 500)
-                        .centerCrop()
-                        .into((((ImageMessage) holder).imageContent));
-
-                docRef.get().addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-                        DocumentSnapshot document = task.getResult();
-
-                        if (document.exists()) {
-                            String imageURL = document.getString("imageURL");
-
-                            Glide.with(context)
-                                    .load(imageURL)
-                                    .override(100, 100)
-                                    .centerCrop()
-                                    .into(((ImageMessage) holder).senderImage);
-                        } else {
-                            Log.d(TAG, "No such document");
-                        }
-                    } else {
-                        Log.d(TAG, "get failed with ", task.getException());
-                    }
-                });
-
-                break;
-
-            default: break;
+                } else {
+                    Log.d(TAG, "get failed with ", task.getException());
+                }
+            });
         }
     }
 
