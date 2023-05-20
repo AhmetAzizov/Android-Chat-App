@@ -1,24 +1,51 @@
 <resources xmlns:tools="http://schemas.android.com/tools" xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Base application theme. -->
-    <style name="Theme.AndroidChatApp" parent="Theme.MaterialComponents.NoActionBar">
+    <style name="Theme.AndroidChatApp" parent="Theme.Material3.Light.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">#8F8E8E</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">#413C3C</item>
+        <item name="colorPrimary">@color/md_light_green_500</item>
+        <item name="background">@color/md_brown_50</item>
+        <item name="colorOnBackground">@color/md_red_50</item>
+        <item name="colorSurface">@color/md_brown_100</item>
+        <item name="colorOnSurface">@color/md_black_1000</item>
+        <item name="colorPrimaryVariant">@color/md_red_50</item>
+        <item name="colorOnPrimary">@color/Green</item>
+        <item name="android:textColor">@color/black</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_700</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/md_light_green_300</item>
+        <item name="colorSecondaryVariant">@color/md_red_50</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:statusBarColor">@color/md_brown_100</item>
         <!-- Customize your theme here. -->
-<!--        <item name="android:windowFullscreen">true</item>-->
+
+        <item name="colorTertiary">@color/material_dynamic_tertiary40</item>
     </style>
 
 
-    <style name="roundImageView" parent="">
+    <style name="roundImageView" parent="Theme.Material3.Light.NoActionBar">
         <item name="cornerFamily">rounded</item>
         <item name="cornerSize">65dp</item>
-        <item name="color">@color/white</item>
+        <item name="color">@color/md_white_1000</item>
+    </style>
+
+    <style name="senderMessageBubble" parent="">
+        <item name="cornerSizeTopRight">0dp</item>
+        <item name="cornerSizeTopLeft">20dp</item>
+        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeBottomLeft">20dp</item>
+    </style>
+
+    <style name="receiverMessageBubble" parent="">
+        <item name="cornerSizeTopRight">20dp</item>
+        <item name="cornerSizeTopLeft">0dp</item>
+        <item name="cornerSizeBottomRight">20dp</item>
+        <item name="cornerSizeBottomLeft">20dp</item>
+    </style>
+
+    <style name="senderMessageBubbleColor" parent="">
+        <item name="cardBackgroundColor">@color/md_green_100</item>
+    </style>
+
+    <style name="receiverMessageBubbleColor" parent="">
+        <item name="cardBackgroundColor">@color/md_green_50</item>
     </style>
 </resources>

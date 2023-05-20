@@ -30,6 +30,7 @@ import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import java.util.ArrayList;
@@ -43,12 +44,12 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     Context context;
     ArrayList<Message> list;
     FirebaseFirestore db;
-    Toolbar selectionOptions;
+    MaterialToolbar selectionOptions;
     TextView selectionCount;
     List<Message> selectionList = new ArrayList<>();
 
 
-    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, Toolbar selectionOptions, TextView selectionCount) {
+    public ChatsAdapter(Context context, ArrayList<Message> list, RecyclerView recyclerView, MaterialToolbar selectionOptions, TextView selectionCount) {
         this.list = list;
         this.context = context;
         this.recyclerView = recyclerView;
@@ -163,30 +164,27 @@ public class ChatsAdapter extends RecyclerView.Adapter {
             selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
 
             checkSelectionList(position);
-
             return true;
         });
 
 
         holder.itemView.setOnClickListener(v -> {
-            if (!selectionList.isEmpty()) {
-                checkSelectionList(position);
-            }
+            if (!selectionList.isEmpty()) checkSelectionList(position);
         });
 
 
-        if (selectionList.contains(list.get(position))) {
-            holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
-        }
-        else {
-            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
-        }
+//        if (selectionList.contains(list.get(position))) {
+//            holder.itemView.setBackgroundColor(Color.rgb(200, 150,  150));
+//        }
+//        else {
+//            holder.itemView.setBackgroundColor(Color.TRANSPARENT);
+//        }
+
+        holder.itemView.setBackgroundColor(selectionList.contains(list.get(position)) ? Color.rgb(200, 150,  150) : Color.TRANSPARENT);
     }
 
     @Override
-    public int getItemCount() {
-        return list.size();
-    }
+    public int getItemCount() {return list.size();}
 
 
     static class SenderMessageViewHolder extends RecyclerView.ViewHolder {

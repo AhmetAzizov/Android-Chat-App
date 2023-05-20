@@ -3,16 +3,23 @@
     <style name="Theme.AndroidChatApp" parent="Theme.MaterialComponents.DayNight.NoActionBar">
         <!-- Primary brand color. -->
         <item name="colorPrimary">#1C1C1C</item>
-        <item name="colorPrimaryVariant">@color/purple_700</item>
-        <item name="colorOnPrimary">@color/black</item>
+        <item name="colorPrimaryVariant">@color/md_red_50</item>
+        <item name="background">@color/md_red_50</item>
+        <item name="colorOnSurface">@color/md_red_50</item>
+        <item name="colorSurface">@color/md_red_50</item>
+        <item name="colorOnPrimary">@color/md_red_50</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/teal_200</item>
-        <item name="colorSecondaryVariant">@color/teal_200</item>
-        <item name="colorOnSecondary">@color/black</item>
+        <item name="colorSecondary">@color/md_red_50</item>
+        <item name="colorSecondaryVariant">@color/md_red_50</item>
+        <item name="colorOnSecondary">@color/md_red_50</item>
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/black</item>
+        <item name="android:statusBarColor">@color/md_red_50</item>
         <!-- Customize your theme here. -->
 
 <!--        <item name="android:windowFullscreen">true</item>-->
+    </style>
+
+    <style name="CustomCardViewStyle" parent="">
+        <item name="cardBackgroundColor">@color/black</item>
     </style>
 </resources>

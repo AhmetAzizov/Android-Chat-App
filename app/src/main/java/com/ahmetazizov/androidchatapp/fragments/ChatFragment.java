@@ -44,6 +44,7 @@ import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
 import com.bumptech.glide.Glide;
+import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -86,7 +87,7 @@ public class ChatFragment extends Fragment {
     RecyclerView chatsRecyclerView;
     CardView sendButton, pickImageButton, downArrow;
     EditText messageInput;
-    Toolbar profileInfo, selectionOptions;
+    MaterialToolbar profileInfo, selectionOptions;
     boolean firstTime = true;
 
 
