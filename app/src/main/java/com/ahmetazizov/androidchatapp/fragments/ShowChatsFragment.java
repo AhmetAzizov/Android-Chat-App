@@ -121,7 +121,6 @@ public class ShowChatsFragment extends Fragment {
     private FirebaseFirestore db;
     private RecyclerView recyclerView, searchCardList;
     private CardView cover;
-    private ProgressBar loadingScreenProgressBar;
     private CardView rateButton, searchCard, settingsButton;
     private SearchView searchCardInput;
     private LinearLayout searchCardLayout;
@@ -138,10 +137,9 @@ public class ShowChatsFragment extends Fragment {
 
         recyclerView = view.findViewById(R.id.chatsRecyclerView);
         cover = view.findViewById(R.id.loadingScreen);
-        loadingScreenProgressBar = view.findViewById(R.id.loadingScreenProgressBar);
         searchResult = new ArrayList<>();
         settingsButton = view.findViewById(R.id.settingsButton);
-        rateButton = view.findViewById(R.id.rateButton);
+//        rateButton = view.findViewById(R.id.rateButton);
         addContactButton = view.findViewById(R.id.addContactButton);
 
         searchCard = view.findViewById(R.id.searchCard);
@@ -244,10 +242,10 @@ public class ShowChatsFragment extends Fragment {
             }
         });
 
-        rateButton.setOnClickListener(v -> {
-            RatingDialog ratingDialog = new RatingDialog(getContext());
-            ratingDialog.show();
-            });
+//        rateButton.setOnClickListener(v -> {
+//            RatingDialog ratingDialog = new RatingDialog(getContext());
+//            ratingDialog.show();
+//            });
 
         addContactButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
