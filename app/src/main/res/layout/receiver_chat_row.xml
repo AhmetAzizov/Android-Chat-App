@@ -9,6 +9,7 @@
         android:layout_height="wrap_content"
         android:layout_margin="5dp"
         app:strokeWidth="0dp"
+        app:cardElevation="3dp"
         app:shapeAppearanceOverlay="@style/receiverMessageBubble"
         style="@style/receiverMessageBubbleColor"
         app:layout_constraintEnd_toEndOf="parent"
@@ -26,7 +27,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="12:45"
-                android:textSize="12sp"
+                android:textSize="10sp"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent" />
 

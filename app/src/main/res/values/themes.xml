@@ -14,13 +14,15 @@
         <item name="colorOnPrimaryContainer">@color/black</item>
 
         <item name="android:textColor">@color/black</item>
+
+        <item name="buttonTint">@color/md_blue_400</item>
         <!-- Secondary brand color. -->
         <item name="colorSecondary">@color/AntiqueWhite</item>
 
         <item name="colorSecondaryVariant">@color/md_red_50</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">@color/md_brown_200</item>
+        <item name="android:statusBarColor">@color/md_brown_100</item>
         <!-- Customize your theme here. -->
 
         <item name="colorTertiary">@color/material_dynamic_tertiary40</item>

@@ -29,6 +29,7 @@
                             android:layout_width="40dp"
                             android:layout_height="36dp"
                             android:padding="5dp"
+                            app:tint="?attr/colorOnPrimary"
                             app:srcCompat="@drawable/ic_menu" />
 
                 </com.google.android.material.card.MaterialCardView>
@@ -51,7 +52,7 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:layout_marginLeft="70dp"
+                    android:layout_marginLeft="65dp"
                     android:layout_marginTop="10dp"
                     app:cardBackgroundColor="?attr/colorSecondary"
                     app:shapeAppearanceOverlay="@style/searchBarCorner"

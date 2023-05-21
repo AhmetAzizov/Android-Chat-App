@@ -137,13 +137,7 @@ public class MainActivity extends AppCompatActivity {
 
             if (chatFragment == null) {
 
-                Map<String, Object> data = new HashMap<>();
-                data.put("isOnline", "true");
-
-                DocumentReference docRef = db.collection("users").document(Constants.currentUser);
-
-                docRef.update(data)
-                        .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
+                isOnline();
 
                 // go to add fragment
                 getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
@@ -177,6 +171,13 @@ public class MainActivity extends AppCompatActivity {
         super.onPause();
 
         isOffline();
+    }
+
+    @Override
+    protected void onResume() {
+        super.onResume();
+
+        isOnline();
     }
 
     @Override
@@ -311,6 +312,8 @@ public class MainActivity extends AppCompatActivity {
                 Log.w(TAG, "Listen failed.", error);
                 return;
             }
+//                       setTheme(R.style.Theme_AndroidChatApp);
+
 
             Constants.favorites.clear();
 
@@ -397,6 +400,17 @@ public class MainActivity extends AppCompatActivity {
 
         docRef.update(data)
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
+    }
+
+    private void isOnline() {
+        Map<String, Object> data = new HashMap<>();
+        data.put("isOnline", "true");
+
+        DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+
+        docRef.update(data)
+                .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
+
     }
 }
 
