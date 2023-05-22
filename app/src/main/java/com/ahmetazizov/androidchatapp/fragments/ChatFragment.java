@@ -90,8 +90,7 @@ public class ChatFragment extends Fragment {
     CardView sendButton, downArrow;
     ShapeableImageView pickImageButton;
     EditText messageInput;
-    MaterialToolbar selectionOptions;
-    MaterialCardView profileInfo;
+    MaterialToolbar selectionOptions, profileInfo;
     boolean firstTime = true;
 
 
