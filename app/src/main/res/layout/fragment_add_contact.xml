@@ -4,6 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:background="?attr/background"
     tools:context=".fragments.AddContactFragment">
 
     <androidx.constraintlayout.widget.ConstraintLayout
@@ -11,11 +12,11 @@
         android:layout_height="match_parent">
 
 
-        <Toolbar
+        <com.google.android.material.appbar.MaterialToolbar
             android:id="@+id/profileInfo"
             android:layout_width="match_parent"
             android:layout_height="60dp"
-            android:background="#272727"
+            android:background="?attr/colorSurface"
             android:contentInsetLeft="0dp"
             android:contentInsetStart="0dp"
             app:contentInsetLeft="0dp"
@@ -33,15 +34,18 @@
                 android:layout_width="60dp"
                 android:layout_height="60dp"
                 android:padding="10dp"
-                app:srcCompat="@drawable/ic_arrow_left"/>
+                app:srcCompat="@drawable/ic_arrow_left"
+                app:tint="?attr/colorOnSurface" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Add Contact"
                 android:layout_gravity="center"
-                android:textSize="25sp"/>
-        </Toolbar>
+                android:textSize="25sp"
+                android:textColor="?attr/colorOnSurface" />
+
+        </com.google.android.material.appbar.MaterialToolbar>
 
         <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/addContactUsernameLayout"
@@ -61,7 +65,7 @@
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toBottomOf="@+id/profileInfo"
             app:startIconDrawable="@drawable/ic_person"
-            app:startIconTint="#A1A0A0">
+            app:startIconTint="?attr/colorOnSurface">
 
             <com.google.android.material.textfield.TextInputEditText
                 android:id="@+id/addContactUsername"
@@ -80,7 +84,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="40dp"
-            android:backgroundTint="@color/Gray"
+            android:backgroundTint="?attr/colorSurface"
             android:fontFamily="sans-serif-black"
             android:paddingHorizontal="30dp"
             android:paddingVertical="10dp"
