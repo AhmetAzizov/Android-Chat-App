@@ -29,7 +29,7 @@
                             android:layout_width="40dp"
                             android:layout_height="36dp"
                             android:padding="5dp"
-                            app:tint="?attr/colorOnPrimary"
+                            app:tint="?attr/colorOnSurface"
                             app:srcCompat="@drawable/ic_menu" />
 
                 </com.google.android.material.card.MaterialCardView>
@@ -115,11 +115,14 @@
                     android:layout_margin="16dp"
                     app:shapeAppearanceOverlay="@style/senderMessageBubble"
                     android:text="ADD CONTACT"
+                    android:backgroundTint="?attr/colorSecondary"
                     android:textSize="15sp"
                     android:padding="5dp"
                     app:icon="@drawable/ic_add"
                     app:iconSize="35sp"
                     app:iconPadding="5dp"
+                    android:textColor="?attr/colorOnSurface"
+                    app:iconTint="?attr/colorOnSurface"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent" />
 

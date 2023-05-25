@@ -36,7 +36,7 @@
                     android:id="@+id/backButton"
                     android:layout_width="70dp"
                     android:layout_height="match_parent"
-                    android:padding="18dp"
+                    android:padding="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
@@ -129,7 +129,8 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_copy" />
+                    app:srcCompat="@drawable/ic_copy"
+                    app:tint="?attr/colorOnSurface" />
 
                 <ImageView
                     android:id="@+id/selectionDeleteButton"
@@ -140,7 +141,8 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/selectionCopyButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_delete" />
+                    app:srcCompat="@drawable/ic_delete"
+                    app:tint="?attr/colorOnSurface" />
 
                 <ImageView
                     android:id="@+id/selectionFavoriteButton"
@@ -151,7 +153,8 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintEnd_toStartOf="@+id/selectionDeleteButton"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_star" />
+                    app:srcCompat="@drawable/ic_star"
+                    app:tint="?attr/colorOnSurface" />
 
                 <ImageView
                     android:id="@+id/cancelSelectionButton"
@@ -162,7 +165,8 @@
                     app:layout_constraintDimensionRatio="1:1"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    app:srcCompat="@drawable/ic_close" />
+                    app:srcCompat="@drawable/ic_close"
+                    app:tint="?attr/colorOnSurface" />
 
                 <TextView
                     android:id="@+id/selectionCount"
@@ -170,7 +174,7 @@
                     android:layout_height="wrap_content"
                     android:text="0"
                     android:textSize="25sp"
-                    android:textColor="@color/md_blue_grey_100"
+                    android:textColor="?attr/colorOnSurface"
                     android:fontFamily="sans-serif-medium"
                     android:layout_marginStart="15dp"
                     app:layout_constraintBottom_toBottomOf="parent"
