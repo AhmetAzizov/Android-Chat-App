@@ -70,10 +70,12 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
             FavoriteTextMessage favoriteTextMessage = (FavoriteTextMessage) list.get(position);
 
             String sender = favoriteTextMessage.getSender();
+            String receiver = favoriteTextMessage.getReceiver();
             String messageContent = favoriteTextMessage.getContent();
             String time = favoriteTextMessage.getTime();
 
             ((TextMessage) holder).sender.setText(sender);
+            ((TextMessage) holder).receiver.setText(receiver);
             ((TextMessage) holder).messageContent.setText(messageContent);
             ((TextMessage) holder).timeSent.setText(time);
 
@@ -143,13 +145,14 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
 
     public static class TextMessage extends RecyclerView.ViewHolder {
 
-        TextView sender, messageContent, timeSent;
+        TextView sender, receiver, messageContent, timeSent;
         ImageView senderImage;
 
         public TextMessage(@NonNull View itemView) {
             super(itemView);
 
             sender = itemView.findViewById(R.id.sender);
+            receiver = itemView.findViewById(R.id.receiver);
             timeSent = itemView.findViewById(R.id.timeSent);
             messageContent = itemView.findViewById(R.id.messageContent);
             senderImage = itemView.findViewById(R.id.senderImage);

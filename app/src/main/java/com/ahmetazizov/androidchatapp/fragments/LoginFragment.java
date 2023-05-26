@@ -179,6 +179,7 @@ public class LoginFragment extends Fragment{
                             Log.d(TAG, "signInWithEmail:success");
 
                             Intent intent = new Intent(getContext(), MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                         } else {
                             // If sign in fails, display a message to the user.

@@ -228,7 +228,10 @@ public class MainActivity extends AppCompatActivity {
                         if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
                             showChatsFragment.getSearchResult().clear();
                             showChatsFragment.getSearchAdapter().notifyDataSetChanged();
+                        } else {
+                            System.exit(0);
                         }
+
                         break;
 
                     default:
@@ -322,6 +325,7 @@ public class MainActivity extends AppCompatActivity {
 
                       String id = document.getString("id");
                       String sender = document.getString("sender");
+                      String receiver = document.getString("receiver");
                       String content = document.getString("content");
                       String imageURL = document.getString("url");
                       String chatRef = document.getString("chatRef");
@@ -334,9 +338,9 @@ public class MainActivity extends AppCompatActivity {
                       String time = timeFormat.format(timeMilli);
 
                       if (messageType.equals("text")) {
-                          Constants.favorites.add(new FavoriteTextMessage(id, sender, content, time, chatRef, messageType, exactTime, selfId));
+                          Constants.favorites.add(new FavoriteTextMessage(id, sender, receiver, content, time, chatRef, messageType, exactTime, selfId));
                       } else {
-                          Constants.favorites.add(new FavoriteImageMessage(id, sender, imageURL, time, chatRef, messageType, exactTime, selfId));
+                          Constants.favorites.add(new FavoriteImageMessage(id, sender, receiver, imageURL, time, chatRef, messageType, exactTime, selfId));
                       }
 
                 }

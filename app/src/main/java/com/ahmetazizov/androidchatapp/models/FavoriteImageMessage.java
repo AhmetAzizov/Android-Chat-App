@@ -5,13 +5,15 @@ import com.google.firebase.Timestamp;
 public class FavoriteImageMessage extends Message {
 
     private String selfId;
+    String receiver;
     String url;
     String time;
 
     public FavoriteImageMessage() {}
 
-    public FavoriteImageMessage(String id, String sender, String url, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
+    public FavoriteImageMessage(String id, String sender, String receiver, String url, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
         super(id, sender, chatRef, messageType, exactTime);
+        this.receiver = receiver;
         this.url = url;
         this.time = time;
         this.selfId = selfId;
@@ -23,6 +25,14 @@ public class FavoriteImageMessage extends Message {
 
     public void setSelfId(String selfId) {
         this.selfId = selfId;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     public String getUrl() {

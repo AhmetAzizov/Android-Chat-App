@@ -234,12 +234,15 @@ public class ChatFragment extends Fragment {
                                 if (!currentFavorites.contains(message.getId())) {
                                     if (message instanceof TextMessage) {
                                         TextMessage textMessage = (TextMessage) message;
-                                        sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), textMessage.getSender(), textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
+                                        String sender = textMessage.getSender();
+                                        String receiver = (sender.equals(Constants.currentUser)) ? user.getUsername() : Constants.currentUser;
+                                        sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), sender, receiver, textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
                                     } else {
                                         ImageMessage imageMessage = (ImageMessage) message;
-                                        sortedFavorites.add(new FavoriteImageMessage(imageMessage.getId(), imageMessage.getSender(), imageMessage.getUrl(), null, imageMessage.getChatRef(), imageMessage.getMessageType(), imageMessage.getExactTime(), null));
+                                        String sender = imageMessage.getSender();
+                                        String receiver = (sender.equals(Constants.currentUser)) ? user.getUsername() : Constants.currentUser;
+                                        sortedFavorites.add(new FavoriteImageMessage(imageMessage.getId(), sender, receiver, imageMessage.getUrl(), null, imageMessage.getChatRef(), imageMessage.getMessageType(), imageMessage.getExactTime(), null));
                                     }
-
                                 }
                             }
 

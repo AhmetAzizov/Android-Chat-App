@@ -5,13 +5,15 @@ import com.google.firebase.Timestamp;
 public class FavoriteTextMessage extends Message {
 
     private String selfId;
+    String receiver;
     String content;
     String time;
 
     public FavoriteTextMessage() {}
 
-    public FavoriteTextMessage(String id, String sender, String content, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
+    public FavoriteTextMessage(String id, String sender, String receiver, String content, String time, String chatRef, String messageType, Timestamp exactTime, String selfId) {
         super(id, sender, chatRef, messageType, exactTime);
+        this.receiver = receiver;
         this.content = content;
         this.time = time;
         this.selfId = selfId;
@@ -23,6 +25,14 @@ public class FavoriteTextMessage extends Message {
 
     public void setSelfId(String selfId) {
         this.selfId = selfId;
+    }
+
+    public String getReceiver() {
+        return receiver;
+    }
+
+    public void setReceiver(String receiver) {
+        this.receiver = receiver;
     }
 
     public String getContent() {

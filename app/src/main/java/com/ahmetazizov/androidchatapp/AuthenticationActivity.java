@@ -29,6 +29,7 @@ public class AuthenticationActivity extends AppCompatActivity {
 
         if(currentUser != null){
             Intent intent = new Intent(AuthenticationActivity.this, MainActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
             startActivity(intent);
         } else {
             RegisterFragment fragment = (RegisterFragment) getSupportFragmentManager().findFragmentByTag("registerFragment");

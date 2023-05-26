@@ -276,6 +276,7 @@ public class RegisterFragment extends Fragment {
                                         Toast.makeText(getContext(), "Successfully created user: " + user.getUsername(), Toast.LENGTH_SHORT).show();
 
                                         Intent intent = new Intent(getContext(), MainActivity.class);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                         intent.putExtra("username", user.getUsername());
                                         startActivity(intent);
 
