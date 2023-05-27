@@ -14,6 +14,7 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
+import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
@@ -27,6 +28,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -93,6 +95,7 @@ public class ChatFragment extends Fragment {
     MaterialToolbar selectionOptions, profileInfo;
     boolean firstTime = true;
 
+    ConstraintLayout background;
 
     public ChatsAdapter getAdapter() {
         return this.chatsAdapter;
@@ -130,6 +133,9 @@ public class ChatFragment extends Fragment {
         selectionCopyButton = view.findViewById(R.id.selectionCopyButton);
         selectionFavoriteButton = view.findViewById(R.id.selectionFavoriteButton);
         selectionDeleteButton = view.findViewById(R.id.selectionDeleteButton);
+        background = view.findViewById(R.id.background);
+
+//        background.setBackgroundColor(getResources().getColor(R.color.md_red_900));
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, selectionOptions, selectionCount);
         chatsRecyclerView.setAdapter(chatsAdapter);

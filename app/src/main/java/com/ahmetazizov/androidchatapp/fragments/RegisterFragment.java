@@ -15,6 +15,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import android.graphics.BitmapFactory;
 
 import android.os.Handler;
 import android.util.Log;
@@ -55,6 +56,7 @@ import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -71,6 +73,9 @@ public class RegisterFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
 
+
+    private static final int MAX_WIDTH = 7000;
+    private static final int MAX_HEIGHT = 7000;
 
     FirebaseAuth mAuth = FirebaseAuth.getInstance();
 
@@ -218,8 +223,6 @@ public class RegisterFragment extends Fragment {
 //        return mime.getExtensionFromMimeType(cR.getType(uri));
 //    }
 
-
-
     private void uploadFile(String username, String email, String password) {
         if (imageUri != null) {
             StorageReference fileRef = storageRef.child(System.currentTimeMillis() + "." + Constants.getFileExtension(imageUri, requireContext()));
@@ -258,45 +261,33 @@ public class RegisterFragment extends Fragment {
 
         dbUsersRef.document(user.getUsername())
                 .set(user)
-                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                    @Override
-                    public void onSuccess(Void aVoid) {
+                .addOnSuccessListener(aVoid -> {
 
-                        Map<String, Object> data = new HashMap<>();
-                        data.put("isOnline", "true");
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("isOnline", "true");
 
-                        DocumentReference docRef = db.collection("users").document(user.getUsername());
+                    DocumentReference docRef = db.collection("users").document(user.getUsername());
 
-                        docRef.update(data)
-                                .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                    @Override
-                                    public void onSuccess(Void aVoid) {
+                    docRef.update(data)
+                            .addOnSuccessListener(aVoid1 -> {
 
-                                        Log.d(TAG, "Document created successfully!");
-                                        Toast.makeText(getContext(), "Successfully created user: " + user.getUsername(), Toast.LENGTH_SHORT).show();
+                                Log.d(TAG, "Document created successfully!");
+                                Toast.makeText(getContext(), "Successfully created user: " + user.getUsername(), Toast.LENGTH_SHORT).show();
 
-                                        Intent intent = new Intent(getContext(), MainActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
-                                        intent.putExtra("username", user.getUsername());
-                                        startActivity(intent);
+                                Intent intent = new Intent(getContext(), MainActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                intent.putExtra("username", user.getUsername());
+                                startActivity(intent);
 
-                                    }
-                                })
-                                .addOnFailureListener(new OnFailureListener() {
-                                    @Override
-                                    public void onFailure(@NonNull Exception e) {
-                                        Log.w(TAG, "Error writing document", e);
-                                        Toast.makeText(getContext(), "Error Creating user",Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                    }
+                            })
+                            .addOnFailureListener(e -> {
+                                Log.w(TAG, "Error writing document", e);
+                                Toast.makeText(getContext(), "Error Creating user",Toast.LENGTH_SHORT).show();
+                            });
                 })
-                .addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.e(TAG, "Error creating user: " + e);
-                        Toast.makeText(getContext(), "Error Creating user",Toast.LENGTH_SHORT).show();
-                    }
+                .addOnFailureListener(e -> {
+                    Log.e(TAG, "Error creating user: " + e);
+                    Toast.makeText(getContext(), "Error Creating user",Toast.LENGTH_SHORT).show();
                 });
     }
 
@@ -306,46 +297,34 @@ public class RegisterFragment extends Fragment {
 
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(getActivity(), new OnCompleteListener<AuthResult>() {
-                    @Override
-                    public void onComplete(@NonNull Task<AuthResult> task) {
-                        if (task.isSuccessful()) {
-                            // Sign in success, update UI with the signed-in user's information
-                            Log.d(TAG, "createUserWithEmail:success");
+                .addOnCompleteListener(getActivity(), task -> {
+                    if (task.isSuccessful()) {
+                        // Sign in success, update UI with the signed-in user's information
+                        Log.d(TAG, "createUserWithEmail:success");
 
 
-                            // When the complete the register the new user, we set their display name to the one chosen by the user
-                            FirebaseUser authUser = mAuth.getCurrentUser();
+                        // When the complete the register the new user, we set their display name to the one chosen by the user
+                        FirebaseUser authUser = mAuth.getCurrentUser();
 
 
-                            UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
-                                    .setDisplayName(user.getUsername()).setPhotoUri(imageUri).build();
+                        UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
+                                .setDisplayName(user.getUsername()).setPhotoUri(imageUri).build();
 
 
-                            authUser.updateProfile(profileUpdates).addOnCompleteListener(new OnCompleteListener<Void>() {
-                                @Override
-                                public void onComplete(@androidx.annotation.NonNull Task<Void> task) {
+                        authUser.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
 
-                                    // We call the addUser method to add the new added user's data to firestore
-                                    addUser(user);
+                            // We call the addUser method to add the new added user's data to firestore
+                            addUser(user);
 
-                                }
-                            }).addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@androidx.annotation.NonNull Exception e) {
-                                    Log.d(TAG, "Error: " + e);
-                                    return;
-                                }
-                            });
-                        }
+                        }).addOnFailureListener(e -> {
+                            Log.d(TAG, "Error: " + e);
+                            return;
+                        });
                     }
-                }).addOnFailureListener(new OnFailureListener() {
-                    @Override
-                    public void onFailure(@NonNull Exception e) {
-                        Log.w(TAG, e.getMessage());
-                        Toast.makeText(getContext(), e.getMessage(),
-                                Toast.LENGTH_LONG).show();
-                    }
+                }).addOnFailureListener(e -> {
+                    Log.w(TAG, e.getMessage());
+                    Toast.makeText(getContext(), e.getMessage(),
+                            Toast.LENGTH_LONG).show();
                 });
         }
 
@@ -354,22 +333,19 @@ public class RegisterFragment extends Fragment {
         private void usersListener() {
             final CollectionReference usersRef = db.collection("users");
 
-            usersRef.addSnapshotListener(new EventListener<QuerySnapshot>() {
-                @Override
-                public void onEvent(@Nullable QuerySnapshot value, @Nullable FirebaseFirestoreException e) {
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e);
-                        return;
-                    }
+            usersRef.addSnapshotListener((value, e) -> {
+                if (e != null) {
+                    Log.w(TAG, "Listen failed.", e);
+                    return;
+                }
 
-                    users.clear();
+                users.clear();
 
 
-                    for (QueryDocumentSnapshot document : value) {
+                for (QueryDocumentSnapshot document : value) {
 
-                        users.add(document.getId());
+                    users.add(document.getId());
 
-                    }
                 }
             });
         }
@@ -438,38 +414,36 @@ public class RegisterFragment extends Fragment {
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null){
 
-//            imageUri = data.getData();
-//            image.setImageURI(imageUri);
-
-                imageUri = data.getData();
-                image.setImageURI(imageUri);
+            imageUri = data.getData();
 
 
+//            try {
+//                imageUri = data.getData();
+//                image.setImageURI(imageUri);
+//
+//            } catch (RuntimeException e) {
+//                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+//            }
 
 
-//            Glide.with(getContext())
-//                                    .load(imageUri)
-//                                    .override(500, 500)
-//                                    .centerInside()
-//                                    .into(image);
+            try {
+                InputStream inputStream = getContext().getContentResolver().openInputStream(imageUri);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(inputStream, null, options);
+                int imageWidth = options.outWidth;
+                int imageHeight = options.outHeight;
 
-//                    Picasso.get()
-//                        .load(imageUri)
-//                        .resize(500, 500)
-//                        .centerInside()
-//                        .into(image);
+                Log.d("Bitmap Size", "Width: " + imageWidth + ", Height: " + imageHeight);
 
+                if (imageWidth > MAX_WIDTH || imageHeight > MAX_HEIGHT) {
+                    Toast.makeText(getContext(), "Image too large!", Toast.LENGTH_SHORT).show();
+                } else {
+                    image.setImageURI(imageUri);
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "error: " + e);
+            }
         }
     }
-
-//
-//    private void saveSelectedImageUri(Uri imageUri) {
-//        Bundle bundle = getArguments();
-//        if (bundle == null) {
-//            bundle = new Bundle();
-//        }
-//        bundle.putParcelable("imageUri", imageUri);
-//        setArguments(bundle);
-//    }
-
 }
