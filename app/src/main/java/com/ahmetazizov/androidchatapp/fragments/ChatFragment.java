@@ -6,6 +6,7 @@ import android.content.ClipData;
 import android.content.ClipboardManager;
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
 import android.media.Image;
 import android.net.Uri;
@@ -56,6 +57,7 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.InputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -78,6 +80,8 @@ public class ChatFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
 
+    private static final int MAX_WIDTH = 7000;
+    private static final int MAX_HEIGHT = 7000;
 
     private final static String TAG = "ChatFragment";
     private static final int PICK_IMAGE_REQUEST = 1;
@@ -329,7 +333,14 @@ public class ChatFragment extends Fragment {
             fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
         });
 
-        pickImageButton.setOnClickListener(v -> openFileChooser());
+
+        pickImageButton.setOnClickListener(v -> {
+//            openFileChooser();
+
+            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.replace(R.id.frameLayout, new ChatColorPicker(), "chatColorPicker").addToBackStack(null).commit();
+        });
 
         sendButton.setOnClickListener(v -> sendChats());
     }
@@ -508,8 +519,25 @@ public class ChatFragment extends Fragment {
 
             Uri imageUri = data.getData();
 
-            SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri, user);
-            sendImageDialog.show(requireActivity().getSupportFragmentManager(), "sendImageDialog");
+            try {
+                InputStream inputStream = getContext().getContentResolver().openInputStream(imageUri);
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inJustDecodeBounds = true;
+                BitmapFactory.decodeStream(inputStream, null, options);
+                int imageWidth = options.outWidth;
+                int imageHeight = options.outHeight;
+
+                Log.d("Bitmap Size", "Width: " + imageWidth + ", Height: " + imageHeight);
+
+                if (imageWidth > MAX_WIDTH || imageHeight > MAX_HEIGHT) {
+                    Toast.makeText(getContext(), "Image size is too large", Toast.LENGTH_SHORT).show();
+                } else {
+                    SendImageDialog sendImageDialog = SendImageDialog.newInstance(imageUri, user);
+                    sendImageDialog.show(requireActivity().getSupportFragmentManager(), "sendImageDialog");
+                }
+            } catch (Exception e) {
+                Log.d(TAG, "error: " + e);
+            }
         }
     }
 

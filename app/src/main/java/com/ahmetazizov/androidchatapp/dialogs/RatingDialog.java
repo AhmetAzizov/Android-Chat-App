@@ -23,10 +23,10 @@ public class RatingDialog extends Dialog {
         getWindow().setBackgroundDrawable(new ColorDrawable(Color.TRANSPARENT));
 
         // To prevent the dialog from closing when clicked outside
-//        setCanceledOnTouchOutside(false);
+        // setCanceledOnTouchOutside(false);
 
         // To prevent the dialog from closing when back button is pressed
-//        setCancelable(false);
+        // setCancelable(false);
 
         for (int i = 0; i < starArray.length; i++) {
             String id = "star" + (i + 1);
@@ -39,28 +39,25 @@ public class RatingDialog extends Dialog {
 
         for (ImageView star : starArray) {
 
-            star.setOnClickListener(new View.OnClickListener() {
-                @Override
-                public void onClick(View v) {
+            star.setOnClickListener(v -> {
 
-                    for (int i = 0; i < 5; i++) {
-                        starArray[i].setColorFilter(context.getResources().getColor(R.color.DarkGray));
-                    }
+                for (int i = 0; i < 5; i++) {
+                    starArray[i].setColorFilter(context.getResources().getColor(R.color.DarkGray));
+                }
 
-                    int count = 0;
+                int count = 0;
 
-                    switch (v.getId()) {
-                        case R.id.star1: count = 1; break;
-                        case R.id.star2: count = 2; break;
-                        case R.id.star3: count = 3; break;
-                        case R.id.star4: count = 4; break;
-                        case R.id.star5: count = 5; break;
-                    }
+                switch (v.getId()) {
+                    case R.id.star1: count = 1; break;
+                    case R.id.star2: count = 2; break;
+                    case R.id.star3: count = 3; break;
+                    case R.id.star4: count = 4; break;
+                    case R.id.star5: count = 5; break;
+                }
 
 
-                    for (int i = 0; i < count; i++) {
-                        starArray[i].setColorFilter(context.getResources().getColor(R.color.Gold));
-                    }
+                for (int i = 0; i < count; i++) {
+                    starArray[i].setColorFilter(context.getResources().getColor(R.color.Gold));
                 }
             });
 

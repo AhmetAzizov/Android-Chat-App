@@ -437,7 +437,7 @@ public class RegisterFragment extends Fragment {
                 Log.d("Bitmap Size", "Width: " + imageWidth + ", Height: " + imageHeight);
 
                 if (imageWidth > MAX_WIDTH || imageHeight > MAX_HEIGHT) {
-                    Toast.makeText(getContext(), "Image too large!", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(getContext(), "Image size is too large", Toast.LENGTH_SHORT).show();
                 } else {
                     image.setImageURI(imageUri);
                 }

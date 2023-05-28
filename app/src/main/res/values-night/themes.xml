@@ -2,7 +2,7 @@
     <!-- Base application theme. -->
     <style name="Theme.AndroidChatApp" parent="Theme.Material3.Dark.NoActionBar">
         <!-- Primary brand color. -->
-        <item name="colorPrimary">@color/md_light_green_500</item>
+        <item name="colorPrimary">@color/AliceBlue</item>
         <item name="background">@color/md_blue_grey_900</item>
         <item name="colorOnBackground">@color/md_red_50</item>
         <item name="colorSurface">@color/md_blue_grey_800</item>
