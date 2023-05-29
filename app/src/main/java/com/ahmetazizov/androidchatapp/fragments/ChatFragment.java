@@ -57,7 +57,12 @@ import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -79,6 +84,10 @@ public class ChatFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_chat, container, false);
     }
+
+
+
+    private static final String FILE_NAME = "chatColor.txt";
 
     private static final int MAX_WIDTH = 7000;
     private static final int MAX_HEIGHT = 7000;
@@ -139,7 +148,6 @@ public class ChatFragment extends Fragment {
         selectionDeleteButton = view.findViewById(R.id.selectionDeleteButton);
         background = view.findViewById(R.id.background);
 
-//        background.setBackgroundColor(getResources().getColor(R.color.md_red_900));
 
         chatsAdapter = new ChatsAdapter(getContext(), chats, chatsRecyclerView, selectionOptions, selectionCount);
         chatsRecyclerView.setAdapter(chatsAdapter);
@@ -170,6 +178,19 @@ public class ChatFragment extends Fragment {
 
 
 
+
+        String currentColor = loadFile().trim();
+
+        switch (currentColor) {
+            case "red": background.setBackgroundColor(getResources().getColor(R.color.md_red_400)); break;
+            case "green": background.setBackgroundColor(getResources().getColor(R.color.md_green_400)); break;
+            case "blue": background.setBackgroundColor(getResources().getColor(R.color.md_blue_400)); break;
+            case "purple": background.setBackgroundColor(getResources().getColor(R.color.md_purple_400)); break;
+            case "orange": background.setBackgroundColor(getResources().getColor(R.color.md_orange_400)); break;
+            case "yellow": background.setBackgroundColor(getResources().getColor(R.color.md_yellow_400)); break;
+            case "brown": background.setBackgroundColor(getResources().getColor(R.color.md_brown_400)); break;
+            default: break;
+        }
 
         selectionOptions.setOnClickListener(null);
 
@@ -203,6 +224,9 @@ public class ChatFragment extends Fragment {
             SimpleDateFormat dateFormat = new SimpleDateFormat("M/dd, HH:mm");
 
             for (Message textMessage : copyList) {
+
+                if (textMessage instanceof ImageMessage) continue;
+
                 TextMessage message = (TextMessage) textMessage;
 
                 long messageDateMilli = textMessage.getExactTime().toDate().getTime();
@@ -220,8 +244,8 @@ public class ChatFragment extends Fragment {
             // Copy the text to the clipboard
             clipboard.setPrimaryClip(clip);
 
-            if (copyList.size() == 1) Toast.makeText(getContext(), "TextMessage copied", Toast.LENGTH_SHORT).show();
-            else Toast.makeText(getContext(), copyList.size() + " messages copied", Toast.LENGTH_SHORT).show();
+            if (copyList.size() == 1) Toast.makeText(getContext(), "Message copied", Toast.LENGTH_SHORT).show();
+            else Toast.makeText(getContext(), copyList.size() + " Messages copied", Toast.LENGTH_SHORT).show();
 
             chatsAdapter.closeSelectionList();
         });
@@ -334,13 +358,7 @@ public class ChatFragment extends Fragment {
         });
 
 
-        pickImageButton.setOnClickListener(v -> {
-//            openFileChooser();
-
-            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frameLayout, new ChatColorPicker(), "chatColorPicker").addToBackStack(null).commit();
-        });
+        pickImageButton.setOnClickListener(v -> openFileChooser());
 
         sendButton.setOnClickListener(v -> sendChats());
     }
@@ -539,6 +557,40 @@ public class ChatFragment extends Fragment {
                 Log.d(TAG, "error: " + e);
             }
         }
+    }
+
+    private String loadFile() {
+        FileInputStream fis = null;
+
+        try {
+            fis = requireContext().openFileInput(FILE_NAME);
+            InputStreamReader isr = new InputStreamReader(fis);
+            BufferedReader br = new BufferedReader(isr);
+            StringBuilder sb = new StringBuilder();
+            String text;
+
+            while ((text = br.readLine()) != null) {
+                sb.append(text).append("\n");
+            }
+
+            return sb.toString();
+
+
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        } finally {
+            if (fis != null) {
+                try {
+                    fis.close();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        return "default";
     }
 
 }

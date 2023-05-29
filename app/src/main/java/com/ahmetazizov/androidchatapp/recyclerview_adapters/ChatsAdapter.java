@@ -7,29 +7,27 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.graphics.drawable.Drawable;
-import android.net.Uri;
+import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toolbar;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
+import androidx.appcompat.app.AppCompatActivity;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
+import com.ahmetazizov.androidchatapp.dialogs.ResizePhotoDialog;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.bumptech.glide.Glide;
-import com.bumptech.glide.load.DataSource;
-import com.bumptech.glide.load.engine.GlideException;
-import com.bumptech.glide.request.RequestListener;
-import com.bumptech.glide.request.target.Target;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -64,7 +62,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         int CASE;
 
         if (!list.isEmpty()) {
-            if (list.get(position).getMessageType().equals("text")) {
+            if (list.get(position) instanceof TextMessage) {
                 CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
             } else {
                 CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
@@ -105,7 +103,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         int CASE;
 
         if (!list.isEmpty()) {
-            if (list.get(position).getMessageType().equals("text")) {
+            if (list.get(position) instanceof TextMessage) {
                 CASE = (list.get(position).getSender().equals(currentUser)) ? 1 : 2;
             } else {
                 CASE = (list.get(position).getSender().equals(currentUser)) ? 3 : 4;
@@ -137,23 +135,62 @@ public class ChatsAdapter extends RecyclerView.Adapter {
                 ImageMessage imageMessage = (ImageMessage) list.get(position);
 
                 String url = imageMessage.getUrl();
+                String time = imageMessage.getTime();
+
+                ((SenderImageViewHolder) holder).senderTimeSent.setText(time);
 
                 Glide.with(context)
                         .load(url)
                         .override(500, 500)
                         .centerCrop()
                         .into(((SenderImageViewHolder) holder).senderImageContainer);
+
+
+
+
+                ((SenderImageViewHolder) holder).senderImageContainer.setOnClickListener(v -> {
+                    if (selectionList.isEmpty()) {
+                        ResizePhotoDialog resizePhotoDialog = ResizePhotoDialog.newInstance(url);
+                        resizePhotoDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "resizePhotoDialog");
+                    } else {
+                        checkSelectionList(position);
+                    }
+                });
+
                 break;
             case 4:
                 ImageMessage imageMessage2 = (ImageMessage) list.get(position);
 
                 String url2 = imageMessage2.getUrl();
+                String time2 = imageMessage2.getTime();
+
+                ((ReceiverImageViewHolder) holder).receiverTimeSent.setText(time2);
 
                 Glide.with(context)
                         .load(url2)
                         .override(500, 500)
                         .centerCrop()
                         .into(((ReceiverImageViewHolder) holder).receiverImageContainer);
+
+
+                ((ReceiverImageViewHolder) holder).receiverImageContainer.setOnClickListener(v -> {
+
+                    if (selectionList.isEmpty()) {
+                        ResizePhotoDialog resizePhotoDialog = ResizePhotoDialog.newInstance(url2);
+                        resizePhotoDialog.show(((AppCompatActivity) context).getSupportFragmentManager(), "resizePhotoDialog");
+                    } else {
+                        checkSelectionList(position);
+                    }
+                });
+
+//                ((ReceiverImageViewHolder) holder).receiverImageContainer.setOnLongClickListener(v -> {
+//                    selectionOptions.setVisibility(View.VISIBLE);
+//                    selectionOptions.animate().alpha(1.0f).setDuration(300).setListener(null);
+//
+//                    checkSelectionList(position);
+//                    return true;
+//                });
+
                 break;
 
             default: break;
@@ -218,22 +255,26 @@ public class ChatsAdapter extends RecyclerView.Adapter {
     static class SenderImageViewHolder extends RecyclerView.ViewHolder {
 
         ImageView senderImageContainer;
+        private TextView senderTimeSent;
 
         public SenderImageViewHolder(@NonNull View itemView) {
             super(itemView);
 
             senderImageContainer = itemView.findViewById(R.id.imageContainer);
+            senderTimeSent = itemView.findViewById(R.id.senderTimeSent);
         }
     }
 
     static class ReceiverImageViewHolder extends RecyclerView.ViewHolder {
 
         ImageView receiverImageContainer;
+        private TextView receiverTimeSent;
 
         public ReceiverImageViewHolder(@NonNull View itemView) {
             super(itemView);
 
             receiverImageContainer = itemView.findViewById(R.id.imageContainer);
+            receiverTimeSent = itemView.findViewById(R.id.receiverTimeSent);
         }
     }
 

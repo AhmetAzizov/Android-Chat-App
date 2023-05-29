@@ -13,7 +13,7 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
         app:cardCornerRadius="22dp"
-        app:cardBackgroundColor="#7E7C7C">
+        app:cardBackgroundColor="?attr/colorSurface">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
@@ -49,6 +49,7 @@
                 android:layout_margin="3dp"
                 app:cardCornerRadius="18dp"
                 app:cardElevation="20dp"
+                app:cardBackgroundColor="?attr/background"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -67,8 +68,8 @@
                         android:layout_marginLeft="15dp"
                         android:fontFamily="sans-serif-medium"
                         android:text="username"
-                        android:textColor="@color/WhiteSmoke"
                         android:textSize="20sp"
+                        android:textColor="?attr/colorOnSurface"
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintStart_toStartOf="parent"
                         app:layout_constraintTop_toTopOf="parent" />
@@ -83,7 +84,7 @@
                         app:layout_constraintBottom_toBottomOf="parent"
                         app:layout_constraintEnd_toEndOf="parent"
                         app:layout_constraintTop_toTopOf="parent"
-                        app:tint="@color/WhiteSmoke" />
+                        app:tint="?attr/colorOnSurface" />
 
                 </androidx.constraintlayout.widget.ConstraintLayout>
 

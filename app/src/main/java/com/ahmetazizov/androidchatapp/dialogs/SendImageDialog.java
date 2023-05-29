@@ -40,7 +40,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
 
-public class SendImageDialog  extends DialogFragment {
+public class SendImageDialog extends DialogFragment {
 
     private final String TAG = "sendImageDialog";
 

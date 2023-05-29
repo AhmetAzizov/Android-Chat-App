@@ -35,11 +35,10 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
         this.list = list;
     }
 
-
     @Override
     public int getItemViewType(int position) {
         if (!list.isEmpty()) {
-            return (list.get(position).getMessageType().equals("text")) ? 1 : 2;
+            return (list.get(position) instanceof FavoriteTextMessage) ? 1 : 2;
         } else {
             return -1;
         }
@@ -65,7 +64,7 @@ public class FavoritesAdapter extends RecyclerView.Adapter {
         DocumentReference docRef = db.collection("users").document(list.get(position).getSender());
 
 
-        if (list.get(position).getMessageType().equals("text")) {
+        if (list.get(position) instanceof FavoriteTextMessage) {
 
             FavoriteTextMessage favoriteTextMessage = (FavoriteTextMessage) list.get(position);
 

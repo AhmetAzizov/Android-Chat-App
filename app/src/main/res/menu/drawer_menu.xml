@@ -8,6 +8,11 @@
             android:title="Favorite Messages"/>
 
 
+    <item android:id="@+id/nav_chatColor"
+        android:icon="@drawable/ic_color"
+        android:title="Change Chat Theme"/>
+
+
     <item android:title="Account Settings:">
         <menu>
             <item

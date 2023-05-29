@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
@@ -82,6 +83,14 @@ public class MainActivity extends AppCompatActivity {
                     FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
                     fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
+
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    break;
+
+                case R.id.nav_chatColor:
+                    FragmentManager fragmentManager2 = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+                    fragmentTransaction2.replace(R.id.frameLayout, new ChatColorPicker(), "chatColorPicker").addToBackStack(null).commit();
 
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
