@@ -49,8 +49,8 @@ public class ChatColorPicker extends Fragment {
 
     private static final String FILE_NAME = "chatColor.txt";
 
-    CheckBox defaultColor, red, green, blue, purple, orange, yellow, brown;
-    CardView cardDefault, cardRed, cardGreen, cardBlue, cardPurple, cardOrange, cardYellow, cardBrown;
+    CheckBox defaultColor, red, green, blue, purple, orange, yellow, brown, pink;
+    CardView cardDefault, cardRed, cardGreen, cardBlue, cardPurple, cardOrange, cardYellow, cardBrown, cardPink;
 
 
     @Override
@@ -65,6 +65,7 @@ public class ChatColorPicker extends Fragment {
         orange = view.findViewById(R.id.checkBoxOrange);
         yellow = view.findViewById(R.id.checkBoxYellow);
         brown = view.findViewById(R.id.checkBoxBrown);
+        pink = view.findViewById(R.id.checkBoxPink);
 
         cardDefault = view.findViewById(R.id.cardDefault);
         cardRed = view.findViewById(R.id.cardRed);
@@ -74,9 +75,10 @@ public class ChatColorPicker extends Fragment {
         cardOrange = view.findViewById(R.id.cardOrange);
         cardYellow = view.findViewById(R.id.cardYellow);
         cardBrown = view.findViewById(R.id.cardBrown);
+        cardPink = view.findViewById(R.id.cardPink);
 
-        CheckBox[] checkBoxes = new CheckBox[] {defaultColor, red, green, blue, purple, orange, yellow, brown};
-        CardView[] cards = new CardView[] {cardDefault, cardRed, cardGreen, cardBlue, cardPurple, cardOrange, cardYellow, cardBrown};
+        CheckBox[] checkBoxes = new CheckBox[] {defaultColor, red, green, blue, purple, orange, yellow, brown, pink};
+        CardView[] cards = new CardView[] {cardDefault, cardRed, cardGreen, cardBlue, cardPurple, cardOrange, cardYellow, cardBrown, cardPink};
 
 
         String currentColor = loadFile().trim();
@@ -90,6 +92,7 @@ public class ChatColorPicker extends Fragment {
             case "orange": orange.setChecked(true); break;
             case "yellow": yellow.setChecked(true); break;
             case "brown": brown.setChecked(true); break;
+            case "pink": pink.setChecked(true); break;
             default: defaultColor.setChecked(true);
         }
 
@@ -131,6 +134,7 @@ public class ChatColorPicker extends Fragment {
                     case R.id.cardOrange: orange.setChecked(true); saveFile("orange"); break;
                     case R.id.cardYellow: yellow.setChecked(true); saveFile("yellow"); break;
                     case R.id.cardBrown: brown.setChecked(true); saveFile("brown"); break;
+                    case R.id.cardPink: brown.setChecked(true); saveFile("pink"); break;
                 }
 
             });

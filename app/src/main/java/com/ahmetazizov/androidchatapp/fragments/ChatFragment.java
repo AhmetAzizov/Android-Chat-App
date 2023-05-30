@@ -189,6 +189,7 @@ public class ChatFragment extends Fragment {
             case "orange": background.setBackgroundColor(getResources().getColor(R.color.md_orange_400)); break;
             case "yellow": background.setBackgroundColor(getResources().getColor(R.color.md_yellow_400)); break;
             case "brown": background.setBackgroundColor(getResources().getColor(R.color.md_brown_400)); break;
+            case "pink": background.setBackgroundColor(getResources().getColor(R.color.md_pink_400)); break;
             default: break;
         }
 
