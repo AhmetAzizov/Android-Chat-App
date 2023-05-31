@@ -72,4 +72,8 @@
         <item name="cornerSizeBottomRight">0dp</item>
         <item name="cornerSizeBottomLeft">20dp</item>
     </style>
+
+    <style name="MyDialogTheme">
+        <item name="android:background">@color/myColor</item>
+    </style>
 </resources>

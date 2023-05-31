@@ -9,6 +9,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -31,6 +32,7 @@ import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -238,7 +240,21 @@ public class MainActivity extends AppCompatActivity {
                             showChatsFragment.getSearchResult().clear();
                             showChatsFragment.getSearchAdapter().notifyDataSetChanged();
                         } else {
-                            System.exit(0);
+                            isOffline();
+
+                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.color.Red);
+
+                            exitDialog
+                                    .setMessage("Are you sure you want to exit the application?")
+                                            .setPositiveButton("Yes", (dialog, which) -> {
+
+                                            })
+                                                    .setNegativeButton("No", (dialog, which) -> {
+                                                        dialog.dismiss();
+                                                    });
+
+
+                                                    System.exit(0);
                         }
 
                         break;
