@@ -242,19 +242,17 @@ public class MainActivity extends AppCompatActivity {
                         } else {
                             isOffline();
 
-                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.color.Red);
+                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
 
                             exitDialog
-                                    .setMessage("Are you sure you want to exit the application?")
+                                    .setTitle("Are you sure you want to exit the application?")
                                             .setPositiveButton("Yes", (dialog, which) -> {
-
+                                                System.exit(0);
                                             })
-                                                    .setNegativeButton("No", (dialog, which) -> {
-                                                        dialog.dismiss();
-                                                    });
-
-
-                                                    System.exit(0);
+                                            .setNegativeButton("No", (dialog, which) -> {
+                                                dialog.dismiss();
+                                            })
+                                            .show();
                         }
 
                         break;
