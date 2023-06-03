@@ -74,7 +74,24 @@
     </style>
 
     <style name="exitDialogTheme">
-        <item name="colorPrimary">?attr/colorOnSurface</item>
-        <item name="buttonBarPositiveButtonStyle">@style/Widget.Material3.Button.IconButton</item>
+        <item name="buttonBarPositiveButtonStyle">@style/exitDialogPositiveButton</item>
+        <item name="buttonBarNegativeButtonStyle">@style/exitDialogNegativeButton</item>
     </style>
+
+
+
+    <!--    exit dialog positive button style-->
+    <style name="exitDialogPositiveButton" parent="@style/Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">@color/md_green_700</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <!--    exit dialog negative button style-->
+    <style name="exitDialogNegativeButton" parent="@style/Widget.Material3.Button">
+        <item name="backgroundTint">?attr/colorSurface</item>
+        <item name="android:textColor">@color/md_red_900</item>
+        <item name="android:textSize">18sp</item>
+    </style>
+
 </resources>
