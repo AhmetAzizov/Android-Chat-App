@@ -29,6 +29,7 @@ import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
+import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -63,7 +64,7 @@ public class SendImageDialog extends DialogFragment {
     User user;
     CardView cancelButton, sendButton;
     ImageView imageContainer;
-    ProgressBar progressBar;
+    LinearProgressIndicator progressBar;
 
     @Nullable
     @Override
@@ -108,6 +109,8 @@ public class SendImageDialog extends DialogFragment {
             if (imageUri != null) {
                 StorageReference fileRef = storageRef.child(System.currentTimeMillis() + "." + Constants.getFileExtension(imageUri, requireContext()));
 
+                progressBar.setIndeterminate(true);
+
                 fileRef.putFile(imageUri)
                         .addOnSuccessListener(taskSnapshot -> {
 
@@ -130,7 +133,7 @@ public class SendImageDialog extends DialogFragment {
                                         .addOnCompleteListener(task -> {
                                             Handler handler = new Handler();
                                             handler.postDelayed(() -> {
-                                                progressBar.setProgress(0);
+                                                progressBar.setIndeterminate(false);
                                                 dismiss();
                                             }, 1000);
                                         })
@@ -151,11 +154,14 @@ public class SendImageDialog extends DialogFragment {
                                         .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
                             });
                         })
-                        .addOnFailureListener(e -> Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show())
-                        .addOnProgressListener(snapshot -> {
-                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
-                            progressBar.setProgress((int) progress);
+                        .addOnFailureListener(e -> {
+                            Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
+                            progressBar.setIndeterminate(false);
                         });
+//                        .addOnProgressListener(snapshot -> {
+//                            double progress = (100.0 * snapshot.getBytesTransferred() / snapshot.getTotalByteCount());
+//                            progressBar.setProgress((int) progress);
+//                        });
             } else {
                 Toast.makeText(getContext(), "No File Selected", Toast.LENGTH_SHORT).show();
             }

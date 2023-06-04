@@ -49,6 +49,7 @@
                 android:layout_height="44dp"
                 android:layout_margin="5dp"
                 app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@+id/sendButton"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -70,6 +71,7 @@
                 android:layout_height="44dp"
                 android:layout_margin="5dp"
                 app:cardCornerRadius="20dp"
+                app:cardBackgroundColor="?attr/colorSecondary"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="0.5"
@@ -80,20 +82,33 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center"
+                    android:padding="12dp"
                     app:srcCompat="@drawable/ic_send"
                     app:tint="@color/black" />
 
             </androidx.cardview.widget.CardView>
 
-            <ProgressBar
+<!--            <ProgressBar-->
+<!--                android:id="@+id/progressBar"-->
+<!--                style="@style/Widget.AppCompat.ProgressBar.Horizontal"-->
+<!--                android:layout_width="match_parent"-->
+<!--                android:layout_height="wrap_content"-->
+<!--                android:layout_margin="5dp"-->
+<!--                app:layout_constraintEnd_toEndOf="parent"-->
+<!--                app:layout_constraintStart_toStartOf="parent"-->
+<!--                app:layout_constraintTop_toBottomOf="@+id/cardView3" />-->
+
+            <com.google.android.material.progressindicator.LinearProgressIndicator
                 android:id="@+id/progressBar"
-                style="@style/Widget.AppCompat.ProgressBar.Horizontal"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_margin="5dp"
+                android:indeterminate="true"
+                app:trackColor="?attr/colorSurface"
+                app:indicatorColor="?attr/colorOnSurface"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintTop_toBottomOf="@+id/cardView3" />
+                app:layout_constraintTop_toBottomOf="@+id/cardView3"/>
 
 
         </androidx.constraintlayout.widget.ConstraintLayout>
