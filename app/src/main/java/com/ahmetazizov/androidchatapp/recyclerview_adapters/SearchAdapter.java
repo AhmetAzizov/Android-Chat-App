@@ -15,19 +15,14 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.User;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.SetOptions;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -72,7 +67,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
                 }
             }
 
-            String newChatRef = Constants.currentUser + "-" + searchResult.get(position).getUsername();
+            String newChatRef = Constants.currentUserName + "-" + searchResult.get(position).getUsername();
             CollectionReference colRef = db.collection("chats");
 
             Timestamp timestamp = Timestamp.now();

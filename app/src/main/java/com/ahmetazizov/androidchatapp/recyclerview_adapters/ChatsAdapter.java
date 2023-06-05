@@ -7,12 +7,9 @@ import android.animation.Animator;
 import android.animation.AnimatorListenerAdapter;
 import android.content.Context;
 import android.graphics.Color;
-import android.util.DisplayMetrics;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
-import android.view.animation.ScaleAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
 
@@ -22,7 +19,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.dialogs.ResizePhotoDialog;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
@@ -58,7 +54,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
     @Override
     public int getItemViewType(int position) {
-        String currentUser = Constants.currentUser;
+        String currentUser = Constants.currentUserName;
         int CASE;
 
         if (!list.isEmpty()) {
@@ -99,7 +95,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
 
         db = FirebaseFirestore.getInstance();
 
-        final String currentUser = Constants.currentUser;
+        final String currentUser = Constants.currentUserName;
         int CASE;
 
         if (!list.isEmpty()) {

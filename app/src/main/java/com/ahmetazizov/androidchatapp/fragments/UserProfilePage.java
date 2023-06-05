@@ -32,7 +32,6 @@ import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.gms.tasks.Task;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
-import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -132,7 +131,7 @@ public class UserProfilePage extends Fragment {
         returnButton = view.findViewById(R.id.returnButton);
         topView = view.findViewById(R.id.topView);
 
-        DocumentReference currentUser = db.collection("users").document(Constants.currentUser);
+        DocumentReference currentUser = db.collection("users").document(Constants.currentUserName);
 
         currentUser.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -213,7 +212,7 @@ public class UserProfilePage extends Fragment {
                 data.put("isOnline", "false");
                 data.put("lastOnline", timestamp);
 
-                DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+                DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
                 docRef.update(data)
                         .addOnSuccessListener(new OnSuccessListener<Void>() {

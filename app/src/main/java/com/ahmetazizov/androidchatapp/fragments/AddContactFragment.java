@@ -8,6 +8,7 @@ import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,12 +19,12 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.SetOptions;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -41,6 +42,7 @@ public class AddContactFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_add_contact, container, false);
     }
 
+    private static final String TAG = "AddContactFragment";
     FirebaseFirestore db;
     TextInputLayout addContactUsernameLayout;
     TextInputEditText addContactUsername;
@@ -69,19 +71,37 @@ public class AddContactFragment extends Fragment {
             String checkedUsername = checkError(username);
 
             if (checkedUsername != null) {
-                String newChatRef = Constants.currentUser + "-" + checkedUsername;
-                CollectionReference colRef = db.collection("chats");
+                final CollectionReference colRef = db.collection("users").document(checkedUsername).collection("requests");
 
-                Timestamp timestamp = Timestamp.now();
                 Map<String, Object> data = new HashMap<>();
-                data.put("time", timestamp);
+                User currentUser = Constants.currentUser;
 
-                // Create an empty document inside "chats" collection
-                colRef.document(newChatRef)
-                        .set(data, SetOptions.merge())
-                        .addOnSuccessListener(unused -> {
-                            Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
-                        }).addOnFailureListener(e -> Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+                data.put("username", currentUser.getUsername());
+                data.put("email", currentUser.getEmail());
+                data.put("imageURL", currentUser.getImageURL());
+
+
+                colRef.document(Constants.currentUserName)
+                        .set(data)
+                        .addOnSuccessListener(success -> {
+                            Toast.makeText(requireContext(), "Request sent successfully", Toast.LENGTH_SHORT).show();
+                        })
+                        .addOnFailureListener(failure -> {
+                            Toast.makeText(requireContext(), "There was an error sending request, please try again", Toast.LENGTH_SHORT).show();
+                        });
+
+
+
+//                Timestamp timestamp = Timestamp.now();
+//                Map<String, Object> data = new HashMap<>();
+//                data.put("time", timestamp);
+//
+//                // Create an empty document inside "chats" collection
+//                colRef.document(newChatRef)
+//                        .set(data, SetOptions.merge())
+//                        .addOnSuccessListener(unused -> {
+//                            Toast.makeText(getContext(), "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+//                        }).addOnFailureListener(e -> Toast.makeText(getContext(), "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
 
             }
         });
@@ -89,12 +109,11 @@ public class AddContactFragment extends Fragment {
 
 
     private String checkError(String username) {
-        boolean found = false;
 
         if(username.contains("-") || username.contains("%") || username.contains(" ")) {
             addContactUsernameLayout.setError("Username can not contain space or special characters!");
             return null;
-        } else if (username.equalsIgnoreCase(Constants.currentUser)) {
+        } else if (username.equalsIgnoreCase(Constants.currentUserName)) {
             addContactUsernameLayout.setError("Username should not be same as the current user!");
             return null;
         } else if (username.isEmpty()) {
@@ -108,18 +127,17 @@ public class AddContactFragment extends Fragment {
             addContactUsernameLayout.setError(null);
         }
 
-        for (User user : Constants.contacts) {
-            if (username.equalsIgnoreCase(user.getUsername())) {
-                addContactUsernameLayout.setError("User already in your contacts!");
-                return null;
-            }
-        }
+//        for (User user : Constants.contacts) {
+//            if (username.equalsIgnoreCase(user.getUsername())) {
+//                addContactUsernameLayout.setError("User already in your contacts!");
+//                return null;
+//            }
+//        }
 
         for (User user : Constants.users) {
             if (user.getUsername().equalsIgnoreCase(username)) {
                 addContactUsernameLayout.setHelperText("correct!");
                 addContactUsernameLayout.setError(null);
-                found = true;
                 return user.getUsername();
             }
         }

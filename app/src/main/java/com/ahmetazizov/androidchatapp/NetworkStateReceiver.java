@@ -11,7 +11,6 @@ import androidx.annotation.NonNull;
 
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 
@@ -41,7 +40,7 @@ public class NetworkStateReceiver extends BroadcastReceiver {
             Map<String, Object> data = new HashMap<>();
             data.put("isOnline", "true");
 
-            DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+            DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
             docRef.update(data)
                     .addOnSuccessListener(new OnSuccessListener<Void>() {

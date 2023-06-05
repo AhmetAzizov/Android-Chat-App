@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.BitmapFactory;
 import android.graphics.PorterDuff;
-import android.media.Image;
 import android.net.Uri;
 import android.os.Bundle;
 
@@ -29,11 +28,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.Toolbar;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
@@ -45,10 +42,8 @@ import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
-import com.google.android.material.card.MaterialCardView;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
@@ -203,7 +198,7 @@ public class ChatFragment extends Fragment {
             List<Message> deleteList = chatsAdapter.getSelectionList();
 
             for (Message textMessage : deleteList) {
-                if (!textMessage.getSender().equals(Constants.currentUser)) {
+                if (!textMessage.getSender().equals(Constants.currentUserName)) {
                     Toast.makeText(getContext(), "You can only delete your own messages!", Toast.LENGTH_SHORT).show();
                     chatsAdapter.closeSelectionList();
                     return;
@@ -252,7 +247,7 @@ public class ChatFragment extends Fragment {
         });
 
         selectionFavoriteButton.setOnClickListener(v -> {
-            final CollectionReference favMessageRef = db.collection("users").document(Constants.currentUser).collection("favorites");
+            final CollectionReference favMessageRef = db.collection("users").document(Constants.currentUserName).collection("favorites");
             List<String> currentFavorites = new ArrayList<>();
             List<Message> sortedFavorites = new ArrayList<>();
             List<Message> favoriteList = chatsAdapter.getSelectionList();
@@ -270,12 +265,12 @@ public class ChatFragment extends Fragment {
                                     if (message instanceof TextMessage) {
                                         TextMessage textMessage = (TextMessage) message;
                                         String sender = textMessage.getSender();
-                                        String receiver = (sender.equals(Constants.currentUser)) ? user.getUsername() : Constants.currentUser;
+                                        String receiver = (sender.equals(Constants.currentUserName)) ? user.getUsername() : Constants.currentUserName;
                                         sortedFavorites.add(new FavoriteTextMessage(textMessage.getId(), sender, receiver, textMessage.getContent(), null, textMessage.getChatRef(), textMessage.getMessageType(), textMessage.getExactTime(), null));
                                     } else {
                                         ImageMessage imageMessage = (ImageMessage) message;
                                         String sender = imageMessage.getSender();
-                                        String receiver = (sender.equals(Constants.currentUser)) ? user.getUsername() : Constants.currentUser;
+                                        String receiver = (sender.equals(Constants.currentUserName)) ? user.getUsername() : Constants.currentUserName;
                                         sortedFavorites.add(new FavoriteImageMessage(imageMessage.getId(), sender, receiver, imageMessage.getUrl(), null, imageMessage.getChatRef(), imageMessage.getMessageType(), imageMessage.getExactTime(), null));
                                     }
                                 }
@@ -428,7 +423,7 @@ public class ChatFragment extends Fragment {
         // TextMessage newMessage = new TextMessage(Constants.currentUser, message, formattedTime, messageType, timestamp);
 
         Map<String, Object> messageData = new HashMap<>();
-        messageData.put("sender", Constants.currentUser);
+        messageData.put("sender", Constants.currentUserName);
         messageData.put("content", message);
         messageData.put("messageType", "text");
         messageData.put("exactTime", timestamp);

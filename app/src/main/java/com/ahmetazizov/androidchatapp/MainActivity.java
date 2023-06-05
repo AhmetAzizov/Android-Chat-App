@@ -9,7 +9,6 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
@@ -27,11 +26,12 @@ import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
-import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
+import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
@@ -108,7 +108,7 @@ public class MainActivity extends AppCompatActivity {
                     data.put("isOnline", "false");
                     data.put("lastOnline", timestamp);
 
-                    DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+                    DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
                     docRef.update(data)
                             .addOnSuccessListener(new OnSuccessListener<Void>() {
@@ -130,17 +130,17 @@ public class MainActivity extends AppCompatActivity {
                     break;
             }
 
-
             return true;
         });
 
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
-            Constants.currentUser = currentUser.getDisplayName();
+            Constants.currentUserName = currentUser.getDisplayName();
 
             getChats();
             getFavorites();
+            getUserInformation();
 
             fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
 
@@ -240,14 +240,13 @@ public class MainActivity extends AppCompatActivity {
                             showChatsFragment.getSearchResult().clear();
                             showChatsFragment.getSearchAdapter().notifyDataSetChanged();
                         } else {
-                            isOffline();
-
                             MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
 
                             exitDialog
                                     .setTitle("Are you sure you want to exit the application?")
                                             .setPositiveButton("Yes", (dialog, which) -> {
-                                                System.exit(0);
+                                                isOffline();
+                                                super.onBackPressed();
                                             })
                                             .setNegativeButton("No", (dialog, which) -> {
                                                 dialog.dismiss();
@@ -277,7 +276,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void fillDrawerDetails(ImageView drawerImage, TextView drawerUsername, TextView drawerEmail) {
-        DocumentReference currentUser = db.collection("users").document(Constants.currentUser);
+        DocumentReference currentUser = db.collection("users").document(Constants.currentUserName);
 
         currentUser.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -331,7 +330,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getFavorites() {
-        final CollectionReference favoritesRef = db.collection("users").document(Constants.currentUser).collection("favorites");
+        final CollectionReference favoritesRef = db.collection("users").document(Constants.currentUserName).collection("favorites");
 
         favoritesRef.addSnapshotListener((value, error) -> {
             if (error != null) {
@@ -389,7 +388,7 @@ public class MainActivity extends AppCompatActivity {
 
                 String[] separateNames = document.getId().split("-");
 
-                if (separateNames[0].equalsIgnoreCase(Constants.currentUser) || separateNames[1].equalsIgnoreCase(Constants.currentUser)) {
+                if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
                     sortUser(document.getId());
                 }
             }
@@ -402,10 +401,35 @@ public class MainActivity extends AppCompatActivity {
         });
     }
 
+
+    private void getUserInformation() {
+        DocumentReference userRef = db.collection("users").document(Constants.currentUserName);
+
+        userRef.get().addOnCompleteListener(task -> {
+
+            if (task.isSuccessful()) {
+                DocumentSnapshot document = task.getResult();
+                if (document.exists()) {
+
+                    Constants.currentUser = document.toObject(User.class);
+
+                } else {
+                    Log.d(TAG, "No such document found!");
+                }
+            } else {
+                Toast.makeText(this, "Error on getting user data", Toast.LENGTH_SHORT).show();
+            }
+
+        }).addOnFailureListener(e -> {
+            Toast.makeText(this, "Error on getting user data", Toast.LENGTH_SHORT).show();
+        });
+    }
+
+
     private void sortUser(String chatReference) {
         String[] chatRefSplit = chatReference.split("-");
 
-        String tempUsername = (chatRefSplit[1].equals(Constants.currentUser)) ? chatRefSplit[0] : chatRefSplit[1];
+        String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
 
         for (User user : Constants.users) {
             if (user.getUsername().equals(tempUsername)) {
@@ -423,7 +447,7 @@ public class MainActivity extends AppCompatActivity {
         data.put("isOnline", "false");
         data.put("lastOnline", timestamp);
 
-        DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+        DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
         docRef.update(data)
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
@@ -433,7 +457,7 @@ public class MainActivity extends AppCompatActivity {
         Map<String, Object> data = new HashMap<>();
         data.put("isOnline", "true");
 
-        DocumentReference docRef = db.collection("users").document(Constants.currentUser);
+        DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
         docRef.update(data)
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
