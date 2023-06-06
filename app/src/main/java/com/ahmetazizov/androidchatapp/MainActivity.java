@@ -19,6 +19,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.ahmetazizov.androidchatapp.FavoritesActivity;
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
@@ -43,6 +44,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -81,10 +83,14 @@ public class MainActivity extends AppCompatActivity {
         navigationView.setNavigationItemSelectedListener(item -> {
             switch (item.getItemId()) {
                 case R.id.nav_favorites:
-                    FragmentManager fragmentManager = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
-                    fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
+//                    FragmentManager fragmentManager = getSupportFragmentManager();
+//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+////                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
+//                    fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
+
+                    Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
+                    startActivity(favoritesIntent);
+                    overridePendingTransition(0, 0); // For disabling activity interface animation
 
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
@@ -400,6 +406,17 @@ public class MainActivity extends AppCompatActivity {
             }
         });
     }
+
+
+//    private void getRequests() {
+//        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
+//
+//        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
+//                .get()
+//                .addOnCompleteListener(task -> {
+//
+//                });
+//    }
 
 
     private void getUserInformation() {

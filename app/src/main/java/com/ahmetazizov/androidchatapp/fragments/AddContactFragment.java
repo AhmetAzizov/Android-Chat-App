@@ -22,6 +22,7 @@ import com.ahmetazizov.androidchatapp.models.User;
 import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
+import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -75,10 +76,12 @@ public class AddContactFragment extends Fragment {
 
                 Map<String, Object> data = new HashMap<>();
                 User currentUser = Constants.currentUser;
+                Timestamp timestamp = Timestamp.now();
 
                 data.put("username", currentUser.getUsername());
                 data.put("email", currentUser.getEmail());
                 data.put("imageURL", currentUser.getImageURL());
+                data.put("requestTime", timestamp);
 
 
                 colRef.document(Constants.currentUserName)
