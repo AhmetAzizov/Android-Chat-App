@@ -19,7 +19,7 @@
 
         <item name="buttonTint">@color/md_blue_400</item>
         <!-- Secondary brand color. -->
-        <item name="colorSecondary">@color/md_blue_grey_100</item>
+        <item name="colorSecondary">@color/md_blue_grey_300</item>
 
         <item name="colorSecondaryVariant">@color/md_red_50</item>
 

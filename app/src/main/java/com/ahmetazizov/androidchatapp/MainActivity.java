@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
 import android.os.Bundle;
+import android.os.Handler;
 import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
@@ -87,12 +88,15 @@ public class MainActivity extends AppCompatActivity {
 //                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 ////                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
 //                    fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
-
-                    Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
-                    startActivity(favoritesIntent);
-                    overridePendingTransition(0, 0); // For disabling activity interface animation
-
                     drawerLayout.closeDrawer(GravityCompat.START);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> {
+                        Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
+                        startActivity(favoritesIntent);
+                        overridePendingTransition(0, 0); // For disabling activity interface animation
+                    }, 180);
+
                     break;
 
                 case R.id.nav_chatColor:
@@ -102,11 +106,14 @@ public class MainActivity extends AppCompatActivity {
 
                     drawerLayout.closeDrawer(GravityCompat.START);
                     break;
-
                 case R.id.nav_changePassword:
-                    Toast.makeText(MainActivity.this, "change password", Toast.LENGTH_SHORT).show();
+                    mAuth.sendPasswordResetEmail(Constants.currentUser.getEmail())
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, "Password reset link has been sent to your email address", Toast.LENGTH_LONG).show();
+                                }
+                            });
                     break;
-
                 case R.id.nav_logOut:
                     Timestamp timestamp = Timestamp.now();
 
@@ -117,17 +124,7 @@ public class MainActivity extends AppCompatActivity {
                     DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
 
                     docRef.update(data)
-                            .addOnSuccessListener(new OnSuccessListener<Void>() {
-                                @Override
-                                public void onSuccess(Void aVoid) {
-                                }
-                            })
-                            .addOnFailureListener(new OnFailureListener() {
-                                @Override
-                                public void onFailure(@NonNull Exception e) {
-                                    Log.w(TAG, "Error writing document", e);
-                                }
-                            });
+                            .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
 
                     FirebaseAuth.getInstance().signOut();
 

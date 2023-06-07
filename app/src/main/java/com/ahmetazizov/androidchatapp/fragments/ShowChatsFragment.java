@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp.fragments;
 
+import android.app.Activity;
 import android.os.Bundle;
 
 import androidx.annotation.Nullable;
@@ -136,6 +137,7 @@ public class ShowChatsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        Activity currentActivity = getActivity();
         recyclerView = view.findViewById(R.id.chatsRecyclerView);
         cover = view.findViewById(R.id.loadingScreen);
         searchResult = new ArrayList<>();
@@ -148,7 +150,7 @@ public class ShowChatsFragment extends Fragment {
         searchCardInput = view.findViewById(R.id.searchCardInput);
         searchCardLayout = view.findViewById(R.id.searchCardLayout);
 
-        adapter = new ContactsRecyclerViewAdapter(getContext(), Constants.contacts, cover);
+        adapter = new ContactsRecyclerViewAdapter(getContext(), Constants.contacts, cover, currentActivity);
         recyclerView.setAdapter(adapter);
         LinearLayoutManager contactLayoutManager = new LinearLayoutManager(getContext());
         contactLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);

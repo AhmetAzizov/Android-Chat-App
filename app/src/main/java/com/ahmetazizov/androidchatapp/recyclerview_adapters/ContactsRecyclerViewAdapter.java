@@ -1,7 +1,9 @@
 package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
 import android.animation.Animator;
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -18,6 +20,9 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.ChatActivity;
+import com.ahmetazizov.androidchatapp.FavoritesActivity;
+import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -37,11 +42,13 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
     Context context;
     ArrayList<User> chats;
     CardView cover;
+    Activity activity;
 
-    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats, CardView cover){
+    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats, CardView cover, Activity activity){
         this.context = context;
         this.chats = chats;
         this.cover = cover;
+        this.activity = activity;
     }
 
     @NonNull
@@ -80,7 +87,13 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
                 })
                 .into(holder.chatImage);
 
-        holder.itemView.setOnClickListener(v -> sendToDataToFragment(holder));
+        holder.itemView.setOnClickListener(v -> {
+//            sendToDataToFragment(holder);
+
+            Intent favoritesIntent = new Intent(v.getContext(), ChatActivity.class);
+            context.startActivity(favoritesIntent);
+            activity.overridePendingTransition(0, 0); // For disabling activity interface animation
+        });
 
 
         holder.chatImage.setOnClickListener(v -> {
