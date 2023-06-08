@@ -12,6 +12,7 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -21,8 +22,6 @@ import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.ahmetazizov.androidchatapp.ChatActivity;
-import com.ahmetazizov.androidchatapp.FavoritesActivity;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -33,7 +32,6 @@ import com.bumptech.glide.load.engine.GlideException;
 import com.bumptech.glide.request.RequestListener;
 import com.bumptech.glide.request.target.Target;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 
 public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRecyclerViewAdapter.MyViewHolder> {
@@ -91,8 +89,12 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 //            sendToDataToFragment(holder);
 
             Intent favoritesIntent = new Intent(v.getContext(), ChatActivity.class);
-            context.startActivity(favoritesIntent);
-            activity.overridePendingTransition(0, 0); // For disabling activity interface animation
+            favoritesIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", chats.get(holder.getAdapterPosition()));
+            favoritesIntent.putExtras(bundle);
+            v.getContext().startActivity(favoritesIntent);
+//            activity.overridePendingTransition(0, 0);
         });
 
 
@@ -161,7 +163,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
         FragmentManager fragmentManager = ((AppCompatActivity) context).getSupportFragmentManager();
         FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 
-        fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
+        fragmentTransaction.setCustomAnimations(0, R.anim.slide_out_from_left);
 
         // Create a Bundle object and set the data you want to pass
         Bundle bundle = new Bundle();

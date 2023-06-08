@@ -109,7 +109,6 @@ public class ChatFragment extends Fragment {
         return this.chatsAdapter;
     }
 
-
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
@@ -329,7 +328,7 @@ public class ChatFragment extends Fragment {
         backButton.setOnClickListener(v -> {
             FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
+            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
             fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
         });
 

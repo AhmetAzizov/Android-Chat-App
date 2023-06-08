@@ -1,6 +1,5 @@
 package com.ahmetazizov.androidchatapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -20,20 +19,14 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.ahmetazizov.androidchatapp.FavoritesActivity;
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.fragments.FavoritesFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
@@ -45,7 +38,6 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -67,6 +59,8 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
+
+        Log.d(TAG, "asdf onStart: 1");
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -94,8 +88,8 @@ public class MainActivity extends AppCompatActivity {
                     handler.postDelayed(() -> {
                         Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
                         startActivity(favoritesIntent);
-                        overridePendingTransition(0, 0); // For disabling activity interface animation
-                    }, 180);
+                        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_from_left); // For overriding activity switch animation
+                    }, 190);
 
                     break;
 
@@ -175,14 +169,14 @@ public class MainActivity extends AppCompatActivity {
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkStateReceiver, intentFilter);
 
-
-        Log.d(TAG, "onCreate: ");
     }
 
 
     @Override
     protected void onPause() {
         super.onPause();
+
+        Log.d(TAG, "asdf onPause: 1");
 
         isOffline();
     }
@@ -191,6 +185,8 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        Log.d(TAG, "asdf onResume: 1");
+
         isOnline();
     }
 
@@ -198,14 +194,18 @@ public class MainActivity extends AppCompatActivity {
     protected void onStop() {
         super.onStop();
 
-        isOffline();
+        Log.d(TAG, "asdf onStop: 1");
+
+        if (!ChatActivity.started) isOffline();
     }
 
     @Override
     protected void onDestroy() {
         super.onDestroy();
 
-        isOffline();
+        Log.d(TAG, "asdf onDestroy: 1");
+
+        if (!ChatActivity.started) isOffline();
     }
 
     @Override
@@ -228,7 +228,7 @@ public class MainActivity extends AppCompatActivity {
                                 if (deleteList.size() == 0) {
                                     FragmentManager fragmentManager2 = getSupportFragmentManager();
                                     FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
-                                    fragmentTransaction.setCustomAnimations(R.anim.enter_from_right, 0);
+                                    fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
                                     fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
                                 } else {
                                     fragment.getAdapter().closeSelectionList();
