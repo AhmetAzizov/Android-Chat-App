@@ -22,6 +22,8 @@ public class Constants {
 
     public static ArrayList<Message> favorites = new ArrayList<>();
 
+    public static boolean appClosed = true;
+
 
     // This method is used for getting the file extension of specified Uri
     public static String getFileExtension(Uri uri, Context context) {

@@ -89,7 +89,7 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 //            sendToDataToFragment(holder);
 
             Intent favoritesIntent = new Intent(v.getContext(), ChatActivity.class);
-            favoritesIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//            favoritesIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
             Bundle bundle = new Bundle();
             bundle.putSerializable("user", chats.get(holder.getAdapterPosition()));
             favoritesIntent.putExtras(bundle);

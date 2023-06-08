@@ -85,6 +85,7 @@ public class ChatActivity extends AppCompatActivity {
     EditText messageInput;
     MaterialToolbar selectionOptions, profileInfo;
     boolean firstTime = true;
+    boolean isOnline;
 
     ConstraintLayout background;
 
@@ -93,16 +94,14 @@ public class ChatActivity extends AppCompatActivity {
     }
 
 
-    public static boolean started = false;
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_chat);
 
-        started = true;
+        Constants.appClosed = false;
 
-        Log.d(TAG, "asdf onCreate: 2");
+        Log.d(TAG, "asdf onCreate: 2, appClosed: " + Constants.appClosed);
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
@@ -149,7 +148,6 @@ public class ChatActivity extends AppCompatActivity {
         handler.postDelayed(() -> getStatus(), 4500);
 
 //        handler.postDelayed(() -> isOnline(), 1000);
-isOnline();
 
         isOnline();
 
@@ -459,8 +457,16 @@ isOnline();
                 String status = value.getString("isOnline");
                 Timestamp lastOnline = value.getTimestamp("lastOnline");
 
-                if (status.equals("true")) infoLabel.setText("Online");
-                else infoLabel.setText(lastSeen(lastOnline));
+                if (status.equals("true")) {
+                    isOnline = true;
+                    infoLabel.setText("Online");
+                } else {
+                    isOnline = false;
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> {
+                        if (!isOnline) infoLabel.setText(lastSeen(lastOnline));
+                    }, 2000);
+                }
 
             } else {
                 Log.d(TAG, "Current data: null");
@@ -613,7 +619,7 @@ isOnline();
     protected void onPause() {
         super.onPause();
 
-        Log.d(TAG, "asdf onPause: 2");
+        Log.d(TAG, "asdf onPause: 2, appClosed: " + Constants.appClosed);
 
         isOffline();
     }
@@ -622,26 +628,8 @@ isOnline();
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG, "asdf onResume: 2");
+        Log.d(TAG, "asdf onResume: 2, appClosed: " + Constants.appClosed);
 
         isOnline();
-    }
-
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Log.d(TAG, "asdf onStop: 2");
-
-        isOffline();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "asdf onDestroy: 2");
-
-        isOffline();
     }
 }

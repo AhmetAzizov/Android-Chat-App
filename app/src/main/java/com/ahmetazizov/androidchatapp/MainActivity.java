@@ -60,7 +60,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Log.d(TAG, "asdf onStart: 1");
+        Log.d(TAG, "asdf onStart: 1, appClosed: " + Constants.appClosed);
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -176,7 +176,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        Log.d(TAG, "asdf onPause: 1");
+        Log.d(TAG, "asdf onPause: 1, appClosed: " + Constants.appClosed);
 
         isOffline();
     }
@@ -185,28 +185,11 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
-        Log.d(TAG, "asdf onResume: 1");
+        Log.d(TAG, "asdf onResume: 1, appClosed: " + Constants.appClosed);
 
         isOnline();
     }
 
-    @Override
-    protected void onStop() {
-        super.onStop();
-
-        Log.d(TAG, "asdf onStop: 1");
-
-        if (!ChatActivity.started) isOffline();
-    }
-
-    @Override
-    protected void onDestroy() {
-        super.onDestroy();
-
-        Log.d(TAG, "asdf onDestroy: 1");
-
-        if (!ChatActivity.started) isOffline();
-    }
 
     @Override
     public void onBackPressed() {
