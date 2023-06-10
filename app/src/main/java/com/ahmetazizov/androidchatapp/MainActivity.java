@@ -28,6 +28,7 @@ import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
+import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
@@ -52,7 +53,7 @@ public class MainActivity extends AppCompatActivity {
     private FirebaseAuth mAuth;
     private NetworkStateReceiver networkStateReceiver;
     NavigationView navigationView;
-    ImageView drawerImage;
+    ShapeableImageView drawerImage;
     TextView drawerUsername, drawerEmail;
 
 

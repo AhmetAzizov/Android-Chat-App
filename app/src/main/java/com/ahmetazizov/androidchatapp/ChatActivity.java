@@ -318,30 +318,32 @@ public class ChatActivity extends AppCompatActivity {
 
 
         backButton.setOnClickListener(v -> {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
-            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
+//            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+
+            super.onBackPressed();
         });
 
 
 
         profileInfo.setOnClickListener(v -> {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-            fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
-
-            // Create a Bundle object and set the data you want to pass
-            Bundle bundle1 = new Bundle();
-            bundle1.putSerializable("user", user);
-
-            // Create a new instance of the fragment and set the bundle
-            ProfilePage profilePage = new ProfilePage();
-            profilePage.setArguments(bundle1);
-
-            // Replace the current fragment with the new one
-            fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//            fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
+//
+//            // Create a Bundle object and set the data you want to pass
+//            Bundle bundle1 = new Bundle();
+//            bundle1.putSerializable("user", user);
+//
+//            // Create a new instance of the fragment and set the bundle
+//            ProfilePage profilePage = new ProfilePage();
+//            profilePage.setArguments(bundle1);
+//
+//            // Replace the current fragment with the new one
+//            fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
         });
 
 
