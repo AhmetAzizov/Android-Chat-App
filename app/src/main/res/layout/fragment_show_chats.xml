@@ -14,24 +14,24 @@
             android:layout_height="match_parent">
 
 
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/settingsButton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_margin="10dp"
-                    app:shapeAppearanceOverlay="@style/menuButtonCorner"
-                    app:strokeWidth="0dp"
-                    app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toTopOf="parent">
+<!--                <com.google.android.material.card.MaterialCardView-->
+<!--                    android:id="@+id/settingsButton"-->
+<!--                    android:layout_width="wrap_content"-->
+<!--                    android:layout_height="wrap_content"-->
+<!--                    android:layout_margin="10dp"-->
+<!--                    app:shapeAppearanceOverlay="@style/menuButtonCorner"-->
+<!--                    app:strokeWidth="0dp"-->
+<!--                    app:layout_constraintStart_toStartOf="parent"-->
+<!--                    app:layout_constraintTop_toTopOf="parent">-->
 
-                        <com.google.android.material.imageview.ShapeableImageView
-                            android:layout_width="40dp"
-                            android:layout_height="36dp"
-                            android:padding="5dp"
-                            app:tint="?attr/colorOnSurface"
-                            app:srcCompat="@drawable/ic_menu" />
+<!--                        <com.google.android.material.imageview.ShapeableImageView-->
+<!--                            android:layout_width="40dp"-->
+<!--                            android:layout_height="36dp"-->
+<!--                            android:padding="5dp"-->
+<!--                            app:tint="?attr/colorOnSurface"-->
+<!--                            app:srcCompat="@drawable/ic_menu" />-->
 
-                </com.google.android.material.card.MaterialCardView>
+<!--                </com.google.android.material.card.MaterialCardView>-->
 
 
                 <androidx.recyclerview.widget.RecyclerView
@@ -41,7 +41,7 @@
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    android:layout_marginTop="70dp"
+                    android:layout_marginTop="60dp"
                     />
 
 
@@ -51,9 +51,9 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="10dp"
-                    android:layout_marginLeft="65dp"
-                    android:layout_marginTop="10dp"
-                    app:shapeAppearanceOverlay="@style/searchBarCorner"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="12dp"
+                    app:cardCornerRadius="15dp"
                     app:strokeWidth="0dp"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"

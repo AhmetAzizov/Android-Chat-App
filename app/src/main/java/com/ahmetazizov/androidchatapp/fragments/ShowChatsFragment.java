@@ -17,6 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,52 +39,8 @@ import org.checkerframework.checker.nullness.qual.NonNull;
 
 import java.util.ArrayList;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link ShowChatsFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
+
 public class ShowChatsFragment extends Fragment {
-
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
-
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    public ShowChatsFragment() {
-        // Required empty public constructor
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment ShowChatsFragment.
-     */
-    // TODO: Rename and change types and number of parameters
-    public static ShowChatsFragment newInstance(String param1, String param2) {
-        ShowChatsFragment fragment = new ShowChatsFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -92,20 +49,6 @@ public class ShowChatsFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_show_chats, container, false);
 
     }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
     public final static String TAG = "ShowChatsFragment";
@@ -133,7 +76,7 @@ public class ShowChatsFragment extends Fragment {
         recyclerView = view.findViewById(R.id.chatsRecyclerView);
         cover = view.findViewById(R.id.loadingScreen);
         searchResult = new ArrayList<>();
-        settingsButton = view.findViewById(R.id.settingsButton);
+//        settingsButton = view.findViewById(R.id.settingsButton);
 //        rateButton = view.findViewById(R.id.rateButton);
         addContactButton = view.findViewById(R.id.addContactButton);
 
@@ -153,6 +96,8 @@ public class ShowChatsFragment extends Fragment {
         LinearLayoutManager searchLayoutManager = new LinearLayoutManager(getContext());
         searchLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchCardList.setLayoutManager(searchLayoutManager);
+
+        Log.d(TAG, "contactlist: " + Constants.contacts);
 
         // Firestore database reference
         db = FirebaseFirestore.getInstance();
@@ -217,23 +162,23 @@ public class ShowChatsFragment extends Fragment {
                         });
 
 
-        settingsButton.setOnClickListener(v -> {
-//            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
-
-            MainActivity activity = (MainActivity) getActivity();
-
-            if (activity != null) {
-                DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
-
-                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                } else {
-                    drawerLayout.openDrawer(GravityCompat.START);
-                }
-            }
-        });
+//        settingsButton.setOnClickListener(v -> {
+////            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
+////            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+////            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
+//
+//            MainActivity activity = (MainActivity) getActivity();
+//
+//            if (activity != null) {
+//                DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
+//
+//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+//                    drawerLayout.closeDrawer(GravityCompat.START);
+//                } else {
+//                    drawerLayout.openDrawer(GravityCompat.START);
+//                }
+//            }
+//        });
 
 //        rateButton.setOnClickListener(v -> {
 //            RatingDialog ratingDialog = new RatingDialog(getContext());
@@ -248,7 +193,7 @@ public class ShowChatsFragment extends Fragment {
 
             Intent intent = new Intent(requireContext(), AddContactActivity.class);
             startActivity(intent);
-
+            getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.zoom_out);
         });
     }
 

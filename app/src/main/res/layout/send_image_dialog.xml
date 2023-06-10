@@ -23,9 +23,9 @@
                 android:id="@+id/cardView3"
                 android:layout_width="0dp"
                 android:layout_height="0dp"
-                android:layout_margin="3dp"
+                android:layout_margin="5dp"
                 app:cardCornerRadius="20dp"
-                app:cardElevation="20dp"
+                app:cardElevation="0dp"
                 app:layout_constraintDimensionRatio="1:1"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
@@ -45,7 +45,7 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/cancelButton"
-                android:layout_width="140dp"
+                android:layout_width="145dp"
                 android:layout_height="44dp"
                 android:layout_margin="5dp"
                 app:cardCornerRadius="20dp"
@@ -67,7 +67,7 @@
 
             <androidx.cardview.widget.CardView
                 android:id="@+id/sendButton"
-                android:layout_width="140dp"
+                android:layout_width="145dp"
                 android:layout_height="44dp"
                 android:layout_margin="5dp"
                 app:cardCornerRadius="20dp"
@@ -102,8 +102,8 @@
                 android:id="@+id/progressBar"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_margin="5dp"
-                android:indeterminate="true"
+                android:layout_marginVertical="5dp"
+                android:indeterminate="false"
                 app:trackColor="?attr/colorSurface"
                 app:indicatorColor="?attr/colorOnSurface"
                 app:layout_constraintEnd_toEndOf="parent"

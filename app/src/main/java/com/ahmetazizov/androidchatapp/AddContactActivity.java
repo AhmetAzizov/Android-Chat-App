@@ -6,6 +6,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Handler;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.Toast;
@@ -47,6 +48,7 @@ public class AddContactActivity extends AppCompatActivity {
 //            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
 //            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
 //            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+
 
             super.onBackPressed();
         });
@@ -134,5 +136,4 @@ public class AddContactActivity extends AppCompatActivity {
 
         return null;
     }
-
 }

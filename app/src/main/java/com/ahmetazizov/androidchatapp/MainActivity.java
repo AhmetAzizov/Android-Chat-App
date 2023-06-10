@@ -6,6 +6,7 @@ import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
 
 
 import android.content.Intent;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
+import com.ahmetazizov.androidchatapp.fragments.UserProfilePage;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
@@ -30,6 +32,8 @@ import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
 import com.google.android.material.navigation.NavigationView;
+import com.google.android.material.tabs.TabLayout;
+import com.google.android.material.tabs.TabLayoutMediator;
 import com.google.firebase.Timestamp;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
@@ -55,6 +59,10 @@ public class MainActivity extends AppCompatActivity {
     NavigationView navigationView;
     ShapeableImageView drawerImage;
     TextView drawerUsername, drawerEmail;
+    ImageView menuButton;
+    TabLayout tabLayout;
+    ViewPager2 viewPager;
+    ViewPagerAdapter viewPagerAdapter;
 
 
     @Override
@@ -67,6 +75,10 @@ public class MainActivity extends AppCompatActivity {
         mAuth = FirebaseAuth.getInstance();
         drawerLayout = findViewById(R.id.drawer_layout);
         navigationView = findViewById(R.id.navigation_view);
+        menuButton = findViewById(R.id.menuButton);
+        drawerLayout = findViewById(R.id.drawer_layout);
+        tabLayout = findViewById(R.id.tabLayout);
+        viewPager = findViewById(R.id.viewPager);
 
         View navigationHeader = navigationView.getHeaderView(0);
 
@@ -131,6 +143,8 @@ public class MainActivity extends AppCompatActivity {
             return true;
         });
 
+
+
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
@@ -144,18 +158,30 @@ public class MainActivity extends AppCompatActivity {
 
             ChatFragment chatFragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
 
+            fillViewPager();
+
+
             if (chatFragment == null) {
 
                 isOnline();
 
                 // go to add fragment
-                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
-
+//                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
             }
         } else {
             Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
             startActivity(intent);
         }
+
+
+        menuButton.setOnClickListener(v -> {
+
+                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
+        });
     }
 
 
@@ -163,6 +189,7 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
 
         // Register the BroadcastReceiver to listen for network state changes
         networkStateReceiver = new NetworkStateReceiver();
@@ -380,10 +407,12 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
 
-            ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+//            ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+            int position = viewPager.getCurrentItem();
 
-            if (fragment != null) {
-                fragment.getAdapter().notifyDataSetChanged();
+            if (position == 0) {
+                ShowChatsFragment showChatsFragment = (ShowChatsFragment) viewPagerAdapter.getCurrentFragment(0);
+                showChatsFragment.getAdapter().notifyDataSetChanged();
             }
         });
     }
@@ -437,6 +466,21 @@ public class MainActivity extends AppCompatActivity {
             }
         }
     }
+
+
+    private void fillViewPager() {
+        viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getLifecycle());
+        viewPagerAdapter.addFragment(new ShowChatsFragment(), "CHATS");
+        viewPagerAdapter.addFragment(new UserProfilePage(), "REQUESTS");
+
+        viewPager.setAdapter(viewPagerAdapter);
+
+        new TabLayoutMediator(tabLayout, viewPager, (tab, position) -> {
+            tab.setText(viewPagerAdapter.getTitle(position));
+        }).attach();
+    }
+
+
 
     private void isOffline() {
         Timestamp timestamp = Timestamp.now();

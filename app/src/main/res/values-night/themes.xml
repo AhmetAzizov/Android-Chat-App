@@ -24,7 +24,7 @@
         <item name="colorSecondaryVariant">@color/md_red_50</item>
 
         <!-- Status bar color. -->
-        <item name="android:statusBarColor">?attr/background</item>
+        <item name="android:statusBarColor">@color/md_blue_grey_800</item>
         <!-- Customize your theme here. -->
 
         <item name="colorTertiary">@color/material_dynamic_tertiary40</item>
