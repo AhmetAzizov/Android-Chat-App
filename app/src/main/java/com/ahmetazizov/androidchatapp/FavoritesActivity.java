@@ -35,9 +35,11 @@ public class FavoritesActivity extends AppCompatActivity {
         favoritesRecyclerview.setLayoutManager(layoutManager);
 
         backButton.setOnClickListener(v -> {
-            FragmentManager fragmentManager = getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+//            FragmentManager fragmentManager = getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+
+            super.onBackPressed();
         });
     }
 

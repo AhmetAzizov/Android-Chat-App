@@ -2,7 +2,7 @@ package com.ahmetazizov.androidchatapp.models;
 
 import com.google.firebase.Timestamp;
 
-public class Message {
+public abstract class Message {
 
     String id;
     String sender;

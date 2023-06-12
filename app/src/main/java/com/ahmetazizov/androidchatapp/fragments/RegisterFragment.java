@@ -73,7 +73,6 @@ public class RegisterFragment extends Fragment {
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
 
-
     private static final int MAX_WIDTH = 7000;
     private static final int MAX_HEIGHT = 7000;
 
@@ -107,6 +106,15 @@ public class RegisterFragment extends Fragment {
         imageContainer = view.findViewById(R.id.imageContainer);
         users = new ArrayList<>();
 
+        if (savedInstanceState != null) {
+            imageUri = savedInstanceState.getParcelable("uri");
+            image.setImageURI(imageUri);
+            Log.d(TAG, "something something");
+        }
+
+        if (Constants.registerImageUri != null) {
+            image.setImageURI(Constants.registerImageUri);
+        }
 
         enterUsernameLayout = view.findViewById(R.id.enterUserNameLayout);
         enterEmailLayout = view.findViewById(R.id.enterEmailLayout);
@@ -399,32 +407,28 @@ public class RegisterFragment extends Fragment {
 
 
     private void openFileChooser(){
-        Intent intent = new Intent();
-        intent.setType("image/*");
-        intent.setAction(Intent.ACTION_GET_CONTENT);
+//        Intent intent = new Intent();
+//        intent.setType("image/*");
+//        intent.setAction(Intent.ACTION_GET_CONTENT);
+//
+////        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+//          startActivityForResult(intent, PICK_IMAGE_REQUEST);
 
-//        Intent intent = new Intent(Intent.ACTION_PICK, MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
-          startActivityForResult(intent, PICK_IMAGE_REQUEST);
+        Intent i = new Intent(Intent.ACTION_PICK,android.provider.MediaStore.Images.Media.EXTERNAL_CONTENT_URI);
+        startActivityForResult(i,1);
     }
 
     @Override
     public void onActivityResult(int requestCode, int resultCode, @Nullable Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
 
+
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK
                 && data != null && data.getData() != null){
 
             imageUri = data.getData();
 
-
-//            try {
-//                imageUri = data.getData();
-//                image.setImageURI(imageUri);
-//
-//            } catch (RuntimeException e) {
-//                Toast.makeText(getContext(), e.getMessage(), Toast.LENGTH_SHORT).show();
-//            }
-
+            Constants.registerImageUri = null;
 
             try {
                 InputStream inputStream = getContext().getContentResolver().openInputStream(imageUri);
@@ -445,5 +449,14 @@ public class RegisterFragment extends Fragment {
                 Log.d(TAG, "error: " + e);
             }
         }
+    }
+
+
+    @Override
+    public void onSaveInstanceState(@NonNull Bundle outState) {
+        super.onSaveInstanceState(outState);
+
+        Constants.registerImageUri = imageUri;
+        outState.putParcelable("uri", imageUri);
     }
 }

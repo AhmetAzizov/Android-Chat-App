@@ -24,6 +24,9 @@ public class Constants {
 
     public static boolean appClosed = true;
 
+    public static Uri registerImageUri;
+
+
 
     // This method is used for getting the file extension of specified Uri
     public static String getFileExtension(Uri uri, Context context) {

@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp;
 
+import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -22,6 +23,7 @@ import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
+import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.fragments.UserProfilePage;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
@@ -63,7 +65,6 @@ public class MainActivity extends AppCompatActivity {
     TabLayout tabLayout;
     ViewPager2 viewPager;
     ViewPagerAdapter viewPagerAdapter;
-
 
     @Override
     protected void onStart() {
@@ -156,18 +157,10 @@ public class MainActivity extends AppCompatActivity {
 
             fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
 
-            ChatFragment chatFragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-
             fillViewPager();
 
+            isOnline();
 
-            if (chatFragment == null) {
-
-                isOnline();
-
-                // go to add fragment
-//                getSupportFragmentManager().beginTransaction().replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
-            }
         } else {
             Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
             startActivity(intent);
@@ -190,13 +183,11 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-
         // Register the BroadcastReceiver to listen for network state changes
         networkStateReceiver = new NetworkStateReceiver();
         IntentFilter intentFilter = new IntentFilter();
         intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
         registerReceiver(networkStateReceiver, intentFilter);
-
     }
 
 
@@ -204,16 +195,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onPause() {
         super.onPause();
 
-        Log.d(TAG, "asdf onPause: 1, appClosed: " + Constants.appClosed);
-
         isOffline();
     }
 
     @Override
     protected void onResume() {
         super.onResume();
-
-        Log.d(TAG, "asdf onResume: 1, appClosed: " + Constants.appClosed);
 
         isOnline();
     }
@@ -412,7 +399,10 @@ public class MainActivity extends AppCompatActivity {
 
             if (position == 0) {
                 ShowChatsFragment showChatsFragment = (ShowChatsFragment) viewPagerAdapter.getCurrentFragment(0);
-                showChatsFragment.getAdapter().notifyDataSetChanged();
+
+                if (showChatsFragment.getAdapter() != null) {
+                    showChatsFragment.getAdapter().notifyDataSetChanged();
+                }
             }
         });
     }
@@ -471,7 +461,7 @@ public class MainActivity extends AppCompatActivity {
     private void fillViewPager() {
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getLifecycle());
         viewPagerAdapter.addFragment(new ShowChatsFragment(), "CHATS");
-        viewPagerAdapter.addFragment(new UserProfilePage(), "REQUESTS");
+        viewPagerAdapter.addFragment(new RegisterFragment(), "REQUESTS");
 
         viewPager.setAdapter(viewPagerAdapter);
 

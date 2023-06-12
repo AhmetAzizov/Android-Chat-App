@@ -329,21 +329,7 @@ public class ChatActivity extends AppCompatActivity {
 
 
         profileInfo.setOnClickListener(v -> {
-//            FragmentManager fragmentManager = getSupportFragmentManager();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//
-//            fragmentTransaction.setCustomAnimations(R.anim.enter_from_bottom, R.anim.fade_out);
-//
-//            // Create a Bundle object and set the data you want to pass
-//            Bundle bundle1 = new Bundle();
-//            bundle1.putSerializable("user", user);
-//
-//            // Create a new instance of the fragment and set the bundle
-//            ProfilePage profilePage = new ProfilePage();
-//            profilePage.setArguments(bundle1);
-//
-//            // Replace the current fragment with the new one
-//            fragmentTransaction.replace(R.id.frameLayout, profilePage, "profilePage").addToBackStack(null).commit();
+
         });
 
 
@@ -633,5 +619,16 @@ public class ChatActivity extends AppCompatActivity {
         Log.d(TAG, "asdf onResume: 2, appClosed: " + Constants.appClosed);
 
         isOnline();
+    }
+
+
+    @Override
+    public void onBackPressed() {
+        List<Message> deleteList = chatsAdapter.getSelectionList();
+        if (deleteList.size() == 0) {
+            super.onBackPressed();
+        } else {
+            chatsAdapter.closeSelectionList();
+        }
     }
 }

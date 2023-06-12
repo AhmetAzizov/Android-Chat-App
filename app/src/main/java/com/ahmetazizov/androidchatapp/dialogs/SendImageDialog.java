@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp.dialogs;
 
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
@@ -18,6 +19,7 @@ import androidx.cardview.widget.CardView;
 import androidx.fragment.app.DialogFragment;
 
 import com.ahmetazizov.androidchatapp.Constants;
+import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
