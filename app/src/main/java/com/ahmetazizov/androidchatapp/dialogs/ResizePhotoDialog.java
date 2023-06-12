@@ -53,7 +53,7 @@ public class ResizePhotoDialog extends DialogFragment {
             imageUrl = getArguments().getString("imageUrl");
         }
 
-        imageContainer = view.findViewById(R.id.imageContainer);
+        imageContainer = view.findViewById(R.id.image);
 
 
         Glide.with(getContext())

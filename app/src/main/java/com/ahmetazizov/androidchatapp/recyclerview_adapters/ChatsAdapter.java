@@ -256,7 +256,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         public SenderImageViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            senderImageContainer = itemView.findViewById(R.id.imageContainer);
+            senderImageContainer = itemView.findViewById(R.id.image);
             senderTimeSent = itemView.findViewById(R.id.senderTimeSent);
         }
     }
@@ -269,7 +269,7 @@ public class ChatsAdapter extends RecyclerView.Adapter {
         public ReceiverImageViewHolder(@NonNull View itemView) {
             super(itemView);
 
-            receiverImageContainer = itemView.findViewById(R.id.imageContainer);
+            receiverImageContainer = itemView.findViewById(R.id.image);
             receiverTimeSent = itemView.findViewById(R.id.receiverTimeSent);
         }
     }

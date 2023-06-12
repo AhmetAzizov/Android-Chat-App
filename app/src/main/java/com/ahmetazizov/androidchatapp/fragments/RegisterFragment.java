@@ -2,19 +2,16 @@ package com.ahmetazizov.androidchatapp.fragments;
 
 import static android.app.Activity.RESULT_OK;
 
-import android.content.ContentResolver;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 
-import androidx.activity.result.ActivityResultLauncher;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
+import androidx.viewpager2.widget.ViewPager2;
+
 import android.graphics.BitmapFactory;
 
 import android.os.Handler;
@@ -23,7 +20,6 @@ import android.util.Patterns;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.MimeTypeMap;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
@@ -34,27 +30,17 @@ import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.User;
-import com.google.android.gms.tasks.OnCompleteListener;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
-import com.google.android.gms.tasks.Task;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
-import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 import com.google.firebase.auth.UserProfileChangeRequest;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
-import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
-import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
-import com.google.firebase.firestore.QuerySnapshot;
 import com.google.firebase.storage.FirebaseStorage;
-import com.google.firebase.storage.OnProgressListener;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -86,7 +72,6 @@ public class RegisterFragment extends Fragment {
     TextInputLayout enterUsernameLayout, enterEmailLayout, enterPasswordLayout;
     TextInputEditText enterUsername, enterEmail, enterPassword;
     ImageView image;
-    CardView imageContainer;
     ProgressBar progressBar;
     Uri imageUri;
 
@@ -103,7 +88,6 @@ public class RegisterFragment extends Fragment {
         loginDirect = view.findViewById(R.id.loginDirect);
         progressBar = view.findViewById(R.id.progressBar);
         image = view.findViewById(R.id.image);
-        imageContainer = view.findViewById(R.id.imageContainer);
         users = new ArrayList<>();
 
         if (savedInstanceState != null) {
@@ -155,11 +139,13 @@ public class RegisterFragment extends Fragment {
         });
 
         loginDirect.setOnClickListener(v -> {
-            FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//            FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
+//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+//
+//            fragmentTransaction.replace(R.id.AuthFrameLayout, new LoginFragment(), "loginFragment").commit();
 
-            fragmentTransaction.replace(R.id.AuthFrameLayout, new LoginFragment(), "loginFragment").commit();
-
+            ViewPager2 viewPager = getActivity().findViewById(R.id.viewPager);
+            viewPager.setCurrentItem(1);
         });
     }
 

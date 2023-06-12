@@ -70,7 +70,14 @@ public class MainActivity extends AppCompatActivity {
     protected void onStart() {
         super.onStart();
 
-        Log.d(TAG, "asdf onStart: 1, appClosed: " + Constants.appClosed);
+
+    }
+
+
+    @Override
+    protected void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setContentView(R.layout.activity_main);
 
         db = FirebaseFirestore.getInstance();
         mAuth = FirebaseAuth.getInstance();
@@ -89,105 +96,37 @@ public class MainActivity extends AppCompatActivity {
 
         getUsers();
 
-        navigationView.setNavigationItemSelectedListener(item -> {
-            switch (item.getItemId()) {
-                case R.id.nav_favorites:
-//                    FragmentManager fragmentManager = getSupportFragmentManager();
-//                    FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-////                    fragmentTransaction.setCustomAnimations(0, R.anim.enter_from_left);
-//                    fragmentTransaction.replace(R.id.frameLayout, new FavoritesFragment(), "favoritesFragment").addToBackStack(null).commit();
-                    drawerLayout.closeDrawer(GravityCompat.START);
-
-                    Handler handler = new Handler();
-                    handler.postDelayed(() -> {
-                        Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
-                        startActivity(favoritesIntent);
-                        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_from_left); // For overriding activity switch animation
-                    }, 190);
-
-                    break;
-
-                case R.id.nav_chatColor:
-                    FragmentManager fragmentManager2 = getSupportFragmentManager();
-                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
-                    fragmentTransaction2.replace(R.id.frameLayout, new ChatColorPicker(), "chatColorPicker").addToBackStack(null).commit();
-
-                    drawerLayout.closeDrawer(GravityCompat.START);
-                    break;
-                case R.id.nav_changePassword:
-                    mAuth.sendPasswordResetEmail(Constants.currentUser.getEmail())
-                            .addOnCompleteListener(task -> {
-                                if (task.isSuccessful()) {
-                                    Toast.makeText(MainActivity.this, "Password reset link has been sent to your email address", Toast.LENGTH_LONG).show();
-                                }
-                            });
-                    break;
-                case R.id.nav_logOut:
-                    Timestamp timestamp = Timestamp.now();
-
-                    Map<String, Object> data = new HashMap<>();
-                    data.put("isOnline", "false");
-                    data.put("lastOnline", timestamp);
-
-                    DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
-
-                    docRef.update(data)
-                            .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
-
-                    FirebaseAuth.getInstance().signOut();
-
-                    Intent intent = new Intent(MainActivity.this, AuthenticationActivity.class);
-                    startActivity(intent);
-                    break;
-            }
-
-            return true;
-        });
-
-
-
         FirebaseUser currentUser = mAuth.getCurrentUser();
 
         if(currentUser != null){
             Constants.currentUserName = currentUser.getDisplayName();
 
-            getChats();
-            getFavorites();
-            getUserInformation();
+            setNavigationListener();
+            getChats();  //  Get chat references of the user
+            getFavorites();  // Get the favorite chats of the logged-in user
+            getUserInformation();  // Get the information of logged-in user
 
-            fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);
+            fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);  // Fill the user details in the navigation drawer
 
-            fillViewPager();
+            fillViewPager();  // Connect fragments with the tab layout
 
-            isOnline();
+            isOnline();  // Update status of the user
 
-        } else {
-            Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
-            startActivity(intent);
-        }
+            setNetworkStateReceiver();  // Register the BroadcastReceiver to listen for network state changes
 
-
-        menuButton.setOnClickListener(v -> {
+            menuButton.setOnClickListener(v -> {
 
                 if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
                     drawerLayout.closeDrawer(GravityCompat.START);
                 } else {
                     drawerLayout.openDrawer(GravityCompat.START);
                 }
-        });
-    }
+            });
 
-
-    @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
-
-        // Register the BroadcastReceiver to listen for network state changes
-        networkStateReceiver = new NetworkStateReceiver();
-        IntentFilter intentFilter = new IntentFilter();
-        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
-        registerReceiver(networkStateReceiver, intentFilter);
+        } else {
+            Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
+            startActivity(intent);
+        }
     }
 
 
@@ -390,7 +329,7 @@ public class MainActivity extends AppCompatActivity {
                 String[] separateNames = document.getId().split("-");
 
                 if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
-                    sortUser(document.getId());
+                    sortUser(document.getId());  //  Get contact names from the chat reference and send to contacts list
                 }
             }
 
@@ -405,6 +344,22 @@ public class MainActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+
+
+    private void sortUser(String chatReference) {
+        String[] chatRefSplit = chatReference.split("-");
+
+        String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
+
+        for (User user : Constants.users) {
+            if (user.getUsername().equals(tempUsername)) {
+                user.setChatReference(chatReference);
+                Constants.contacts.add(user);
+                break;
+            }
+        }
     }
 
 
@@ -443,20 +398,6 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-    private void sortUser(String chatReference) {
-        String[] chatRefSplit = chatReference.split("-");
-
-        String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
-
-        for (User user : Constants.users) {
-            if (user.getUsername().equals(tempUsername)) {
-                user.setChatReference(chatReference);
-                Constants.contacts.add(user);
-                break;
-            }
-        }
-    }
-
 
     private void fillViewPager() {
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getLifecycle());
@@ -470,6 +411,68 @@ public class MainActivity extends AppCompatActivity {
         }).attach();
     }
 
+
+    private void setNetworkStateReceiver() {
+        networkStateReceiver = new NetworkStateReceiver();
+        IntentFilter intentFilter = new IntentFilter();
+        intentFilter.addAction(ConnectivityManager.CONNECTIVITY_ACTION);
+        registerReceiver(networkStateReceiver, intentFilter);
+    }
+
+
+
+    private void setNavigationListener() {
+        navigationView.setNavigationItemSelectedListener(item -> {
+            switch (item.getItemId()) {
+                case R.id.nav_favorites:
+                    drawerLayout.closeDrawer(GravityCompat.START);
+
+                    Handler handler = new Handler();
+                    handler.postDelayed(() -> {
+                        Intent favoritesIntent = new Intent(MainActivity.this, FavoritesActivity.class);
+                        startActivity(favoritesIntent);
+                        overridePendingTransition(R.anim.slide_in_from_right, R.anim.slide_out_from_left); // For overriding activity switch animation
+                    }, 190);
+
+                    break;
+
+                case R.id.nav_chatColor:
+                    FragmentManager fragmentManager2 = getSupportFragmentManager();
+                    FragmentTransaction fragmentTransaction2 = fragmentManager2.beginTransaction();
+                    fragmentTransaction2.replace(R.id.frameLayout, new ChatColorPicker(), "chatColorPicker").addToBackStack(null).commit();
+
+                    drawerLayout.closeDrawer(GravityCompat.START);
+                    break;
+                case R.id.nav_changePassword:
+                    mAuth.sendPasswordResetEmail(Constants.currentUser.getEmail())
+                            .addOnCompleteListener(task -> {
+                                if (task.isSuccessful()) {
+                                    Toast.makeText(MainActivity.this, "Password reset link has been sent to your email address", Toast.LENGTH_LONG).show();
+                                }
+                            });
+                    break;
+                case R.id.nav_logOut:
+                    Timestamp timestamp = Timestamp.now();
+
+                    Map<String, Object> data = new HashMap<>();
+                    data.put("isOnline", "false");
+                    data.put("lastOnline", timestamp);
+
+                    DocumentReference docRef = db.collection("users").document(Constants.currentUserName);
+
+                    docRef.update(data)
+                            .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
+
+                    FirebaseAuth.getInstance().signOut();
+
+                    Intent intent = new Intent(MainActivity.this, AuthenticationActivity.class);
+                    startActivity(intent);
+                    break;
+            }
+
+            return true;
+        });
+    }
 
 
     private void isOffline() {
