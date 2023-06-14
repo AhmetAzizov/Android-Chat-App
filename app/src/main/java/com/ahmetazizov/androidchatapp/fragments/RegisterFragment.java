@@ -48,9 +48,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class RegisterFragment extends Fragment {
-    public RegisterFragment() {
-        // Required empty public constructor
-    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -58,6 +55,12 @@ public class RegisterFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_register, container, false);
     }
+
+
+
+
+
+
 
     private static final int MAX_WIDTH = 7000;
     private static final int MAX_HEIGHT = 7000;
@@ -74,6 +77,8 @@ public class RegisterFragment extends Fragment {
     ImageView image;
     ProgressBar progressBar;
     Uri imageUri;
+    CardView imageContainer;
+
 
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     StorageReference storageRef;
@@ -83,11 +88,12 @@ public class RegisterFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
-        selectImageButton = view.findViewById(R.id.selectImageButton);
+//        selectImageButton = view.findViewById(R.id.selectImageButton);
         registerButton = view.findViewById(R.id.registerButton);
         loginDirect = view.findViewById(R.id.loginDirect);
         progressBar = view.findViewById(R.id.progressBar);
         image = view.findViewById(R.id.image);
+        imageContainer = view.findViewById(R.id.imageContainer);
         users = new ArrayList<>();
 
         if (savedInstanceState != null) {
@@ -97,6 +103,12 @@ public class RegisterFragment extends Fragment {
         }
 
         if (Constants.registerImageUri != null) {
+            image.setImageTintList(null);
+            ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
+            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+            image.setLayoutParams(layoutParams);
+
             image.setImageURI(Constants.registerImageUri);
         }
 
@@ -116,11 +128,16 @@ public class RegisterFragment extends Fragment {
 
 //        setupGetContentLauncher();
 
-        selectImageButton.setOnClickListener(v -> {
-            // Method for choosing the image from device
+//        selectImageButton.setOnClickListener(v -> {
+//            // Method for choosing the image from device
+//            openFileChooser();
+//        });
+
+
+
+        imageContainer.setOnClickListener(v -> {
             openFileChooser();
         });
-
 
 
         registerButton.setOnClickListener(v -> {
@@ -429,6 +446,13 @@ public class RegisterFragment extends Fragment {
                 if (imageWidth > MAX_WIDTH || imageHeight > MAX_HEIGHT) {
                     Toast.makeText(getContext(), "Image size is too large", Toast.LENGTH_SHORT).show();
                 } else {
+
+                    image.setImageTintList(null);
+                    ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
+                    layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                    layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                    image.setLayoutParams(layoutParams);
+
                     image.setImageURI(imageUri);
                 }
             } catch (Exception e) {
