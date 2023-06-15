@@ -96,21 +96,44 @@ public class RegisterFragment extends Fragment {
         imageContainer = view.findViewById(R.id.imageContainer);
         users = new ArrayList<>();
 
+
         if (savedInstanceState != null) {
+            Log.d(TAG, "image uri1  " + Constants.registerImageUri);
+
             imageUri = savedInstanceState.getParcelable("uri");
-            image.setImageURI(imageUri);
-            Log.d(TAG, "something something");
+
+            if (imageUri != null) {
+                image.setImageURI(imageUri);
+
+                image.setImageTintList(null);
+                ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
+                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+                image.setLayoutParams(layoutParams);
+            }
+
+            Constants.registerImageUri = null;
         }
 
-        if (Constants.registerImageUri != null) {
-            image.setImageTintList(null);
-            ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
-            layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-            layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-            image.setLayoutParams(layoutParams);
+//        if (Constants.registerImageUri != null) {
+//            try {
+//                Log.d(TAG, "image uri2  " + Constants.registerImageUri);
+//                image.setImageTintList(null);
+//                ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
+//                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
+//                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
+//                image.setLayoutParams(layoutParams);
+//
+//                image.setImageURI(Constants.registerImageUri);
+//            } catch (Exception e) {
+//                Toast.makeText(requireContext(), "Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
+//                return;
+//            }
+//
+//            image.setImageURI(Constants.registerImageUri);
+//            Constants.registerImageUri = null;
+//        }
 
-            image.setImageURI(Constants.registerImageUri);
-        }
 
         enterUsernameLayout = view.findViewById(R.id.enterUserNameLayout);
         enterEmailLayout = view.findViewById(R.id.enterEmailLayout);
@@ -352,59 +375,11 @@ public class RegisterFragment extends Fragment {
 
                 users.clear();
 
-
                 for (QueryDocumentSnapshot document : value) {
-
                     users.add(document.getId());
-
                 }
             });
         }
-
-
-
-//    private void setupGetContentLauncher() {
-//
-//
-//        mGetContentLauncher = registerForActivityResult(new ActivityResultContracts.GetContent(),
-//                new ActivityResultCallback<Uri>() {
-//                    @Override
-//                    public void onActivityResult(Uri result) {
-//                        if (result != null) {
-//
-//                            imageUri = result;
-//
-////                            Picasso.get().load(imageUri).resize(500, 500).centerInside().into(image);
-//
-//
-//                            try {
-//                                Glide.with(getContext())
-//                                        .load(imageUri)
-//                                        .override(500, 500)
-//                                        .centerInside()
-//                                        .into(image);
-//                            } catch (Exception e) {
-//                                Log.d(TAG, "Exception: " + e.getMessage());
-//                            }
-//
-//
-////                            image.setImageURI(imageUri);
-//
-//
-//                            Log.d(TAG, "URI: " + result);
-//                        }
-//                    }
-//                });
-//    }
-//
-//    private void openFileChooser() {
-//        mGetContentLauncher.launch("image/*");
-//    }
-
-
-
-
-
 
 
 
@@ -454,9 +429,11 @@ public class RegisterFragment extends Fragment {
                     image.setLayoutParams(layoutParams);
 
                     image.setImageURI(imageUri);
+
+                    Log.d(TAG, "set image uri : " + imageUri);
                 }
             } catch (Exception e) {
-                Log.d(TAG, "error: " + e);
+                Log.e(TAG, "error: " + e);
             }
         }
     }
@@ -464,9 +441,9 @@ public class RegisterFragment extends Fragment {
 
     @Override
     public void onSaveInstanceState(@NonNull Bundle outState) {
-        super.onSaveInstanceState(outState);
-
         Constants.registerImageUri = imageUri;
         outState.putParcelable("uri", imageUri);
+
+        super.onSaveInstanceState(outState);
     }
 }

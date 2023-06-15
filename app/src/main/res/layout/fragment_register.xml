@@ -87,7 +87,6 @@
                         app:counterMaxLength="15"
                         app:endIconMode="clear_text"
                         app:errorEnabled="true"
-                        app:helperText="required*"
                         app:helperTextTextColor="?attr/colorOnSurface"
                         app:hintTextColor="?attr/colorOnSurface"
                         app:layout_constraintEnd_toEndOf="parent"
@@ -102,7 +101,7 @@
                             android:layout_height="wrap_content"
                             android:hint="User Name"
                             android:outlineSpotShadowColor="?attr/colorOnSurface"
-                            android:textColor="#A1A0A0"
+                            android:textColor="?attr/colorOnSurface"
                             android:textCursorDrawable="@null" />
 
                     </com.google.android.material.textfield.TextInputLayout>
@@ -120,7 +119,6 @@
                         app:boxStrokeWidthFocused="1dp"
                         app:endIconMode="clear_text"
                         app:errorEnabled="true"
-                        app:helperText="required*"
                         app:helperTextTextColor="?attr/colorOnSurface"
                         app:hintTextColor="?attr/colorOnSurface"
                         app:layout_constraintEnd_toEndOf="@+id/enterUserNameLayout"
@@ -150,7 +148,6 @@
                         app:boxStrokeWidthFocused="1dp"
                         app:endIconMode="password_toggle"
                         app:errorEnabled="true"
-                        app:helperText="required*"
                         app:helperTextTextColor="?attr/colorOnSurface"
                         app:hintTextColor="?attr/colorOnSurface"
                         app:layout_constraintEnd_toEndOf="@+id/enterEmailLayout"

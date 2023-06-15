@@ -466,6 +466,7 @@ public class MainActivity extends AppCompatActivity {
                     FirebaseAuth.getInstance().signOut();
 
                     Intent intent = new Intent(MainActivity.this, AuthenticationActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     break;
             }
