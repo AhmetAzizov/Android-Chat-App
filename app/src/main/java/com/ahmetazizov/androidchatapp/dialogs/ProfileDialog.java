@@ -18,7 +18,7 @@ import androidx.fragment.app.FragmentTransaction;
 
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;
@@ -27,12 +27,12 @@ public class ProfileDialog extends DialogFragment {
 
     private final String TAG = "profileDialog";
 
-    User user;
+    AppUser user;
     ImageView profileImage;
     ImageView chatButton;
     TextView username;
 
-    public static ProfileDialog newInstance(User user) {
+    public static ProfileDialog newInstance(AppUser user) {
 
         ProfileDialog dialogFragment = new ProfileDialog();
 
@@ -63,7 +63,7 @@ public class ProfileDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getArguments() != null) {
-            user = (User) getArguments().getSerializable("user");
+            user = (AppUser) getArguments().getSerializable("user");
         }
 
         profileImage = view.findViewById(R.id.profileImg);

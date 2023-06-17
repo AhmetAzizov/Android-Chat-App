@@ -34,6 +34,7 @@ import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
@@ -41,7 +42,6 @@ import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -94,7 +94,7 @@ public class ChatFragment extends Fragment {
     ImageView contactImage, backButton, downArrowIcon;
     ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView contactName, infoLabel, selectionCount;
-    User user;
+    AppUser user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
     CardView sendButton, downArrow;
@@ -115,7 +115,7 @@ public class ChatFragment extends Fragment {
 
         Bundle bundle = getArguments();
         if (bundle != null) {
-            user = (User) bundle.getSerializable("user");
+            user = (AppUser) bundle.getSerializable("user");
         } else {
             Log.e(TAG, "bundle is null!");
         }

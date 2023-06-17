@@ -6,13 +6,13 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.drawable.Drawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import androidx.activity.result.contract.ActivityResultContracts;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.appcompat.app.AppCompatActivity;
@@ -25,7 +25,7 @@ import com.ahmetazizov.androidchatapp.ChatActivity;
 import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -38,11 +38,12 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
     public final static String TAG = "ChatsRecycler";
     Context context;
-    ArrayList<User> chats;
+    ArrayList<AppUser> chats;
     CardView cover;
     Activity activity;
 
-    public ContactsRecyclerViewAdapter(Context context, ArrayList<User> chats, CardView cover, Activity activity){
+
+    public ContactsRecyclerViewAdapter(Context context, ArrayList<AppUser> chats, CardView cover, Activity activity){
         this.context = context;
         this.chats = chats;
         this.cover = cover;
@@ -94,7 +95,6 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
             bundle.putSerializable("user", chats.get(holder.getAdapterPosition()));
             favoritesIntent.putExtras(bundle);
             v.getContext().startActivity(favoritesIntent);
-//            activity.overridePendingTransition(0, 0);
         });
 
 

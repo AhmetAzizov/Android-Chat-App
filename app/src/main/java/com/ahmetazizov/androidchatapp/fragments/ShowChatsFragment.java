@@ -6,11 +6,7 @@ import android.os.Bundle;
 
 import androidx.annotation.Nullable;
 import androidx.cardview.widget.CardView;
-import androidx.core.view.GravityCompat;
-import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,11 +24,10 @@ import android.widget.SearchView;
 
 import com.ahmetazizov.androidchatapp.AddContactActivity;
 import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -52,7 +47,7 @@ public class ShowChatsFragment extends Fragment {
 
 
     public final static String TAG = "ShowChatsFragment";
-    private ArrayList<User> searchResult;
+    private ArrayList<AppUser> searchResult;
     private ContactsRecyclerViewAdapter adapter;
     private SearchAdapter searchAdapter;
     private FirebaseFirestore db;
@@ -209,7 +204,7 @@ public class ShowChatsFragment extends Fragment {
 
         searchResult.clear();
 
-        for (User contact : Constants.contacts) {
+        for (AppUser contact : Constants.contacts) {
             if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
                 searchResult.add(contact);
             }
@@ -219,7 +214,7 @@ public class ShowChatsFragment extends Fragment {
         if (input.isEmpty()) searchResult.clear();
     }
 
-    public ArrayList<User> getSearchResult() {
+    public ArrayList<AppUser> getSearchResult() {
         return searchResult;
     }
 

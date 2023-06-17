@@ -6,8 +6,6 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.core.content.ContextCompat;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
@@ -28,14 +26,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
-import com.ahmetazizov.androidchatapp.fragments.ProfilePage;
-import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
-import com.ahmetazizov.androidchatapp.models.User;
 import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
@@ -77,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView contactImage, backButton, downArrowIcon;
     ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView contactName, infoLabel, selectionCount;
-    User user;
+    AppUser user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
     CardView sendButton, downArrow;
@@ -105,10 +101,12 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            user = (User) bundle.getSerializable("user");
+            user = (AppUser) bundle.getSerializable("user");
         } else {
             Log.e(TAG, "bundle is null!");
         }
+
+        Log.d(TAG, "CurrentUser: " + user.getEmail());
 
         db = FirebaseFirestore.getInstance();
         contactImage = findViewById(R.id.contactImage);

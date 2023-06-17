@@ -5,8 +5,8 @@ import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.Message;
-import com.ahmetazizov.androidchatapp.models.User;
 
 import java.util.ArrayList;
 
@@ -14,11 +14,11 @@ public class Constants {
 
     public static String currentUserName;
 
-    public static User currentUser;
+    public static AppUser currentUser;
 
-    public static ArrayList<User> users = new ArrayList<>();
+    public static ArrayList<AppUser> users = new ArrayList<>();
 
-    public static ArrayList<User> contacts = new ArrayList<>();
+    public static ArrayList<AppUser> contacts = new ArrayList<>();
 
     public static ArrayList<Message> favorites = new ArrayList<>();
 

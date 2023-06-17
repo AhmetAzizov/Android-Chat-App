@@ -17,7 +17,7 @@ import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.Timestamp;
@@ -72,7 +72,7 @@ public class AddContactFragment extends Fragment {
                 final CollectionReference colRef = db.collection("users").document(checkedUsername).collection("requests");
 
                 Map<String, Object> data = new HashMap<>();
-                User currentUser = Constants.currentUser;
+                AppUser currentUser = Constants.currentUser;
                 Timestamp timestamp = Timestamp.now();
 
                 data.put("username", currentUser.getUsername());
@@ -117,7 +117,7 @@ public class AddContactFragment extends Fragment {
             addContactUsernameLayout.setError("Username should not be same as the current user!");
             return null;
         } else if (username.isEmpty()) {
-            addContactUsernameLayout.setError("User Name is Empty!");
+            addContactUsernameLayout.setError("AppUser Name is Empty!");
             addContactUsernameLayout.requestFocus();
             return null;
         } else if (username.length() > 15) {
@@ -127,14 +127,14 @@ public class AddContactFragment extends Fragment {
             addContactUsernameLayout.setError(null);
         }
 
-//        for (User user : Constants.contacts) {
+//        for (AppUser user : Constants.contacts) {
 //            if (username.equalsIgnoreCase(user.getUsername())) {
-//                addContactUsernameLayout.setError("User already in your contacts!");
+//                addContactUsernameLayout.setError("AppUser already in your contacts!");
 //                return null;
 //            }
 //        }
 
-        for (User user : Constants.users) {
+        for (AppUser user : Constants.users) {
             if (user.getUsername().equalsIgnoreCase(username)) {
                 addContactUsernameLayout.setHelperText("correct!");
                 addContactUsernameLayout.setError(null);

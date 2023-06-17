@@ -17,7 +17,7 @@ import androidx.recyclerview.widget.RecyclerView;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
@@ -34,9 +34,9 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
     public final static String TAG = "ChatsRecycler";
     static Context context;
-    ArrayList<User> searchResult;
+    ArrayList<AppUser> searchResult;
 
-    public SearchAdapter(Context context, ArrayList<User> searchResult){
+    public SearchAdapter(Context context, ArrayList<AppUser> searchResult){
         this.context = context;
         this.searchResult = searchResult;
     }
@@ -60,7 +60,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
         holder.itemView.setOnClickListener(v -> {
 
-            for (User user : Constants.contacts) {
+            for (AppUser user : Constants.contacts) {
                 if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
                     sendToDataToFragment(holder, position);
                     return;

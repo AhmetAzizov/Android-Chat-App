@@ -19,7 +19,7 @@ import androidx.fragment.app.DialogFragment;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.bumptech.glide.Glide;
 import com.google.android.material.progressindicator.LinearProgressIndicator;
 import com.google.firebase.Timestamp;
@@ -37,7 +37,7 @@ public class SendImageDialog extends DialogFragment {
     private final String TAG = "sendImageDialog";
 
 
-    public static SendImageDialog newInstance(Uri imageUri, User user) {
+    public static SendImageDialog newInstance(Uri imageUri, AppUser user) {
 
         SendImageDialog sendImageDialog = new SendImageDialog();
 
@@ -52,7 +52,7 @@ public class SendImageDialog extends DialogFragment {
     StorageReference storageRef;
     FirebaseFirestore db;
     Uri imageUri;
-    User user;
+    AppUser user;
     CardView cancelButton, sendButton;
     ImageView imageContainer;
     LinearProgressIndicator progressBar;
@@ -74,7 +74,7 @@ public class SendImageDialog extends DialogFragment {
 
         if (getArguments() != null) {
             imageUri = getArguments().getParcelable("imageUri");
-            user = (User) getArguments().getSerializable("user");
+            user = (AppUser) getArguments().getSerializable("user");
         }
 
         db = FirebaseFirestore.getInstance();

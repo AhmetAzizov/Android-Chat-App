@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.User;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -169,8 +169,8 @@ public class RegisterFragment extends Fragment {
             String password = enterPassword.getText().toString().trim();
 
 
+            // Checks if there is any error in the input
             if (checkErrors(username, email, password, imageUri)) {
-                // Checks if there is any error in the input
                 uploadFile(username, email, password);
             } else {
                 Log.d(TAG, "error");
@@ -192,7 +192,7 @@ public class RegisterFragment extends Fragment {
 
     private boolean checkErrors(String username, String email, String password, Uri uri) {
         if (username.isEmpty()) {
-            enterUsernameLayout.setError("User Name is Empty!");
+            enterUsernameLayout.setError("AppUser Name is Empty!");
             enterUsernameLayout.requestFocus();
             return false;
         }
@@ -272,7 +272,7 @@ public class RegisterFragment extends Fragment {
                         fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
                             // We create a new user object
-                            User user = new User(username, email, uri.toString());
+                            AppUser user = new AppUser(username, email, uri.toString());
 
                             registerUser(email, password, user);
 
@@ -291,7 +291,7 @@ public class RegisterFragment extends Fragment {
 
 
 
-    private void addUser(User user) {
+    private void addUser(AppUser user) {
 
         dbUsersRef.document(user.getUsername())
                 .set(user)
@@ -327,18 +327,17 @@ public class RegisterFragment extends Fragment {
 
 
 
-    private void registerUser(String email, String password, User user) {
+    private void registerUser(String email, String password, AppUser user) {
 
 
         mAuth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(getActivity(), task -> {
+                .addOnCompleteListener(requireActivity(), task -> {
                     if (task.isSuccessful()) {
-                        // Sign in success, update UI with the signed-in user's information
-                        Log.d(TAG, "createUserWithEmail:success");
-
 
                         // When the complete the register the new user, we set their display name to the one chosen by the user
                         FirebaseUser authUser = mAuth.getCurrentUser();
+
+                        user.setUid(authUser.getUid());
 
 
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()

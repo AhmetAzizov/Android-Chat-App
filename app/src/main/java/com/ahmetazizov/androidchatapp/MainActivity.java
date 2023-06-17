@@ -1,6 +1,5 @@
 package com.ahmetazizov.androidchatapp;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
@@ -25,11 +24,10 @@ import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
-import com.ahmetazizov.androidchatapp.fragments.UserProfilePage;
+import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
-import com.ahmetazizov.androidchatapp.models.User;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -224,7 +222,7 @@ public class MainActivity extends AppCompatActivity {
                 if (document.exists()) {
                     // document data exists, extract data and fill into object
 
-                    User currentUserData = document.toObject(User.class);
+                    AppUser currentUserData = document.toObject(AppUser.class);
 
                     Glide.with(this)
                             .load(currentUserData.getImageURL())
@@ -261,7 +259,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             for (QueryDocumentSnapshot document : value) {
-                User user = document.toObject(User.class);
+                AppUser user = document.toObject(AppUser.class);
 
                 Constants.users.add(user);
             }
@@ -353,7 +351,7 @@ public class MainActivity extends AppCompatActivity {
 
         String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
 
-        for (User user : Constants.users) {
+        for (AppUser user : Constants.users) {
             if (user.getUsername().equals(tempUsername)) {
                 user.setChatReference(chatReference);
                 Constants.contacts.add(user);
@@ -383,7 +381,8 @@ public class MainActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
 
-                    Constants.currentUser = document.toObject(User.class);
+                    Constants.currentUser = document.toObject(AppUser.class);
+                    Log.d(TAG, "CurrentUser: " + Constants.currentUser.getUid());
 
                 } else {
                     Log.d(TAG, "No such document found!");
