@@ -1,6 +1,7 @@
 package com.ahmetazizov.androidchatapp.recyclerview_adapters;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +15,7 @@ import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.RecyclerView;
 
+import com.ahmetazizov.androidchatapp.ChatActivity;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
@@ -60,32 +62,41 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
         holder.itemView.setOnClickListener(v -> {
 
-            for (AppUser user : Constants.contacts) {
-                if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
-                    sendToDataToFragment(holder, position);
-                    return;
-                }
-            }
 
-            String newChatRef = Constants.currentUserName + "-" + searchResult.get(position).getUsername();
-            CollectionReference colRef = db.collection("chats");
+            Intent favoritesIntent = new Intent(v.getContext(), ChatActivity.class);
+//            favoritesIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", searchResult.get(holder.getAdapterPosition()));
+            favoritesIntent.putExtras(bundle);
+            v.getContext().startActivity(favoritesIntent);
 
-            Timestamp timestamp = Timestamp.now();
-            Map<String, Object> data = new HashMap<>();
-            data.put("time", timestamp);
 
-            // Create an empty document inside "chats" collection
-            colRef.document(newChatRef)
-                    .set(data, SetOptions.merge())
-                    .addOnSuccessListener(unused -> {
-                        Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
-
-                        // This will edit the new contacts chat reference so that it can be used in the next fragment
-                        searchResult.get(position).setChatReference(newChatRef);
-
-                        // This method will navigate to the chat fragment and send a user object containing the users information
-                        sendToDataToFragment(holder, position);
-                    }).addOnFailureListener(e -> Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
+//            for (AppUser user : Constants.contacts) {
+//                if (searchResult.get(holder.getAdapterPosition()).getUsername().equals(user.getUsername())) {
+//                    sendToDataToFragment(holder, position);
+//                    return;
+//                }
+//            }
+//
+//            String newChatRef = Constants.currentUserName + "-" + searchResult.get(position).getUsername();
+//            CollectionReference colRef = db.collection("chats");
+//
+//            Timestamp timestamp = Timestamp.now();
+//            Map<String, Object> data = new HashMap<>();
+//            data.put("time", timestamp);
+//
+//            // Create an empty document inside "chats" collection
+//            colRef.document(newChatRef)
+//                    .set(data, SetOptions.merge())
+//                    .addOnSuccessListener(unused -> {
+//                        Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+//
+//                        // This will edit the new contacts chat reference so that it can be used in the next fragment
+//                        searchResult.get(position).setChatReference(newChatRef);
+//
+//                        // This method will navigate to the chat fragment and send a user object containing the users information
+//                        sendToDataToFragment(holder, position);
+//                    }).addOnFailureListener(e -> Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
 
         });
     }
@@ -119,7 +130,6 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
         // Create a new instance of the fragment and set the bundle
         ChatFragment chatFragment = new ChatFragment();
         chatFragment.setArguments(bundle);
-
 
         // Replace the current fragment with the new one
         fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();

@@ -145,66 +145,93 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        // Get the FragmentManager instance
-        FragmentManager fragmentManager = getSupportFragmentManager();
+//        // Get the FragmentManager instance
+//        FragmentManager fragmentManager = getSupportFragmentManager();
+//
+//        // Loop through the list of fragments in the FragmentManager
+//        for (Fragment fragments : fragmentManager.getFragments()) {
+//            if (fragments != null && fragments.isVisible()) {
+//                String fragmentTag = fragments.getTag(); // Get the tag of the currently active fragment
+//
+//                if (fragmentTag != null) {
+//                switch (fragmentTag) {
+//                    case "chatFragment":
+//                        ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
+//                        if (fragment != null) {
+//                            if (fragment.getAdapter() != null) {
+//                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
+//                                if (deleteList.size() == 0) {
+//                                    FragmentManager fragmentManager2 = getSupportFragmentManager();
+//                                    FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
+//                                    fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
+//                                    fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
+//                                } else {
+//                                    fragment.getAdapter().closeSelectionList();
+//                                }
+//                            }
+//                        }
+//                        break;
+//                    case "showChatsFragment":
+//                        ShowChatsFragment showChatsFragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+//
+//                        if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
+//                            showChatsFragment.getSearchResult().clear();
+//                            showChatsFragment.getSearchAdapter().notifyDataSetChanged();
+//                        } else {
+//                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
+//
+//                            exitDialog
+//                                    .setTitle("Are you sure you want to exit the application?")
+//                                            .setPositiveButton("Yes", (dialog, which) -> {
+//                                                isOffline();
+//                                                super.onBackPressed();
+//                                            })
+//                                            .setNegativeButton("No", (dialog, which) -> {
+//                                                dialog.dismiss();
+//                                            })
+//                                            .show();
+//                        }
+//
+//                        break;
+//
+//                    default:
+//                        super.onBackPressed();
+//                }
+//                }
+//                break; // Break out of the loop after finding the active fragment
+//            }
 
-        // Loop through the list of fragments in the FragmentManager
-        for (Fragment fragments : fragmentManager.getFragments()) {
-            if (fragments != null && fragments.isVisible()) {
-                String fragmentTag = fragments.getTag(); // Get the tag of the currently active fragment
 
-                if (fragmentTag != null) {
-                switch (fragmentTag) {
-                    case "chatFragment":
-                        ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-                        if (fragment != null) {
-                            if (fragment.getAdapter() != null) {
-                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
-                                if (deleteList.size() == 0) {
-                                    FragmentManager fragmentManager2 = getSupportFragmentManager();
-                                    FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
-                                    fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
-                                    fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
-                                } else {
-                                    fragment.getAdapter().closeSelectionList();
-                                }
-                            }
-                        }
-                        break;
-                    case "showChatsFragment":
-                        ShowChatsFragment showChatsFragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
 
-                        if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
-                            showChatsFragment.getSearchResult().clear();
-                            showChatsFragment.getSearchAdapter().notifyDataSetChanged();
-                        } else {
-                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
+        int position = viewPager.getCurrentItem();
 
-                            exitDialog
-                                    .setTitle("Are you sure you want to exit the application?")
-                                            .setPositiveButton("Yes", (dialog, which) -> {
-                                                isOffline();
-                                                super.onBackPressed();
-                                            })
-                                            .setNegativeButton("No", (dialog, which) -> {
-                                                dialog.dismiss();
-                                            })
-                                            .show();
-                        }
+        if (position == 0) {
+            ShowChatsFragment showChatsFragment = (ShowChatsFragment) viewPagerAdapter.getCurrentFragment(0);
 
-                        break;
-
-                    default:
-                        super.onBackPressed();
-                }
-                }
-                break; // Break out of the loop after finding the active fragment
+            if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
+                showChatsFragment.getSearchResult().clear();
+                showChatsFragment.getSearchAdapter().notifyDataSetChanged();
+                return;
             }
         }
 
-        // This closes the navigation drawer if it is open
+
+
+            // This closes the navigation drawer if it is open
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
+        } else {
+            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
+            exitDialog
+                    .setTitle("Are you sure you want to exit the application?")
+                    .setPositiveButton("Yes", (dialog, which) -> {
+                        isOffline();
+                        super.onBackPressed();
+                    })
+                    .setNegativeButton("No", (dialog, which) -> {
+                        dialog.dismiss();
+                    })
+                    .show();
         }
     }
 

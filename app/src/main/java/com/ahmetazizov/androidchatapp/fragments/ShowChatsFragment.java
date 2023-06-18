@@ -92,26 +92,9 @@ public class ShowChatsFragment extends Fragment {
         searchLayoutManager.setOrientation(LinearLayoutManager.VERTICAL);
         searchCardList.setLayoutManager(searchLayoutManager);
 
-        Log.d(TAG, "contactlist: " + Constants.contacts);
-
-        // Firestore database reference
         db = FirebaseFirestore.getInstance();
 
-
-        cover.animate().alpha(0.0f).setDuration(400);
-
-//        new ItemTouchHelper(new ItemTouchHelper.SimpleCallback(0, ItemTouchHelper.RIGHT) {
-//            @Override
-//            public boolean onMove(@androidx.annotation.NonNull RecyclerView recyclerView, @androidx.annotation.NonNull RecyclerView.ViewHolder viewHolder, @androidx.annotation.NonNull RecyclerView.ViewHolder target) {
-//                return false;
-//            }
-//
-//            @Override
-//            public void onSwiped(@androidx.annotation.NonNull RecyclerView.ViewHolder viewHolder, int direction) {
-//
-//            }
-//        }).attachToRecyclerView(recyclerView);
-
+//        cover.animate().alpha(0.0f).setDuration(400);
 
         searchCardInput.setOnClickListener(v -> searchCardInput.setIconified(false));
 
@@ -139,7 +122,8 @@ public class ShowChatsFragment extends Fragment {
             }
         });
 
-        // Unused code //
+
+        // Unused code. I forgot why I wrote this code in the first place. //
         recyclerView
                 .getViewTreeObserver()
                 .addOnGlobalLayoutListener(
@@ -157,35 +141,8 @@ public class ShowChatsFragment extends Fragment {
                         });
 
 
-//        settingsButton.setOnClickListener(v -> {
-////            FragmentManager fragmentManager = getActivity().getSupportFragmentManager();
-////            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-////            fragmentTransaction.replace(R.id.frameLayout, new UserProfilePage(), "userProfilePage").commit();
-//
-//            MainActivity activity = (MainActivity) getActivity();
-//
-//            if (activity != null) {
-//                DrawerLayout drawerLayout = activity.findViewById(R.id.drawer_layout);
-//
-//                if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-//                    drawerLayout.closeDrawer(GravityCompat.START);
-//                } else {
-//                    drawerLayout.openDrawer(GravityCompat.START);
-//                }
-//            }
-//        });
-
-//        rateButton.setOnClickListener(v -> {
-//            RatingDialog ratingDialog = new RatingDialog(getContext());
-//            ratingDialog.show();
-//            });
 
         addContactButton.setOnClickListener(v -> {
-//            FragmentManager fragmentManager = requireActivity().getSupportFragmentManager();
-//            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//            fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, R.anim.slide_out_from_left);
-//            fragmentTransaction.replace(R.id.frameLayout, new AddContactFragment(), "addContactFragment").addToBackStack(null).commit();
-
             Intent intent = new Intent(requireContext(), AddContactActivity.class);
             startActivity(intent);
             getActivity().overridePendingTransition(R.anim.slide_in_from_right, R.anim.zoom_out);
