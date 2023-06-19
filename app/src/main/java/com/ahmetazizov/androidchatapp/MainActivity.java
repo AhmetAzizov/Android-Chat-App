@@ -203,6 +203,13 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+        // This closes the navigation drawer if it is open
+        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            drawerLayout.closeDrawer(GravityCompat.START);
+            return;
+        }
+
+
         int position = viewPager.getCurrentItem();
 
         if (position == 0) {
@@ -216,11 +223,14 @@ public class MainActivity extends AppCompatActivity {
         }
 
 
+//        viewPager.registerOnPageChangeCallback(new ViewPager2.OnPageChangeCallback() {
+//            @Override
+//            public void onPageSelected(int position) {
+//                super.onPageSelected(position);
+//
+//            }
+//        });
 
-            // This closes the navigation drawer if it is open
-        if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
-            drawerLayout.closeDrawer(GravityCompat.START);
-        } else {
             MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
             exitDialog
                     .setTitle("Are you sure you want to exit the application?")
@@ -233,10 +243,6 @@ public class MainActivity extends AppCompatActivity {
                     })
                     .show();
         }
-    }
-
-
-
 
 
 
@@ -388,15 +394,15 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
-//    private void getRequests() {
-//        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
-//
-//        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
-//                .get()
-//                .addOnCompleteListener(task -> {
-//
-//                });
-//    }
+    private void getRequests() {
+        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
+
+        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+
+                });
+    }
 
 
     private void getUserInformation() {
