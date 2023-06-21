@@ -35,7 +35,7 @@ public class SearchAdapter extends RecyclerView.Adapter<SearchAdapter.MyViewHold
 
 
     public final static String TAG = "ChatsRecycler";
-    static Context context;
+    Context context;
     ArrayList<AppUser> searchResult;
 
     public SearchAdapter(Context context, ArrayList<AppUser> searchResult){
