@@ -7,6 +7,7 @@ import android.webkit.MimeTypeMap;
 
 import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.models.Request;
 
 import java.util.ArrayList;
 
@@ -21,6 +22,8 @@ public class Constants {
     public static ArrayList<AppUser> contacts = new ArrayList<>();
 
     public static ArrayList<Message> favorites = new ArrayList<>();
+
+    public static ArrayList<Request> requests = new ArrayList<>();
 
     public static boolean appClosed = true;
 

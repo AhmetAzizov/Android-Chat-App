@@ -23,11 +23,13 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
+import com.ahmetazizov.androidchatapp.fragments.RequestFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
 import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
+import com.ahmetazizov.androidchatapp.models.Request;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
 import com.google.android.material.imageview.ShapeableImageView;
@@ -43,6 +45,7 @@ import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
@@ -99,6 +102,7 @@ public class MainActivity extends AppCompatActivity {
         if(currentUser != null){
             Constants.currentUserName = currentUser.getDisplayName();
 
+            getRequests();
             setNavigationListener();
             getChats();  //  Get chat references of the user
             getFavorites();  // Get the favorite chats of the logged-in user
@@ -397,10 +401,24 @@ public class MainActivity extends AppCompatActivity {
     private void getRequests() {
         final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
 
+        Constants.requests.clear();
+
         requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
                 .get()
                 .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
 
+                        QuerySnapshot querySnapshot = task.getResult();
+
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+
+                                Request request = document.toObject(Request.class);
+
+                                Constants.requests.add(request);
+                            }
+                        }
+                    }
                 });
     }
 
@@ -434,7 +452,7 @@ public class MainActivity extends AppCompatActivity {
     private void fillViewPager() {
         viewPagerAdapter = new ViewPagerAdapter(getSupportFragmentManager(), getLifecycle());
         viewPagerAdapter.addFragment(new ShowChatsFragment(), "CHATS");
-        viewPagerAdapter.addFragment(new RegisterFragment(), "REQUESTS");
+        viewPagerAdapter.addFragment(new RequestFragment(), "REQUESTS");
 
         viewPager.setAdapter(viewPagerAdapter);
 

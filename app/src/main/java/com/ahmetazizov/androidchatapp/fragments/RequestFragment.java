@@ -5,17 +5,21 @@ import android.os.Bundle;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.recyclerview_adapters.RequestAdapter;
 
 public class RequestFragment extends Fragment {
 
     RecyclerView recyclerView;
+    RequestAdapter requestAdapter;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -29,5 +33,11 @@ public class RequestFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         recyclerView = view.findViewById(R.id.recyclerView);
+
+        requestAdapter = new RequestAdapter(requireContext(), Constants.requests);
+        recyclerView.setAdapter(requestAdapter);
+        LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
+        layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
+        recyclerView.setLayoutManager(layoutManager);
     }
 }

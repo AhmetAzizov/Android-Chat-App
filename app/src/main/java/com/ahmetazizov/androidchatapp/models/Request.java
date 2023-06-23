@@ -1,23 +1,23 @@
 package com.ahmetazizov.androidchatapp.models;
 
-import java.security.Timestamp;
+import com.google.firebase.Timestamp;
 
 public class Request extends User{
 
-    private Timestamp exactTime;
+    private Timestamp requestTime;
 
     public Request() {}
 
-    public Request(String username, String email, String imageURL, Timestamp exactTime) {
+    public Request(String username, String email, String imageURL, com.google.firebase.Timestamp exactTime) {
         super(username, email, imageURL);
-        this.exactTime = exactTime;
+        this.requestTime = exactTime;
     }
 
-    public Timestamp getExactTime() {
-        return exactTime;
+    public Timestamp getRequestTime() {
+        return requestTime;
     }
 
-    public void setExactTime(Timestamp exactTime) {
-        this.exactTime = exactTime;
+    public void setRequestTime(Timestamp requestTime) {
+        this.requestTime = requestTime;
     }
 }
