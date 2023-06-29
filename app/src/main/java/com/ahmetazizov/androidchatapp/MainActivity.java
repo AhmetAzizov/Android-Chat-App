@@ -282,6 +282,37 @@ public class MainActivity extends AppCompatActivity {
     }
 
 
+    private void getRequests() {
+        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
+
+        Constants.requests.clear();
+
+        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
+
+                        QuerySnapshot querySnapshot = task.getResult();
+
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+
+                                Request request = document.toObject(Request.class);
+
+                                Constants.requests.add(request);
+                            }
+                        }
+
+
+                        RequestFragment requestFragment = (RequestFragment) viewPagerAdapter.getCurrentFragment(1);
+
+                        if (requestFragment.getRequestAdapter() != null) {
+                            requestFragment.getRequestAdapter().notifyDataSetChanged();
+                        }
+                    }
+                });
+    }
+
 
     public void getUsers() {
         final CollectionReference usersRef = db.collection("users");
@@ -395,31 +426,6 @@ public class MainActivity extends AppCompatActivity {
                 break;
             }
         }
-    }
-
-
-    private void getRequests() {
-        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
-
-        Constants.requests.clear();
-
-        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
-
-                        QuerySnapshot querySnapshot = task.getResult();
-
-                        if (querySnapshot != null) {
-                            for (QueryDocumentSnapshot document : querySnapshot) {
-
-                                Request request = document.toObject(Request.class);
-
-                                Constants.requests.add(request);
-                            }
-                        }
-                    }
-                });
     }
 
 
