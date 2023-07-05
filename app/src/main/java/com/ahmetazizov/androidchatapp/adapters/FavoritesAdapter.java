@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp.recyclerview_adapters;
+package com.ahmetazizov.androidchatapp.adapters;
 
 import android.content.Context;
 import android.util.Log;
@@ -15,7 +15,6 @@ import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
-import com.ahmetazizov.androidchatapp.models.TextMessage;
 import com.bumptech.glide.Glide;
 import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.DocumentSnapshot;

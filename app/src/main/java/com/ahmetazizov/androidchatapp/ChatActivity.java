@@ -32,7 +32,7 @@ import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.TextMessage;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
+import com.ahmetazizov.androidchatapp.adapters.ChatsAdapter;
 import com.bumptech.glide.Glide;
 import com.google.android.material.appbar.MaterialToolbar;
 import com.google.android.material.imageview.ShapeableImageView;

@@ -1,5 +1,6 @@
 package com.ahmetazizov.androidchatapp.dialogs;
 
+import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.drawable.ColorDrawable;
 import android.os.Bundle;
@@ -16,6 +17,7 @@ import androidx.fragment.app.DialogFragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import com.ahmetazizov.androidchatapp.ChatActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
 import com.ahmetazizov.androidchatapp.models.AppUser;
@@ -26,7 +28,6 @@ import java.io.Serializable;
 public class ProfileDialog extends DialogFragment {
 
     private final String TAG = "profileDialog";
-
     AppUser user;
     ImageView profileImage;
     ImageView chatButton;
@@ -76,30 +77,16 @@ public class ProfileDialog extends DialogFragment {
                 .centerCrop()
                 .into(profileImage);
 
-
         username.setText(user.getUsername());
 
+        chatButton.setOnClickListener(v -> {
+            Intent favoritesIntent = new Intent(v.getContext(), ChatActivity.class);
+            Bundle bundle = new Bundle();
+            bundle.putSerializable("user", (Serializable) user);
+            favoritesIntent.putExtras(bundle);
+            v.getContext().startActivity(favoritesIntent);
 
-
-        chatButton.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentManager fragmentManager = ((AppCompatActivity) getContext()).getSupportFragmentManager();
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-
-                // Create a Bundle object and set the data you want to pass
-                Bundle bundle = new Bundle();
-                bundle.putSerializable("user", (Serializable) user);
-
-                // Create a new instance of the fragment and set the bundle
-                ChatFragment chatFragment = new ChatFragment();
-                chatFragment.setArguments(bundle);
-
-                // Replace the current fragment with the new one
-                fragmentTransaction.replace(R.id.frameLayout, chatFragment, "chatFragment").commit();
-
-                dismiss();
-            }
+            dismiss();
         });
     }
 

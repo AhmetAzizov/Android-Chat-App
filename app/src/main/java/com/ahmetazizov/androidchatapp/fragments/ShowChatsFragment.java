@@ -13,7 +13,6 @@ import androidx.recyclerview.widget.RecyclerView;
 
 import android.transition.ChangeBounds;
 import android.transition.TransitionManager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,9 +23,9 @@ import android.widget.SearchView;
 
 import com.ahmetazizov.androidchatapp.AddContactActivity;
 import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.ContactsRecyclerViewAdapter;
+import com.ahmetazizov.androidchatapp.adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.SearchAdapter;
+import com.ahmetazizov.androidchatapp.adapters.SearchAdapter;
 import com.ahmetazizov.androidchatapp.models.AppUser;
 import com.google.firebase.firestore.FirebaseFirestore;
 

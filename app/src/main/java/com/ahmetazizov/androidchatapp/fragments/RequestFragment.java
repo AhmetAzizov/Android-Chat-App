@@ -16,7 +16,7 @@ import android.view.ViewGroup;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.Request;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.RequestAdapter;
+import com.ahmetazizov.androidchatapp.adapters.RequestAdapter;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;

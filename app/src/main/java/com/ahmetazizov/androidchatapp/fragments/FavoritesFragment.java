@@ -4,7 +4,6 @@ import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
@@ -18,8 +17,7 @@ import android.widget.ImageView;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.ChatsAdapter;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
+import com.ahmetazizov.androidchatapp.adapters.FavoritesAdapter;
 
 public class FavoritesFragment extends Fragment {
 

@@ -395,11 +395,11 @@ public class MainActivity extends AppCompatActivity {
                 String[] separateNames = document.getId().split("-");
 
                 if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
-                    sortUser(document.getId());  //  Get contact names from the chat reference and send to contacts list
+                    sortUser(document.getId());  // Get contact names from the chat reference and send to contacts list
                 }
             }
 
-//            ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+//          ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
             int position = viewPager.getCurrentItem();
 
             if (position == 0) {

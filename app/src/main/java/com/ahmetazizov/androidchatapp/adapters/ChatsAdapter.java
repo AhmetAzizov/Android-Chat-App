@@ -1,4 +1,4 @@
-package com.ahmetazizov.androidchatapp.recyclerview_adapters;
+package com.ahmetazizov.androidchatapp.adapters;
 
 //import static com.ahmetazizov.androidchatapp.models.TextMessage.LAYOUT_RECEIVER;
 //import static com.ahmetazizov.androidchatapp.models.TextMessage.LAYOUT_SENDER;

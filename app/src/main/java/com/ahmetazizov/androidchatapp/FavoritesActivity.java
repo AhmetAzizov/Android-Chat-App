@@ -1,18 +1,13 @@
 package com.ahmetazizov.androidchatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import android.os.Bundle;
 import android.widget.ImageView;
 
-import com.ahmetazizov.androidchatapp.Constants;
-import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
-import com.ahmetazizov.androidchatapp.recyclerview_adapters.FavoritesAdapter;
+import com.ahmetazizov.androidchatapp.adapters.FavoritesAdapter;
 
 public class FavoritesActivity extends AppCompatActivity {
 
