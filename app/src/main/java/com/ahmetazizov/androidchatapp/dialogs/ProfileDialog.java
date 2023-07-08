@@ -12,15 +12,11 @@ import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.DialogFragment;
-import androidx.fragment.app.FragmentManager;
-import androidx.fragment.app.FragmentTransaction;
 
 import com.ahmetazizov.androidchatapp.ChatActivity;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;
@@ -28,12 +24,12 @@ import java.io.Serializable;
 public class ProfileDialog extends DialogFragment {
 
     private final String TAG = "profileDialog";
-    AppUser user;
+    Contact user;
     ImageView profileImage;
     ImageView chatButton;
     TextView username;
 
-    public static ProfileDialog newInstance(AppUser user) {
+    public static ProfileDialog newInstance(Contact user) {
 
         ProfileDialog dialogFragment = new ProfileDialog();
 
@@ -64,7 +60,7 @@ public class ProfileDialog extends DialogFragment {
         super.onViewCreated(view, savedInstanceState);
 
         if (getArguments() != null) {
-            user = (AppUser) getArguments().getSerializable("user");
+            user = (Contact) getArguments().getSerializable("user");
         }
 
         profileImage = view.findViewById(R.id.profileImg);

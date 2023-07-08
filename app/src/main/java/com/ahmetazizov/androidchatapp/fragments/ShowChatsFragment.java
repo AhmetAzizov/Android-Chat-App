@@ -26,7 +26,7 @@ import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.adapters.ContactsRecyclerViewAdapter;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.adapters.SearchAdapter;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.google.firebase.firestore.FirebaseFirestore;
 
 import org.checkerframework.checker.nullness.qual.NonNull;
@@ -46,7 +46,7 @@ public class ShowChatsFragment extends Fragment {
 
 
     public final static String TAG = "ShowChatsFragment";
-    private ArrayList<AppUser> searchResult;
+    private ArrayList<Contact> searchResult;
     private ContactsRecyclerViewAdapter adapter;
     private SearchAdapter searchAdapter;
     private FirebaseFirestore db;
@@ -160,7 +160,7 @@ public class ShowChatsFragment extends Fragment {
 
         searchResult.clear();
 
-        for (AppUser contact : Constants.contacts) {
+        for (Contact contact : Constants.contacts) {
             if (contact.getUsername().toLowerCase().contains(input.toLowerCase())) {
                 searchResult.add(contact);
             }
@@ -170,7 +170,7 @@ public class ShowChatsFragment extends Fragment {
         if (input.isEmpty()) searchResult.clear();
     }
 
-    public ArrayList<AppUser> getSearchResult() {
+    public ArrayList<Contact> getSearchResult() {
         return searchResult;
     }
 

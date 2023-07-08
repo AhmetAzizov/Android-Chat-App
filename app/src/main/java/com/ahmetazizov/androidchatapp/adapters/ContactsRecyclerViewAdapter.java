@@ -24,7 +24,7 @@ import com.ahmetazizov.androidchatapp.ChatActivity;
 import com.ahmetazizov.androidchatapp.dialogs.ProfileDialog;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.bumptech.glide.Glide;
 import com.bumptech.glide.load.DataSource;
 import com.bumptech.glide.load.engine.GlideException;
@@ -37,12 +37,12 @@ public class ContactsRecyclerViewAdapter extends RecyclerView.Adapter<ContactsRe
 
     public final static String TAG = "ChatsRecycler";
     Context context;
-    ArrayList<AppUser> chats;
+    ArrayList<Contact> chats;
     CardView cover;
     Activity activity;
 
 
-    public ContactsRecyclerViewAdapter(Context context, ArrayList<AppUser> chats, CardView cover, Activity activity){
+    public ContactsRecyclerViewAdapter(Context context, ArrayList<Contact> chats, CardView cover, Activity activity){
         this.context = context;
         this.chats = chats;
         this.cover = cover;

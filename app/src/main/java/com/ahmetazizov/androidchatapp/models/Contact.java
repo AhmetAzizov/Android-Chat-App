@@ -2,14 +2,14 @@ package com.ahmetazizov.androidchatapp.models;
 
 import java.io.Serializable;
 
-public class AppUser extends User implements Serializable {
+public class Contact extends User implements Serializable {
 
     private String chatReference;
     private String Uid;
 
-    public AppUser() {}
+    public Contact() {}
 
-    public AppUser(String username, String email, String imageURL) {
+    public Contact(String username, String email, String imageURL) {
         super(username, email, imageURL);
     }
 

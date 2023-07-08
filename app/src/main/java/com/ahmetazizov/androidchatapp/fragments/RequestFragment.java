@@ -9,6 +9,7 @@ import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 import androidx.swiperefreshlayout.widget.SwipeRefreshLayout;
 
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,13 +19,16 @@ import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.Request;
 import com.ahmetazizov.androidchatapp.adapters.RequestAdapter;
 import com.google.firebase.firestore.CollectionReference;
+import com.google.firebase.firestore.EventListener;
 import com.google.firebase.firestore.FirebaseFirestore;
+import com.google.firebase.firestore.FirebaseFirestoreException;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
 public class RequestFragment extends Fragment {
 
+    public final static String TAG = "RequestFragment";
     RecyclerView recyclerView;
     RequestAdapter requestAdapter;
     FirebaseFirestore db;
@@ -82,19 +86,18 @@ public class RequestFragment extends Fragment {
         Constants.requests.clear();
 
         requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
-                .get()
-                .addOnCompleteListener(task -> {
-                    if (task.isSuccessful()) {
+                .addSnapshotListener((querySnapshot, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    }
 
-                        QuerySnapshot querySnapshot = task.getResult();
+                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+                        Constants.requests.clear();
 
-                        if (querySnapshot != null) {
-                            for (QueryDocumentSnapshot document : querySnapshot) {
-
-                                Request request = document.toObject(Request.class);
-
-                                Constants.requests.add(request);
-                            }
+                        for (QueryDocumentSnapshot document : querySnapshot) {
+                            Request request = document.toObject(Request.class);
+                            Constants.requests.add(request);
                         }
 
                         requestAdapter.notifyDataSetChanged();

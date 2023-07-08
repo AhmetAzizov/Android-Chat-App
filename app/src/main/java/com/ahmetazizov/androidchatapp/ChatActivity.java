@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.dialogs.SendImageDialog;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
 import com.ahmetazizov.androidchatapp.models.ImageMessage;
@@ -73,7 +73,7 @@ public class ChatActivity extends AppCompatActivity {
     ImageView contactImage, backButton, downArrowIcon;
     ImageView cancelSelectionButton, selectionCopyButton, selectionFavoriteButton, selectionDeleteButton;
     TextView contactName, infoLabel, selectionCount;
-    AppUser user;
+    Contact user;
     ChatsAdapter chatsAdapter;
     RecyclerView chatsRecyclerView;
     CardView sendButton, downArrow;
@@ -101,7 +101,7 @@ public class ChatActivity extends AppCompatActivity {
 
         Bundle bundle = getIntent().getExtras();
         if (bundle != null) {
-            user = (AppUser) bundle.getSerializable("user");
+            user = (Contact) bundle.getSerializable("user");
         } else {
             Log.e(TAG, "bundle is null!");
         }

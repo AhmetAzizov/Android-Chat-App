@@ -18,7 +18,7 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.bumptech.glide.Glide;
 
 import java.io.Serializable;
@@ -35,7 +35,7 @@ public class ProfilePage extends Fragment {
 
     public final static String TAG = "ProfilePage";
     boolean imageResized = false;
-    AppUser user;
+    Contact user;
     ImageView profileImage;
     TextView username, userEmail;
     CardView profileImageContainer;
@@ -47,7 +47,7 @@ public class ProfilePage extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         Bundle bundle = getArguments();
-        user = (AppUser) bundle.getSerializable("user");
+        user = (Contact) bundle.getSerializable("user");
 
         profileImage = view.findViewById(R.id.profileImage);
         profileImageContainer = view.findViewById(R.id.profileImageContainer);

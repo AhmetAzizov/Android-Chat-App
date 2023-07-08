@@ -3,7 +3,6 @@ package com.ahmetazizov.androidchatapp;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
-import androidx.fragment.app.Fragment;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 import androidx.viewpager2.widget.ViewPager2;
@@ -21,14 +20,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.ahmetazizov.androidchatapp.fragments.ChatColorPicker;
-import com.ahmetazizov.androidchatapp.fragments.ChatFragment;
-import com.ahmetazizov.androidchatapp.fragments.RegisterFragment;
 import com.ahmetazizov.androidchatapp.fragments.RequestFragment;
 import com.ahmetazizov.androidchatapp.fragments.ShowChatsFragment;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.ahmetazizov.androidchatapp.models.FavoriteImageMessage;
 import com.ahmetazizov.androidchatapp.models.FavoriteTextMessage;
-import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.Request;
 import com.bumptech.glide.Glide;
 import com.google.android.material.dialog.MaterialAlertDialogBuilder;
@@ -49,7 +45,6 @@ import com.google.firebase.firestore.QuerySnapshot;
 
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 public class MainActivity extends AppCompatActivity {
@@ -149,71 +144,12 @@ public class MainActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-//        // Get the FragmentManager instance
-//        FragmentManager fragmentManager = getSupportFragmentManager();
-//
-//        // Loop through the list of fragments in the FragmentManager
-//        for (Fragment fragments : fragmentManager.getFragments()) {
-//            if (fragments != null && fragments.isVisible()) {
-//                String fragmentTag = fragments.getTag(); // Get the tag of the currently active fragment
-//
-//                if (fragmentTag != null) {
-//                switch (fragmentTag) {
-//                    case "chatFragment":
-//                        ChatFragment fragment = (ChatFragment) getSupportFragmentManager().findFragmentByTag("chatFragment");
-//                        if (fragment != null) {
-//                            if (fragment.getAdapter() != null) {
-//                                List<Message> deleteList = fragment.getAdapter().getSelectionList();
-//                                if (deleteList.size() == 0) {
-//                                    FragmentManager fragmentManager2 = getSupportFragmentManager();
-//                                    FragmentTransaction fragmentTransaction = fragmentManager2.beginTransaction();
-//                                    fragmentTransaction.setCustomAnimations(R.anim.slide_in_from_right, 0);
-//                                    fragmentTransaction.replace(R.id.frameLayout, new ShowChatsFragment(), "showChatsFragment").commit();
-//                                } else {
-//                                    fragment.getAdapter().closeSelectionList();
-//                                }
-//                            }
-//                        }
-//                        break;
-//                    case "showChatsFragment":
-//                        ShowChatsFragment showChatsFragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
-//
-//                        if (showChatsFragment != null && !showChatsFragment.getSearchResult().isEmpty()) {
-//                            showChatsFragment.getSearchResult().clear();
-//                            showChatsFragment.getSearchAdapter().notifyDataSetChanged();
-//                        } else {
-//                            MaterialAlertDialogBuilder exitDialog = new MaterialAlertDialogBuilder(this, R.style.exitDialogTheme);
-//
-//                            exitDialog
-//                                    .setTitle("Are you sure you want to exit the application?")
-//                                            .setPositiveButton("Yes", (dialog, which) -> {
-//                                                isOffline();
-//                                                super.onBackPressed();
-//                                            })
-//                                            .setNegativeButton("No", (dialog, which) -> {
-//                                                dialog.dismiss();
-//                                            })
-//                                            .show();
-//                        }
-//
-//                        break;
-//
-//                    default:
-//                        super.onBackPressed();
-//                }
-//                }
-//                break; // Break out of the loop after finding the active fragment
-//            }
-
-
-
         // This closes the navigation drawer if it is open
         if (drawerLayout.isDrawerOpen(GravityCompat.START)) {
             drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
-
-
+        
         int position = viewPager.getCurrentItem();
 
         if (position == 0) {
@@ -259,7 +195,7 @@ public class MainActivity extends AppCompatActivity {
                 if (document.exists()) {
                     // document data exists, extract data and fill into object
 
-                    AppUser currentUserData = document.toObject(AppUser.class);
+                    Contact currentUserData = document.toObject(Contact.class);
 
                     Glide.with(this)
                             .load(currentUserData.getImageURL())
@@ -327,7 +263,7 @@ public class MainActivity extends AppCompatActivity {
 
 
             for (QueryDocumentSnapshot document : value) {
-                AppUser user = document.toObject(AppUser.class);
+                Contact user = document.toObject(Contact.class);
 
                 Constants.users.add(user);
             }
@@ -342,13 +278,13 @@ public class MainActivity extends AppCompatActivity {
             if (error != null) {
                 Log.w(TAG, "Listen failed.", error);
                 return;
+            } else if (value == null) {
+                Log.w(TAG, "Value is Null");
+                return;
             }
-//                       setTheme(R.style.Theme_AndroidChatApp);
-
 
             Constants.favorites.clear();
 
-            if (value != null) {
                 for (QueryDocumentSnapshot document : value) {
 
                       String id = document.getString("id");
@@ -370,45 +306,46 @@ public class MainActivity extends AppCompatActivity {
                       } else {
                           Constants.favorites.add(new FavoriteImageMessage(id, sender, receiver, imageURL, time, chatRef, messageType, exactTime, selfId));
                       }
-
                 }
-            }
 
             Log.d(TAG, "favorites list length: " + Constants.favorites.size());
         });
-
     }
 
     public void getChats() {
         final CollectionReference chatsRef = db.collection("chats");
 
-        chatsRef.orderBy("time", Query.Direction.DESCENDING).addSnapshotListener((value, e) -> {
-            if (e != null) {
-                Log.w(TAG, "Listen failed.", e);
-                return;
-            }
+        chatsRef.orderBy("time", Query.Direction.DESCENDING)
+                .addSnapshotListener((value, e) -> {
+                    if (e != null) {
+                        Log.w(TAG, "Listen failed.", e);
+                        return;
+                    } else if (value == null) {
+                        Log.w(TAG, "Value is Null");
+                        return;
+                    }
 
-            Constants.contacts.clear();
+                    Constants.contacts.clear();
 
-            for (QueryDocumentSnapshot document : value) {
+                    for (QueryDocumentSnapshot document : value) {
 
-                String[] separateNames = document.getId().split("-");
+                        String[] separateNames = document.getId().split("-");
 
-                if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
-                    sortUser(document.getId());  // Get contact names from the chat reference and send to contacts list
-                }
-            }
+                        if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
+                            sortUser(document.getId());  // Get contact names from the chat reference and send to contacts list
+                        }
+                    }
 
-//          ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
-            int position = viewPager.getCurrentItem();
+                    //          ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+                    int position = viewPager.getCurrentItem();
 
-            if (position == 0) {
-                ShowChatsFragment showChatsFragment = (ShowChatsFragment) viewPagerAdapter.getCurrentFragment(0);
+                    if (position == 0) {
+                        ShowChatsFragment showChatsFragment = (ShowChatsFragment) viewPagerAdapter.getCurrentFragment(0);
 
-                if (showChatsFragment.getAdapter() != null) {
-                    showChatsFragment.getAdapter().notifyDataSetChanged();
-                }
-            }
+                        if (showChatsFragment.getAdapter() != null) {
+                            showChatsFragment.getAdapter().notifyDataSetChanged();
+                        }
+                    }
         });
     }
 
@@ -419,7 +356,7 @@ public class MainActivity extends AppCompatActivity {
 
         String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
 
-        for (AppUser user : Constants.users) {
+        for (Contact user : Constants.users) {
             if (user.getUsername().equals(tempUsername)) {
                 user.setChatReference(chatReference);
                 Constants.contacts.add(user);
@@ -438,7 +375,7 @@ public class MainActivity extends AppCompatActivity {
                 DocumentSnapshot document = task.getResult();
                 if (document.exists()) {
 
-                    Constants.currentUser = document.toObject(AppUser.class);
+                    Constants.currentUser = document.toObject(Contact.class);
                     Log.d(TAG, "CurrentUser: " + Constants.currentUser.getUid());
 
                 } else {

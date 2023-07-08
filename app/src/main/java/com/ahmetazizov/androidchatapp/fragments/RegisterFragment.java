@@ -29,7 +29,7 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.android.material.textfield.TextInputLayout;
 import com.google.firebase.auth.FirebaseAuth;
@@ -192,7 +192,7 @@ public class RegisterFragment extends Fragment {
 
     private boolean checkErrors(String username, String email, String password, Uri uri) {
         if (username.isEmpty()) {
-            enterUsernameLayout.setError("AppUser Name is Empty!");
+            enterUsernameLayout.setError("Contact Name is Empty!");
             enterUsernameLayout.requestFocus();
             return false;
         }
@@ -272,7 +272,7 @@ public class RegisterFragment extends Fragment {
                         fileRef.getDownloadUrl().addOnSuccessListener(uri -> {
 
                             // We create a new user object
-                            AppUser user = new AppUser(username, email, uri.toString());
+                            Contact user = new Contact(username, email, uri.toString());
 
                             registerUser(email, password, user);
 
@@ -291,7 +291,7 @@ public class RegisterFragment extends Fragment {
 
 
 
-    private void addUser(AppUser user) {
+    private void addUser(Contact user) {
 
         dbUsersRef.document(user.getUsername())
                 .set(user)
@@ -327,7 +327,7 @@ public class RegisterFragment extends Fragment {
 
 
 
-    private void registerUser(String email, String password, AppUser user) {
+    private void registerUser(String email, String password, Contact user) {
 
 
         mAuth.createUserWithEmailAndPassword(email, password)

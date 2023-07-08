@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.ahmetazizov.androidchatapp.AuthenticationActivity;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.bumptech.glide.Glide;
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.OnFailureListener;
@@ -115,7 +115,7 @@ public class UserProfilePage extends Fragment {
     Button resetPassword, logOut;
     View topView;
     boolean imageResized = false;
-    AppUser currentUserData;
+    Contact currentUserData;
 
     @Override
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
@@ -139,7 +139,7 @@ public class UserProfilePage extends Fragment {
                 if (document.exists()) {
                     // document data exists, extract data and fill into object
 
-                    currentUserData = document.toObject(AppUser.class);
+                    currentUserData = document.toObject(Contact.class);
 
                     Glide.with(getContext())
                             .load(currentUserData.getImageURL())

@@ -5,7 +5,7 @@ import android.content.Context;
 import android.net.Uri;
 import android.webkit.MimeTypeMap;
 
-import com.ahmetazizov.androidchatapp.models.AppUser;
+import com.ahmetazizov.androidchatapp.models.Contact;
 import com.ahmetazizov.androidchatapp.models.Message;
 import com.ahmetazizov.androidchatapp.models.Request;
 
@@ -15,11 +15,11 @@ public class Constants {
 
     public static String currentUserName;
 
-    public static AppUser currentUser;
+    public static Contact currentUser;
 
-    public static ArrayList<AppUser> users = new ArrayList<>();
+    public static ArrayList<Contact> users = new ArrayList<>();
 
-    public static ArrayList<AppUser> contacts = new ArrayList<>();
+    public static ArrayList<Contact> contacts = new ArrayList<>();
 
     public static ArrayList<Message> favorites = new ArrayList<>();
 
