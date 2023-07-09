@@ -121,11 +121,14 @@ public class MainActivity extends AppCompatActivity {
             });
 
         } else {
-            Intent intent = new Intent(MainActivity.this , AuthenticationActivity.class);
+            Intent intent = new Intent(MainActivity.this, AuthenticationActivity.class);
             startActivity(intent);
         }
     }
 
+    public ViewPager2 getViewPager() {
+        return viewPager;
+    }
 
     @Override
     protected void onPause() {
@@ -149,7 +152,7 @@ public class MainActivity extends AppCompatActivity {
             drawerLayout.closeDrawer(GravityCompat.START);
             return;
         }
-        
+
         int position = viewPager.getCurrentItem();
 
         if (position == 0) {
@@ -336,7 +339,7 @@ public class MainActivity extends AppCompatActivity {
                         }
                     }
 
-                    //          ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
+                    // ShowChatsFragment fragment = (ShowChatsFragment) getSupportFragmentManager().findFragmentByTag("showChatsFragment");
                     int position = viewPager.getCurrentItem();
 
                     if (position == 0) {

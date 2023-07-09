@@ -11,12 +11,16 @@ import android.widget.Toast;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
+import androidx.viewpager2.widget.ViewPager2;
 
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.ViewPagerAdapter;
+import com.ahmetazizov.androidchatapp.fragments.RequestFragment;
 import com.ahmetazizov.androidchatapp.models.Contact;
 import com.ahmetazizov.androidchatapp.models.Request;
 import com.bumptech.glide.Glide;
+import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.Timestamp;
 import com.google.firebase.firestore.CollectionReference;
 import com.google.firebase.firestore.DocumentReference;
@@ -34,11 +38,13 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.MyViewHo
     Context context;
     ArrayList<Request> requestList;
     FirebaseFirestore db;
+    ViewPager2 viewPager;
 
 
-    public RequestAdapter(Context context, ArrayList<Request> requestList) {
+    public RequestAdapter(Context context, ArrayList<Request> requestList, ViewPager2 viewPager) {
         this.context = context;
         this.requestList = requestList;
+        this.viewPager = viewPager;
         db = FirebaseFirestore.getInstance();
     }
 
@@ -81,29 +87,29 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.MyViewHo
 
                 for (Contact user : Constants.contacts) {
                     if (user.getUsername().equalsIgnoreCase(requestSender)) {
-                        deleteRef.delete();
-                        notifyDataSetChanged();
+                        deleteRef.delete()
+                                .addOnSuccessListener(unused -> notifyDataSetChanged());
                         return;
                     }
                 }
 
                 String newChatRef = requestSender + '-' + Constants.currentUserName;
 
+                deleteRef.delete()
+                        .addOnSuccessListener(unused -> notifyDataSetChanged())
+                        .addOnFailureListener(e -> Log.e(TAG, "Error"));
+
                 Timestamp timestamp = Timestamp.now();
                 Map<String, Object> data = new HashMap<>();
                 data.put("time", timestamp);
-
-                deleteRef.delete()
-                        .addOnFailureListener(e -> Log.e(TAG, "Error"));
 
                 // Create an empty document inside "chats" collection
                 colRef.document(newChatRef)
                         .set(data, SetOptions.merge())
                         .addOnSuccessListener(unused -> {
                             Toast.makeText(context, "Successfully added a new contact!", Toast.LENGTH_SHORT).show();
+                            viewPager.setCurrentItem(0);
                         }).addOnFailureListener(e -> Toast.makeText(context, "There was an error: " + e.getMessage(), Toast.LENGTH_LONG).show());
-
-                notifyDataSetChanged();
         });
     }
 

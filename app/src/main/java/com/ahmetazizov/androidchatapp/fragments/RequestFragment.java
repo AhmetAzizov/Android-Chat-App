@@ -15,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.ahmetazizov.androidchatapp.Constants;
+import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
 import com.ahmetazizov.androidchatapp.models.Request;
 import com.ahmetazizov.androidchatapp.adapters.RequestAdapter;
@@ -50,13 +51,15 @@ public class RequestFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
 
+        MainActivity mainActivity = (MainActivity) getActivity();
+
         recyclerView = view.findViewById(R.id.recyclerView);
         db = FirebaseFirestore.getInstance();
         swipeContainer = view.findViewById(R.id.swipeContainer);
 
         swipeListener();
 
-        requestAdapter = new RequestAdapter(requireContext(), Constants.requests);
+        requestAdapter = new RequestAdapter(requireContext(), Constants.requests, mainActivity.getViewPager());
         recyclerView.setAdapter(requestAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
