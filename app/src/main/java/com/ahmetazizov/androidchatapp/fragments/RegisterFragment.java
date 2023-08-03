@@ -339,14 +339,12 @@ public class RegisterFragment extends Fragment {
 
                         user.setUid(authUser.getUid());
 
-
                         UserProfileChangeRequest profileUpdates = new UserProfileChangeRequest.Builder()
                                 .setDisplayName(user.getUsername()).setPhotoUri(imageUri).build();
 
-
                         authUser.updateProfile(profileUpdates).addOnCompleteListener(task1 -> {
 
-                            // We call the addUser method to add the new added user's data to firestore
+                            // We call the addUser method to add the new added user's data to firebase
                             addUser(user);
 
                         }).addOnFailureListener(e -> {

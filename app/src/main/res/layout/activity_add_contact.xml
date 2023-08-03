@@ -4,14 +4,14 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="?attr/colorSurface"
+    android:background="?attr/background"
     tools:context=".AddContactActivity">
 
     <com.google.android.material.appbar.MaterialToolbar
         android:id="@+id/profileInfo"
         android:layout_width="match_parent"
         android:layout_height="60dp"
-        android:background="?attr/background"
+        android:background="?attr/colorSurface"
         android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
         app:contentInsetLeft="0dp"
@@ -54,8 +54,9 @@
         app:counterMaxLength="15"
         app:endIconMode="clear_text"
         app:errorEnabled="true"
-        app:helperTextTextColor="#686867"
-        app:hintTextColor="#686867"
+        app:helperTextTextColor="?attr/colorOnSurface"
+        app:hintTextColor="?attr/colorOnSurface"
+        app:boxStrokeColor="?attr/colorOnSurface"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@+id/profileInfo"
@@ -66,9 +67,8 @@
             android:id="@+id/addContactUsername"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:maxLines="1"
             android:hint="User Name"
-            android:outlineSpotShadowColor="@color/Red"
-            android:textColor="#A1A0A0"
             android:textCursorDrawable="@null" />
 
     </com.google.android.material.textfield.TextInputLayout>
@@ -78,8 +78,8 @@
         android:id="@+id/addContactButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginTop="40dp"
-        android:backgroundTint="?attr/background"
+        android:layout_marginTop="30dp"
+        android:backgroundTint="?attr/colorSurface"
         android:fontFamily="sans-serif-black"
         android:paddingHorizontal="40dp"
         android:paddingVertical="20dp"

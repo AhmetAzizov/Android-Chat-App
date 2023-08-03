@@ -42,6 +42,7 @@ import com.google.firebase.firestore.DocumentReference;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
+import com.google.firebase.firestore.SetOptions;
 
 import java.io.BufferedReader;
 import java.io.FileInputStream;
@@ -423,8 +424,9 @@ public class ChatActivity extends AppCompatActivity {
 
         Map<String, Object> data = new HashMap<>();
         data.put("time", docTimestamp);
+        data.put("lastMessage", message);
 
-        docRef.set(data)
+        docRef.set(data, SetOptions.merge())
                 .addOnSuccessListener(aVoid -> Log.d(TAG, "DocumentSnapshot successfully written!"))
                 .addOnFailureListener(e -> Log.w(TAG, "Error writing document", e));
     }

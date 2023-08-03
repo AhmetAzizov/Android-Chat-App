@@ -99,7 +99,7 @@
         android:layout_height="70dp"
         android:visibility="gone"
         android:alpha="0"
-        android:background="?attr/background"
+        android:background="?attr/colorSurface"
         android:contentInsetLeft="0dp"
         android:contentInsetStart="0dp"
         app:contentInsetLeft="0dp"

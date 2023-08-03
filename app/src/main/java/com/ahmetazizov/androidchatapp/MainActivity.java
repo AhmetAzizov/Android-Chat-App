@@ -65,8 +65,6 @@ public class MainActivity extends AppCompatActivity {
     @Override
     protected void onStart() {
         super.onStart();
-
-
     }
 
 
@@ -324,7 +322,7 @@ public class MainActivity extends AppCompatActivity {
                         Log.w(TAG, "Listen failed.", e);
                         return;
                     } else if (value == null) {
-                        Log.w(TAG, "Value is Null");
+                        Log.w(TAG, "Value is null");
                         return;
                     }
 

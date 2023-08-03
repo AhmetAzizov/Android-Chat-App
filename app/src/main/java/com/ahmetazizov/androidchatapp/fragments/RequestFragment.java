@@ -17,6 +17,7 @@ import android.view.ViewGroup;
 import com.ahmetazizov.androidchatapp.Constants;
 import com.ahmetazizov.androidchatapp.MainActivity;
 import com.ahmetazizov.androidchatapp.R;
+import com.ahmetazizov.androidchatapp.RequestInterface;
 import com.ahmetazizov.androidchatapp.models.Request;
 import com.ahmetazizov.androidchatapp.adapters.RequestAdapter;
 import com.google.firebase.firestore.CollectionReference;
@@ -27,7 +28,9 @@ import com.google.firebase.firestore.Query;
 import com.google.firebase.firestore.QueryDocumentSnapshot;
 import com.google.firebase.firestore.QuerySnapshot;
 
-public class RequestFragment extends Fragment {
+import java.util.Objects;
+
+public class RequestFragment extends Fragment implements RequestInterface {
 
     public final static String TAG = "RequestFragment";
     RecyclerView recyclerView;
@@ -41,7 +44,6 @@ public class RequestFragment extends Fragment {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_request, container, false);
     }
-
 
     public RequestAdapter getRequestAdapter() {
         return requestAdapter;
@@ -59,7 +61,8 @@ public class RequestFragment extends Fragment {
 
         swipeListener();
 
-        requestAdapter = new RequestAdapter(requireContext(), Constants.requests, mainActivity.getViewPager());
+        Objects.requireNonNull(mainActivity, "mainactivity is null");
+        requestAdapter = new RequestAdapter(requireContext(), Constants.requests, mainActivity.getViewPager(), this);
         recyclerView.setAdapter(requestAdapter);
         LinearLayoutManager layoutManager = new LinearLayoutManager(requireContext());
         layoutManager.setOrientation(LinearLayoutManager.VERTICAL);
@@ -67,40 +70,64 @@ public class RequestFragment extends Fragment {
     }
 
 
-
-
-
-
     private void swipeListener() {
 
         swipeContainer.setOnRefreshListener(() -> {
             Constants.requests.clear();
 
-            getRequests();
+            getRequest();
 
             swipeContainer.setRefreshing(false);
         });
     }
 
 
-    private void getRequests() {
+    public void getRequests() {
+//        final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
+//
+//        Constants.requests.clear();
+//
+//        requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
+//                .addSnapshotListener((querySnapshot, e) -> {
+//                    if (e != null) {
+//                        Log.w(TAG, "Listen failed.", e);
+//                        return;
+//                    }
+//
+//                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
+//                        Constants.requests.clear();
+//
+//                        for (QueryDocumentSnapshot document : querySnapshot) {
+//                            Request request = document.toObject(Request.class);
+//                            Constants.requests.add(request);
+//                        }
+//
+//                        requestAdapter.notifyDataSetChanged();
+//                    }
+//                });
+
+    }
+
+    @Override
+    public void getRequest() {
         final CollectionReference requestsRef = db.collection("users").document(Constants.currentUserName).collection("requests");
 
         Constants.requests.clear();
 
         requestsRef.orderBy("requestTime", Query.Direction.DESCENDING)
-                .addSnapshotListener((querySnapshot, e) -> {
-                    if (e != null) {
-                        Log.w(TAG, "Listen failed.", e);
-                        return;
-                    }
+                .get()
+                .addOnCompleteListener(task -> {
+                    if (task.isSuccessful()) {
 
-                    if (querySnapshot != null && !querySnapshot.isEmpty()) {
-                        Constants.requests.clear();
+                        QuerySnapshot querySnapshot = task.getResult();
 
-                        for (QueryDocumentSnapshot document : querySnapshot) {
-                            Request request = document.toObject(Request.class);
-                            Constants.requests.add(request);
+                        if (querySnapshot != null) {
+                            for (QueryDocumentSnapshot document : querySnapshot) {
+
+                                Request request = document.toObject(Request.class);
+
+                                Constants.requests.add(request);
+                            }
                         }
 
                         requestAdapter.notifyDataSetChanged();
