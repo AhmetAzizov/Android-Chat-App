@@ -79,7 +79,6 @@ public class RegisterFragment extends Fragment {
     Uri imageUri;
     CardView imageContainer;
 
-
     FirebaseFirestore db = FirebaseFirestore.getInstance();
     StorageReference storageRef;
     CollectionReference dbUsersRef;
@@ -114,26 +113,6 @@ public class RegisterFragment extends Fragment {
 
             Constants.registerImageUri = null;
         }
-
-//        if (Constants.registerImageUri != null) {
-//            try {
-//                Log.d(TAG, "image uri2  " + Constants.registerImageUri);
-//                image.setImageTintList(null);
-//                ViewGroup.LayoutParams layoutParams = image.getLayoutParams();
-//                layoutParams.width = ViewGroup.LayoutParams.MATCH_PARENT;
-//                layoutParams.height = ViewGroup.LayoutParams.MATCH_PARENT;
-//                image.setLayoutParams(layoutParams);
-//
-//                image.setImageURI(Constants.registerImageUri);
-//            } catch (Exception e) {
-//                Toast.makeText(requireContext(), "Error" + e.getMessage(), Toast.LENGTH_SHORT).show();
-//                return;
-//            }
-//
-//            image.setImageURI(Constants.registerImageUri);
-//            Constants.registerImageUri = null;
-//        }
-
 
         enterUsernameLayout = view.findViewById(R.id.enterUserNameLayout);
         enterEmailLayout = view.findViewById(R.id.enterEmailLayout);
@@ -293,14 +272,14 @@ public class RegisterFragment extends Fragment {
 
     private void addUser(Contact user) {
 
-        dbUsersRef.document(user.getUsername())
+        dbUsersRef.document(user.getUid())
                 .set(user)
                 .addOnSuccessListener(aVoid -> {
 
                     Map<String, Object> data = new HashMap<>();
                     data.put("isOnline", "true");
 
-                    DocumentReference docRef = db.collection("users").document(user.getUsername());
+                    DocumentReference docRef = db.collection("users").document(user.getUid());
 
                     docRef.update(data)
                             .addOnSuccessListener(aVoid1 -> {
@@ -373,7 +352,8 @@ public class RegisterFragment extends Fragment {
                 users.clear();
 
                 for (QueryDocumentSnapshot document : value) {
-                    users.add(document.getId());
+                    String username = document.getString("username");
+                    users.add(username);
                 }
             });
         }

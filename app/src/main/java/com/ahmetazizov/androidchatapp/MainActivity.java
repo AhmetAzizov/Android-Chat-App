@@ -1,6 +1,7 @@
 package com.ahmetazizov.androidchatapp;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.constraintlayout.helper.widget.Carousel;
 import androidx.core.view.GravityCompat;
 import androidx.drawerlayout.widget.DrawerLayout;
 import androidx.fragment.app.FragmentManager;
@@ -11,6 +12,7 @@ import androidx.viewpager2.widget.ViewPager2;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.ConnectivityManager;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.util.Log;
@@ -46,6 +48,8 @@ import com.google.firebase.firestore.QuerySnapshot;
 import java.text.SimpleDateFormat;
 import java.util.HashMap;
 import java.util.Map;
+
+import kotlinx.coroutines.AwaitKt;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -94,14 +98,14 @@ public class MainActivity extends AppCompatActivity {
 
         if(currentUser != null){
             Constants.currentUserName = currentUser.getDisplayName();
+            Constants.currentUserUid = currentUser.getUid();
 
+            fillDrawerDetails(drawerImage, drawerUsername, drawerEmail, Constants.currentUserUid);  // Fill the user details in the navigation drawer and get data of logged-in user
             getRequests();
             setNavigationListener();
-            getChats();  //  Get chat references of the user
+            getChats();
             getFavorites();  // Get the favorite chats of the logged-in user
-            getUserInformation();  // Get the information of logged-in user
 
-            fillDrawerDetails(drawerImage, drawerUsername, drawerEmail);  // Fill the user details in the navigation drawer
 
             fillViewPager();  // Connect fragments with the tab layout
 
@@ -187,8 +191,8 @@ public class MainActivity extends AppCompatActivity {
 
 
 
-    private void fillDrawerDetails(ImageView drawerImage, TextView drawerUsername, TextView drawerEmail) {
-        DocumentReference currentUser = db.collection("users").document(Constants.currentUserName);
+    private void fillDrawerDetails(ImageView drawerImage, TextView drawerUsername, TextView drawerEmail, String uid) {
+        DocumentReference currentUser = db.collection("users").document(uid);
 
         currentUser.get().addOnCompleteListener(task -> {
             if (task.isSuccessful()) {
@@ -196,16 +200,16 @@ public class MainActivity extends AppCompatActivity {
                 if (document.exists()) {
                     // document data exists, extract data and fill into object
 
-                    Contact currentUserData = document.toObject(Contact.class);
+                    Constants.currentUser = document.toObject(Contact.class);
 
                     Glide.with(this)
-                            .load(currentUserData.getImageURL())
+                            .load(Constants.currentUser.getImageURL())
                             .override(1000, 1000)
                             .centerCrop()
                             .into(drawerImage);
 
-                    drawerUsername.setText(currentUserData.getUsername());
-                    drawerEmail.setText(currentUserData.getEmail());
+                    drawerUsername.setText(Constants.currentUser.getUsername());
+                    drawerEmail.setText(Constants.currentUser.getEmail());
 
                 } else {
                     Log.d(TAG, "Error fetching user data");
@@ -262,10 +266,10 @@ public class MainActivity extends AppCompatActivity {
 
             Constants.users.clear();
 
-
             for (QueryDocumentSnapshot document : value) {
                 Contact user = document.toObject(Contact.class);
 
+                Log.e(TAG, "uid: " + user.getUid());
                 Constants.users.add(user);
             }
         });
@@ -330,9 +334,9 @@ public class MainActivity extends AppCompatActivity {
 
                     for (QueryDocumentSnapshot document : value) {
 
-                        String[] separateNames = document.getId().split("-");
+                        String[] separatedChatRef = document.getId().split("-");
 
-                        if (separateNames[0].equalsIgnoreCase(Constants.currentUserName) || separateNames[1].equalsIgnoreCase(Constants.currentUserName)) {
+                        if (separatedChatRef[0].equals(Constants.currentUserUid) || separatedChatRef[1].equals(Constants.currentUserUid)){
                             sortUser(document.getId());  // Get contact names from the chat reference and send to contacts list
                         }
                     }
@@ -355,10 +359,11 @@ public class MainActivity extends AppCompatActivity {
     private void sortUser(String chatReference) {
         String[] chatRefSplit = chatReference.split("-");
 
-        String tempUsername = (chatRefSplit[1].equals(Constants.currentUserName)) ? chatRefSplit[0] : chatRefSplit[1];
+        String tempUsername = (chatRefSplit[1].equals(Constants.currentUserUid)) ? chatRefSplit[0] : chatRefSplit[1];
 
         for (Contact user : Constants.users) {
-            if (user.getUsername().equals(tempUsername)) {
+            if (user.getUid().equals(tempUsername)) {
+
                 user.setChatReference(chatReference);
                 Constants.contacts.add(user);
                 break;
@@ -368,7 +373,7 @@ public class MainActivity extends AppCompatActivity {
 
 
     private void getUserInformation() {
-        DocumentReference userRef = db.collection("users").document(Constants.currentUserName);
+        DocumentReference userRef = db.collection("users").document(Constants.currentUserUid);
 
         userRef.get().addOnCompleteListener(task -> {
 
@@ -377,7 +382,6 @@ public class MainActivity extends AppCompatActivity {
                 if (document.exists()) {
 
                     Constants.currentUser = document.toObject(Contact.class);
-                    Log.d(TAG, "CurrentUser: " + Constants.currentUser.getUid());
 
                 } else {
                     Log.d(TAG, "No such document found!");

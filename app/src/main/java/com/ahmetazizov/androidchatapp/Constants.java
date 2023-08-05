@@ -15,6 +15,8 @@ public class Constants {
 
     public static String currentUserName;
 
+    public static String currentUserUid;
+
     public static Contact currentUser;
 
     public static ArrayList<Contact> users = new ArrayList<>();

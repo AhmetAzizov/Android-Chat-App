@@ -92,7 +92,7 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.MyViewHo
                     if (user.getUsername().equalsIgnoreCase(requestSender)) {
                         Toast.makeText(context, "Contact already exists", Toast.LENGTH_SHORT).show();
                         deleteRef.delete()
-                                .addOnSuccessListener(unused -> {
+                                .addOnSuccessListener(success -> {
                                     requestInterface.getRequest();
                                 });
                         return;
@@ -107,9 +107,9 @@ public class RequestAdapter extends RecyclerView.Adapter<RequestAdapter.MyViewHo
 
                 deleteRef.delete()
                         .addOnSuccessListener(unused -> {
-//                            notifyDataSetChanged();
+                            requestInterface.getRequest();
 
-//                            viewPager.setCurrentItem(0);
+                            viewPager.setCurrentItem(0);
 
                             // Create an empty document inside "chats" collection
                             colRef.document(newChatRef)

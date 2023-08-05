@@ -5,9 +5,9 @@ import com.google.firebase.Timestamp;
 public class FavoriteImageMessage extends Message {
 
     private String selfId;
-    String receiver;
-    String url;
-    String time;
+    private String receiver;
+    private String url;
+    private String time;
 
     public FavoriteImageMessage() {}
 

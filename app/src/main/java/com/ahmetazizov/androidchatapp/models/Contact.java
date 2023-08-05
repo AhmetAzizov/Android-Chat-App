@@ -5,7 +5,7 @@ import java.io.Serializable;
 public class Contact extends User implements Serializable {
 
     private String chatReference;
-    private String Uid;
+    private String uid;
 
     public Contact() {}
 
@@ -15,11 +15,11 @@ public class Contact extends User implements Serializable {
 
 
     public String getUid() {
-        return Uid;
+        return uid;
     }
 
     public void setUid(String uid) {
-        Uid = uid;
+        this.uid = uid;
     }
 
     public String getChatReference() {
